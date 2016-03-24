@@ -30,6 +30,12 @@ object JSFormat {
   implicit val responseHeaderFrmt = Json.format[CRMResponseHeader]
   implicit val responseFrmt       = Json.format[CRMResponse]
 
+  // Class formats
+  // ~~~~~
+  implicit val contactProfileFrmt           = Json.format[ContactProfile]
+  implicit val userFrmt                     = Json.format[User]
+
+
 }
 
 
