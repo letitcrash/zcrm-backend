@@ -9,10 +9,34 @@ import play.api.libs.json.JsValue
 import play.api.mvc.Headers
 import authentikat.jwt._
 import scala.util.{Success, Failure, Try}
+import controllers.session._
+
+
 
 object Security {
     
   private implicit val clearTokenFrmt  = Json.format[ClearToken]
+
+  val validateRequests = current.configuration.getBoolean("validateRequests").getOrElse(false)
+
+  def validateHeaders(headers: Headers): Try[CRMRequestHeader] = {
+    if(!validateRequests) {
+      try {
+        val id = Integer.parseInt(headers.get(settings.USER_ID_HEADER).getOrElse("1"))
+        Success(CRMRequestHeader(userId = id, userLevel = 9999))
+      } catch {
+        case ex: Exception =>
+          Logger.error("Failed to parse userId from headers", ex)
+          Failure(ex)
+      }
+    } else {
+      for {
+        userId    <- getUserIdHeader(headers)
+        clearToken  <- getJWTHeader(headers)
+        rqHeader  <- createRequestHeader(userId, clearToken)
+      } yield rqHeader
+    }
+  }
   
   def createSessionToken(user: User): Try[String] = {
     if(user.id.isEmpty) {
@@ -25,6 +49,38 @@ object Security {
       case ex: Exception =>
         Logger.error(f"Failed to create session token for user id: ${user.id}", ex)
         Failure(ex)
+    }
+  }
+
+  def updateHeaderToken(header: CRMRequestHeader): Try[String] = {
+    import System.currentTimeMillis
+    val ts = currentTimeMillis()
+    encryptToken(
+      ClearToken(
+        iss = Some(settings.APP_NAME),
+        exp =  Some(ts + settings.TOKEN_EXPIRATION_TIME),
+        iat = Some(ts),
+        uid = header.userId,
+        ulvl = header.userLevel))
+  }
+
+
+ private[Security] def createRequestHeader(userId: Int, token: ClearToken): Try[CRMRequestHeader] = {
+    if(userId != token.uid) {
+      Failure(new NonMatchingUserIdException)
+    } else if(token.iss.get != settings.APP_NAME) {
+      Failure(new ThinIceException)
+    } else if(settings.TOKEN_EXPIRATION_ENABLED && System.currentTimeMillis() > token.exp.get){
+      Failure(new ExpiredTokenException)
+    } else {
+      Success(CRMRequestHeader(userId, token.ulvl))
+    }
+  }
+
+  private[Security] def getJWTHeader(headers: Headers): Try[ClearToken] = {
+    headers.get(settings.API_KEY_HEADER) match {
+      case Some(token) => decryptToken(token)
+      case _ => Failure(new MissingAccessTokenException)
     }
   }
 
@@ -49,6 +105,18 @@ object Security {
     }
   }
 
+  private[Security] def getUserIdHeader(headers: Headers): Try[Int] = {
+    try {
+      headers.get(settings.USER_ID_HEADER) match {
+        case Some(id) => Success(Integer.parseInt(id))
+        case _ => Failure(new MissingUserIdException)
+      }
+    } catch {
+      case ex: Exception =>
+        Logger.error("Failed to parse User id from headers", ex)
+        Failure(new MissingUserIdException)
+    }
+  }
 
   private[Security] def encryptToken(key: ClearToken): Try[String] = {
     import System.currentTimeMillis

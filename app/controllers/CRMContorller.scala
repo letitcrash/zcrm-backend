@@ -1,0 +1,67 @@
+package controllers
+
+import javax.inject._
+import play.api._
+import play.api.mvc._
+import controllers.session._
+import play.api.libs.json.{JsError, Reads, JsValue, Json}
+import scala.util.{Success, Failure, Try}
+import security.Security
+
+
+@Singleton
+class CRMController @Inject() extends Controller with AcceptedReturns  {
+  import utils.JSFormat.{responseFrmt}
+  
+  def jsonError(message: String, error: JsError) = Json.toJson(
+    CRMResponse(
+      CRMResponseHeader(
+        response_code = 22,
+        error_message = Some(message),
+        detailed_error = Some(JsError.toFlatJson(error))
+      ),
+     None))
+
+  object CRMAction {
+    def apply[T](expectedFormat: JsValue)(bodyFn: CRMRequest[T] => AcceptedReturn)
+                (implicit reads: Reads[T]) =
+      Action(parse.anyContent) {
+        implicit req =>
+          validateHeaders(req.headers) { ttHeader =>
+            req.body.asJson.fold(BadRequest(expectedFormat)) { jsBody =>
+              jsBody.validate[T](reads).map { body =>
+                bodyFn(CRMSimpleRequest(ttHeader, body)).toResp
+              } recoverTotal (e => BadRequest(jsonError("Invalid format", e)))
+            }
+          }
+      }
+  }
+
+  def validateHeaders(headers: Headers)
+                     (fn: CRMRequestHeader => Result): Result = {
+    Security.validateHeaders(headers) match {
+      case Success(rqHeader) =>
+        val startTime = System.currentTimeMillis()
+        val response = fn(rqHeader) match {
+          case resp if resp.header.status == 200 =>
+            // When request is successfully handled, refresh headers.
+            Security.updateHeaderToken(rqHeader).map { newHeader =>
+              resp.withHeaders((settings.API_KEY_HEADER, newHeader))
+            } getOrElse InternalServerError("Failed to encrypt auth token")
+
+          case resp => resp
+        }
+        if(settings.LOG_RESPONSE_TIMES) {
+          Logger.info(f"Handled request in ${System.currentTimeMillis() - startTime}ms")
+        }
+        response
+      case Failure(ex) =>
+        Unauthorized(Json.toJson(Map("result" -> "-1234",
+                                     "message" -> "Failed to authenticate",
+                                     "reason" -> ex.getMessage)))
+    }
+  }
+
+
+
+}
