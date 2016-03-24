@@ -10,7 +10,8 @@ libraryDependencies ++= Seq(
   jdbc,
   cache,
   ws,
-  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0-RC1" % Test
+  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0-RC1" % Test,
+  "com.jason-goodwin" %% "authentikat-jwt" % "0.4.1"
 )
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
