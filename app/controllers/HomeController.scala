@@ -7,7 +7,6 @@ import play.api.mvc._
 import models._
 import play.api.libs.json.{Json, JsValue}
 
-
 /**
  * This controller creates an `Action` to handle HTTP requests to the
  * application's home page.
