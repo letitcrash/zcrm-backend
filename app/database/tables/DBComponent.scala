@@ -1,4 +1,4 @@
-package db.tables
+package database.tables
 
 import play.api.db.slick.DatabaseConfigProvider
 import slick.driver.JdbcProfile

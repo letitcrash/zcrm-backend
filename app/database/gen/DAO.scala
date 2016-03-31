@@ -2,7 +2,7 @@ package database.gen
 
 import javax.inject._
 import play.api.Logger
-import db.tables._
+import database.tables._
 import scala.util.{Failure, Success, Try}
 
 object current {

@@ -1,10 +1,6 @@
-package db.tables
+package database.tables
 
 import java.sql.Timestamp
-//import javax.inject.Inject
-//import scala.concurrent.Future
-//import play.api.db.slick.DatabaseConfigProvider
-//import slick.driver.JdbcProfile
 import models.UserLevels
 import slick.model.ForeignKeyAction.{Cascade, Restrict}
 
@@ -23,6 +19,9 @@ case class PasswordEntity(
 
 
 trait UserDBComponent extends DBComponent {
+    this: DBComponent 
+    with  ContactProfileDBComponent =>
+
   import dbConfig.driver.api._
 
   val users = TableQuery[UserTable]
@@ -36,7 +35,7 @@ trait UserDBComponent extends DBComponent {
     def status = column[Char]("status", O.Default('P'))
     def idx = index("username_uniq", username, unique = true)
 
-    //def contactProfile = foreignKey("fk_user_contact_profile", profileId, contactProfiles)(_.id, onUpdate = ForeignKeyAction.Restrict, onDelete = ForeignKeyAction.Cascade)
+    def contactProfile = foreignKey("fk_user_contact_profile", profileId, contactProfiles)(_.id, onUpdate = Restrict, onDelete = Cascade)
 
     override def * = (id.?, username, userLevel, profileId.?, status) <>
       (UserEntity.tupled, UserEntity.unapply)

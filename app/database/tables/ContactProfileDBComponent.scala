@@ -1,4 +1,4 @@
-package db.tables
+package database.tables
 
 import java.sql.Timestamp
 //import javax.inject.Inject
@@ -22,6 +22,8 @@ case class ContactProfileEntity(
   lastModified:       Option[Timestamp] = None)
 
 trait ContactProfileDBComponent extends DBComponent {
+  this: DBComponent =>
+
   import dbConfig.driver.api._
 
   val contactProfiles = TableQuery[ContactProfileTable]

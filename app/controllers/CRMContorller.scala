@@ -35,6 +35,15 @@ class CRMController @Inject() extends Controller with AcceptedReturns  {
             }
           }
       }
+
+   def apply(bodyFn: CRMRequest[None.type] => AcceptedReturn) =
+     Action(parse.anyContent) {
+        implicit req =>
+          validateHeaders(req.headers) { ttHeader =>
+            bodyFn(CRMSimpleRequest(ttHeader, None)).toResp
+         }
+    }
+
   }
 
   def validateHeaders(headers: Headers)

@@ -1,4 +1,4 @@
-package db.tables
+package database.tables
 
 import java.sql.Timestamp
 import slick.model.ForeignKeyAction.{Cascade, Restrict}
