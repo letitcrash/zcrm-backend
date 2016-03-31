@@ -17,7 +17,8 @@ object current {
 
 @Singleton
 class DAO extends UserDBComponent
-   with ContactProfileDBComponent {
+   with ContactProfileDBComponent
+   with SignupTokenDBComponent {
  import dbConfig.driver.api._
 
  def setupTables() : Try[String] = {
@@ -35,7 +36,9 @@ class DAO extends UserDBComponent
 
     Logger.info("Creating contactProfiles   -> " + tryCreate(contactProfiles.schema))
     Logger.info("Creating users             -> " + tryCreate(users.schema))
-    Logger.info("Creating users             -> " + tryCreate(passwords.schema))
+    Logger.info("Creating passwords         -> " + tryCreate(passwords.schema))
+    Logger.info("Creating signupTokens      -> " + tryCreate(signupTokens.schema))
+    
 
     Success("Created All tables!")
   }
