@@ -15,7 +15,7 @@ object current {
 
 }
 
-
+@Singleton
 class DAO extends UserDBComponent
    with ContactProfileDBComponent {
  import dbConfig.driver.api._
@@ -35,6 +35,7 @@ class DAO extends UserDBComponent
 
     Logger.info("Creating contactProfiles   -> " + tryCreate(contactProfiles.schema))
     Logger.info("Creating users             -> " + tryCreate(users.schema))
+    Logger.info("Creating users             -> " + tryCreate(passwords.schema))
 
     Success("Created All tables!")
   }

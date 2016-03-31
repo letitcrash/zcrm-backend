@@ -22,11 +22,8 @@ case class PasswordEntity(
   editedAt: Timestamp)
 
 
-//class UserDBComponent @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) {
 trait UserDBComponent extends DBComponent {
   import dbConfig.driver.api._
-  //val dbConfig = dbConfigProvider.get[JdbcProfile]
-  //val db = dbConfig.db
 
   val users = TableQuery[UserTable]
   val passwords = TableQuery[PasswordTable]

@@ -21,11 +21,7 @@ case class ContactProfileEntity(
   phoneNumberWork:    Option[String] = None,
   lastModified:       Option[Timestamp] = None)
 
-//class ContactProfileDBComponent @Inject()(protected val dbConfigProvider: DatabaseConfigProvider) {
 trait ContactProfileDBComponent extends DBComponent {
-  //val dbConfig = dbConfigProvider.get[JdbcProfile]
-  //val db = dbConfig.db
-  //val dbConfig = DatabaseConfigProvider.get[JdbcProfile](Play.current)
   import dbConfig.driver.api._
 
   val contactProfiles = TableQuery[ContactProfileTable]
