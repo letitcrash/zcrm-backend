@@ -12,7 +12,7 @@ import play.api.libs.json.{Json, JsValue}
  * application's home page.
  */
 @Singleton
-class HomeController @Inject() extends CRMController {
+class HomeController @Inject()  extends CRMController {
 
   /**
    * Create an Action to render an HTML page with a welcome message.
