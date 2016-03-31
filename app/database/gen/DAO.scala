@@ -1,4 +1,4 @@
-package dbb.gen
+package database.gen
 
 import javax.inject._
 import play.api.Logger
