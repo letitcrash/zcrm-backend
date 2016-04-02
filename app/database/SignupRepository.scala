@@ -8,6 +8,11 @@ import database.tables.SignupTokenEntity
 import models.SignupToken
 import play.api.Logger
 
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import scala.concurrent.Future
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
+
 import scala.util.{Success, Failure, Try}
 
 object SignupRepository {
@@ -21,9 +26,6 @@ object SignupRepository {
   //Creates a new token for given user.
   def createTokenForEmail(email: String, validFor: Long = 7200000): Try[SignupToken] = {
     import utils.converters.SignupTokenConverter.EntityToSignupToken
-
-    Logger.info("createTokenForEmail is running ... ") 
-
     val now = System.currentTimeMillis()
     val tokenEntity = SignupTokenEntity(
       token = new BigInteger(220, random).toString(32),
@@ -40,5 +42,9 @@ object SignupRepository {
     }
   }
 
+  def findTokenAsync(token: String): Future[SignupToken] = {
+    import utils.converters.SignupTokenConverter.EntityToSignupToken
+    db.run(signupTokens.filter(_.token === token).result.head).map(_.asSignupToken)
+  }
 
 }
