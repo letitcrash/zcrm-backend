@@ -27,7 +27,7 @@ class SignupController @Inject()  extends CRMController {
     import play.api.libs.concurrent.Execution.Implicits.defaultContext
     import utils.JSFormat._
     implicit val validationFrmt = Json.format[SignupToken]
-    SignupRepository.findTokenAsync("438hpq5dvilk5qatsdv9gu1dsrpnl7tdk70us21idjco")
+    SignupRepository.findToken("438hpq5dvilk5qatsdv9gu1dsrpnl7tdk70us21idjco")
         .map(result => Json.toJson(result))
 
   }
@@ -44,8 +44,10 @@ class SignupController @Inject()  extends CRMController {
     import play.api.libs.concurrent.Execution.Implicits.defaultContext
     import utils.JSFormat._
     implicit val validationFrmt = Json.format[SignupToken]
-    SignupRepository.findTokenAsync("438hpq5dvilk5qatsdv9gu1dsrpnl7tdk70us21idjco")
-        .map(result => Json.toJson(result))
+    SignupRepository.markTokenUsed("438hpq5dvilk5qatsdv9gu1dsrpnl7tdk70us21idjco").map(result => Json.toJson(result))
+    SignupRepository.findToken("438hpq5dvilk5qatsdv9gu1dsrpnl7tdk70us21idjco") .map(result => Json.toJson(result))
+    SignupRepository.findUsableToken("ievgen.paliichuk@gmail.com") .map(result => Json.toJson(result))
+
 
   }
 

@@ -19,11 +19,9 @@ object SignupRepository {
   import database.gen.current.dao.dbConfig.driver.api._
   import database.gen.current.dao._
 
-  //Random generator
   private[SignupRepository] val random = new SecureRandom()
   random.setSeed(random.generateSeed(55))
 
-  //Creates a new token for given user.
   def createTokenForEmail(email: String, validFor: Long = 7200000): Try[SignupToken] = {
     import utils.converters.SignupTokenConverter.EntityToSignupToken
     val now = System.currentTimeMillis()
@@ -42,9 +40,27 @@ object SignupRepository {
     }
   }
 
-  def findTokenAsync(token: String): Future[SignupToken] = {
+  def findToken(token: String): Future[SignupToken] = {
     import utils.converters.SignupTokenConverter.EntityToSignupToken
     db.run(signupTokens.filter(_.token === token).result.head).map(_.asSignupToken)
   }
+
+  def findUsableToken(email: String): Future[SignupToken] = {
+    import utils.converters.SignupTokenConverter.EntityToSignupToken
+    val now = new Timestamp(System.currentTimeMillis())
+     db.run(signupTokens
+          .filter(e => e.email === email && e.usedAt.isEmpty && e.expiresAt < now)
+          .sortBy(_.createdAt.desc).result.head)
+          .map(_.asSignupToken)
+  }
+
+  def markTokenUsed(token: String): Future[Int] = {
+        db.run(signupTokens
+          .filter(_.token === token)
+          .map(_.usedAt)
+          .update(Some(new Timestamp(System.currentTimeMillis()))))
+
+  }
+
 
 }
