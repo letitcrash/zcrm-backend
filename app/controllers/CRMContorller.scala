@@ -60,7 +60,9 @@ class CRMController @Inject() extends Controller with AcceptedReturns  {
                               jsBody.get.validate[T](reads)  match {
                                  case s: JsSuccess[T] => 
                                    bodyFn(CRMSimpleRequest(rqHeader, s.get)).map(_.toResp)
-                                    .recover{case e: Exception => BadRequest("{\"Exception\" :\"" + e.getMessage + "\"}")}
+                                    .recover{case e: Exception => BadRequest( Json.toJson(Map("result" -> "-1233",
+                                                                                "message" -> "Exception occured",
+                                                                                "reason" -> e.getMessage)))}
                                  case e: JsError => Future { BadRequest(jsonError("Invalid format", e)) }
                                }
                 case None => Future{ BadRequest(expectedFormat) }
@@ -78,7 +80,9 @@ class CRMController @Inject() extends Controller with AcceptedReturns  {
           Security.validateHeaders(req.headers) match {
             case Success(rqHeader) => 
               bodyFn(CRMSimpleRequest(rqHeader, None)).map(_.toResp)
-                  .recover { case e: Exception => BadRequest("{\"Exception\" :\"" + e.getMessage + "\"}") }
+                  .recover { case e: Exception => BadRequest( Json.toJson(Map("result" -> "-1233",
+                                                                "message" -> "Exception occured",
+                                                                "reason" -> e.getMessage)))}
             case Failure(ex) =>
               Future { Unauthorized(Json.toJson(Map("result" -> "-1234",
                                      "message" -> "Failed to authenticate",

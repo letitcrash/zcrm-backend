@@ -44,7 +44,7 @@ class SignupController @Inject()  extends CRMController {
     import play.api.libs.concurrent.Execution.Implicits.defaultContext
     import utils.JSFormat._
     implicit val validationFrmt = Json.format[SignupToken]
-    SignupRepository.findTokenAsync("1438hpq5dvilk5qatsdv9gu1dsrpnl7tdk70us21idjco")
+    SignupRepository.findTokenAsync("438hpq5dvilk5qatsdv9gu1dsrpnl7tdk70us21idjco")
         .map(result => Json.toJson(result))
 
   }
