@@ -19,8 +19,7 @@ case class PasswordEntity(
 
 
 trait UserDBComponent extends DBComponent {
-    this: DBComponent 
-    with  ContactProfileDBComponent =>
+    this: DBComponent with  ContactProfileDBComponent =>
 
   import dbConfig.driver.api._
 
@@ -33,11 +32,11 @@ trait UserDBComponent extends DBComponent {
     def username = column[String]("username")
     def profileId = column[Int]("contact_profile_id")
     def status = column[Char]("status", O.Default('P'))
-    def idx = index("username_uniq", username, unique = true)
 
+    def idx = index("username_uniq", username, unique = true)
     def contactProfile = foreignKey("fk_user_contact_profile", profileId, contactProfiles)(_.id, onUpdate = Restrict, onDelete = Cascade)
 
-    override def * = (id.?, username, userLevel, profileId.?, status) <>
+    def * = (id.?, username, userLevel, profileId.?, status) <>
       (UserEntity.tupled, UserEntity.unapply)
   }
 
@@ -51,6 +50,12 @@ trait UserDBComponent extends DBComponent {
     def * = (userId, password, editedAt) <> (PasswordEntity.tupled, PasswordEntity.unapply)
 
   }
+
+  def userWithContact = users joinLeft contactProfiles on(_.profileId === _.id)
+
+  def userWithPas =  passwords joinLeft users on(_.userId === _.id)
+
+
 
 
 }

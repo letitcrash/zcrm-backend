@@ -3,6 +3,7 @@ import play.api.Play.current
 package object settings {
   val APP_NAME = current.configuration.getString("application.name").getOrElse("Undefined")
   val SECRET_KEY = current.configuration.getString("application.secret").getOrElse("secretkey")
+  val LOG_DDL = current.configuration.getBoolean("logging.showDDL").getOrElse(false)
   val SHOW_STACKTRACES = current.configuration.getBoolean("logging.showStacktraces").getOrElse(false)
   val SHOW_ERROR_MESSAGES = current.configuration.getBoolean("logging.showErrorMessages").getOrElse(false)
   val API_KEY_HEADER = current.configuration.getString("headers.access-token").getOrElse("X-Access-Token")
