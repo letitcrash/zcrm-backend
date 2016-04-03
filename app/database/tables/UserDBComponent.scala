@@ -29,12 +29,12 @@ trait UserDBComponent extends DBComponent {
   class UserTable(tag: Tag) extends Table[UserEntity](tag, "tbl_user") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def userLevel = column[Int]("user_level", O.Default(UserLevels.USER))
-    def username = column[String]("username")
+    def username = column[String]("username", O.SqlType("VARCHAR(254)"))
     def profileId = column[Int]("contact_profile_id")
     def status = column[Char]("status", O.Default('P'))
 
-    def idx = index("username_uniq", username, unique = true)
-    def contactProfile = foreignKey("fk_user_contact_profile", profileId, contactProfiles)(_.id, onUpdate = Restrict, onDelete = Cascade)
+    def fkContactProfile= foreignKey("fk_user_contact_profile", profileId, contactProfiles)(_.id, onUpdate = Restrict, onDelete = Cascade)
+    def idxUsername = index("username_uniq", username, unique = true)
 
     def * = (id.?, username, userLevel, profileId.?, status) <>
       (UserEntity.tupled, UserEntity.unapply)
@@ -50,13 +50,6 @@ trait UserDBComponent extends DBComponent {
     def * = (userId, password, editedAt) <> (PasswordEntity.tupled, PasswordEntity.unapply)
 
   }
-
-  def userWithContact = users joinLeft contactProfiles on(_.profileId === _.id)
-
-  def userWithPas =  passwords joinLeft users on(_.userId === _.id)
-
-
-
 
 }
 

@@ -25,10 +25,10 @@ class DAO extends UserDBComponent
 
   def tryCreate(ddlToCreate: dbConfig.driver.DDL ): Try[String] = {
    try {
+        db.run(DBIO.seq(ddlToCreate.create))
         if(settings.LOG_DDL) {
           ddlToCreate.create.statements.foreach(println)
         }
-        db.run(DBIO.seq(ddlToCreate.create))
         Success("")
       } catch {
         case ex: Exception =>
