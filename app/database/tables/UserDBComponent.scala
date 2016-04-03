@@ -19,7 +19,8 @@ case class PasswordEntity(
 
 
 trait UserDBComponent extends DBComponent {
-    this: DBComponent with  ContactProfileDBComponent =>
+    this: DBComponent 
+    with  ContactProfileDBComponent =>
 
   import dbConfig.driver.api._
 

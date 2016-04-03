@@ -7,6 +7,7 @@ import play.api.mvc._
 import models._
 import play.api.libs.json.{Json, JsValue}
 import database.SignupRepository 
+import database.UserDBRepository
 
 import play.api.Logger
 import scala.util.{Success, Failure, Try}
@@ -66,11 +67,19 @@ class SignupController @Inject()  extends CRMController {
 
   }
 
+  def getUser = CRMActionAsync { implicit rq => 
+    import play.api.libs.concurrent.Execution.Implicits.defaultContext
+    import utils.JSFormat._
+    //implicit val validationFrmt = Json.format[User]
+    UserDBRepository.userByUsername("ievgen.paliichuk@gmail.com")
+       .map(result => Json.toJson(result))
+  }
+
   def findTokenAsync = CRMActionAsync { implicit rq => 
     import play.api.libs.concurrent.Execution.Implicits.defaultContext
     import utils.JSFormat._
     implicit val validationFrmt = Json.format[SignupToken]
-    SignupRepository.findToken("438hpq5dvilk5qatsdv9gu1dsrpnl7tdk70us21idjco")
+    SignupRepository.findToken("ef4ih074ul35886hrkci8b0cc963ddn1s486apgecb6d")
         .map(result => Json.toJson(result))
 
   }
@@ -87,10 +96,7 @@ class SignupController @Inject()  extends CRMController {
     import play.api.libs.concurrent.Execution.Implicits.defaultContext
     import utils.JSFormat._
     implicit val validationFrmt = Json.format[SignupToken]
-    SignupRepository.markTokenUsed("438hpq5dvilk5qatsdv9gu1dsrpnl7tdk70us21idjco").map(result => Json.toJson(result))
-    SignupRepository.findToken("438hpq5dvilk5qatsdv9gu1dsrpnl7tdk70us21idjco") .map(result => Json.toJson(result))
-    SignupRepository.findUsableToken("ievgen.paliichuk@gmail.com") .map(result => Json.toJson(result))
-
+    SignupRepository.findToken("ef4ih074ul35886hrkci8b0cc963ddn1s486apgecb6d") .map(result => Json.toJson(result))
 
   }
 

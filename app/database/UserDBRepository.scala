@@ -20,4 +20,18 @@ object UserDBRepository {
   import database.gen.current.dao.dbConfig.driver.api._
   import database.gen.current.dao._
 
+
+  def userByUsername(username: String): Future[User] = {
+    import utils.converters.UserConverter._
+
+     val interaction = for {
+       user <- users if user.username === username
+       profile <- contactProfiles if user.profileId === profile.id
+     } yield (user, profile)
+
+     db.run(interaction.result.head).map(_.asUser)
+
+  }
+
+
 }
