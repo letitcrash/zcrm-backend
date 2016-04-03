@@ -11,9 +11,52 @@ import database.SignupRepository
 import play.api.Logger
 import scala.util.{Success, Failure, Try}
 
+import controllers.session.{CRMResponseHeader, CRMResponse}
+
 
 @Singleton
 class SignupController @Inject()  extends CRMController {
+
+ private implicit val sendEmailRdr = Json.reads[SendEmailRq]
+
+
+  private val errEmailAlreadyExist = 502
+
+  case class SendEmailRq(
+    email: String,
+    url: String)
+
+ import utils.JSFormat.responseFrmt
+
+
+  private val mailAlreadyExist = Json.toJson(CRMResponse(
+    CRMResponseHeader(
+      error_message = Some("A user with the email already exist"),
+      response_code = errEmailAlreadyExist),
+    None
+  ))
+
+
+  /*
+  def sendSignupEmail = Action.async (parse.json) { rq =>
+
+    rq.body.validate[SendEmailRq] map { body =>
+
+      if (validEmail(body.email)) {
+        if (UserDBRepository.getUserByUsername(body.email)(rq.dbSession).isSuccess)
+          Ok(mailAlreadyExist)
+      }
+
+    }
+
+  }
+  */
+
+  def validEmail(str: String): Boolean = {
+    str.contains("@")
+  }
+
+
 
   def token = CRMAction { rq =>
     import utils.JSFormat._
