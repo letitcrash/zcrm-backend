@@ -11,23 +11,34 @@ import database.UserDBRepository
 
 import play.api.Logger
 import scala.util.{Success, Failure, Try}
+import scala.concurrent.{Await, Future} 
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import scala.concurrent.duration.Duration
 
 import controllers.session.{CRMResponseHeader, CRMResponse}
+import play.api.libs.json.{JsError, Reads, JsValue, Json, JsSuccess}
 
 
 @Singleton
-class SignupController @Inject()  extends CRMController {
+class SignupController @Inject() (mailer: utils.Mailer) extends CRMController {
 
  private implicit val sendEmailRdr = Json.reads[SendEmailRq]
 
 
   private val errEmailAlreadyExist = 502
+  private val errTokenAlreadyExists = 601
 
   case class SendEmailRq(
     email: String,
     url: String)
 
  import utils.JSFormat.responseFrmt
+
+  private val tokenExistErr = Json.toJson(CRMResponse(
+    CRMResponseHeader(
+      error_message = Some("A token for that email already exists"),
+      response_code = errTokenAlreadyExists),
+    None))
 
 
   private val mailAlreadyExist = Json.toJson(CRMResponse(
@@ -37,28 +48,49 @@ class SignupController @Inject()  extends CRMController {
     None
   ))
 
+  private def signupMailSentResponse(email: String): JsValue = {
+    val body = Json.toJson(Map("mailed" -> email))
+    Json.toJson(CRMResponse(CRMResponseHeader(), Some(body)))
+  }
 
-  /*
   def sendSignupEmail = Action.async (parse.json) { rq =>
 
-    rq.body.validate[SendEmailRq] map { body =>
-
-      if (validEmail(body.email)) {
-        if (UserDBRepository.getUserByUsername(body.email)(rq.dbSession).isSuccess)
-          Ok(mailAlreadyExist)
-      }
-
+       rq.body.validate[SendEmailRq] match {
+                            case s: JsSuccess[SendEmailRq] => 
+                              if (validEmail(s.get.email)) {
+                                 val userF =  UserDBRepository.getUserByUsername(s.get.email)
+                                 val tokenF = SignupRepository.findUsableToken(s.get.email) 
+                                 userF.map(user =>  Ok(mailAlreadyExist) ).recoverWith {
+                                   case ex =>
+                                     tokenF.map(token => Ok(tokenExistErr)).recover{
+                                       case ex =>
+                                          SignupRepository.createTokenForEmail(s.get.email) match {
+                                            case Success(token) =>
+                                              mailer.sendSignupEmail(s.get.email, token.token, s.get.url) match {
+                                                 case Success(_) => Ok(signupMailSentResponse(s.get.email))
+                                                 case Failure(ex) =>ex.toResp
+                                              }
+                                            case Failure(ex) => ex.toResp
+                                          }
+                                     }
+                                 } 
+                              }else {
+                                Future{ BadRequest( Json.toJson(Map("result" -> "-1",
+                                                                    "message" -> "Invalid email format",
+                                                                    "reason" -> s.get.email)))}
+                              }
+                            case e: JsError => Future { BadRequest(jsonError("Invalid format", e)) }
     }
 
   }
-  */
 
   def validEmail(str: String): Boolean = {
     str.contains("@")
   }
 
+///DELETE BELOW
 
-
+/*
   def token = CRMAction { rq =>
     import utils.JSFormat._
     implicit val validationFrmt = Json.format[SignupToken]
@@ -70,9 +102,9 @@ class SignupController @Inject()  extends CRMController {
   def getUser = CRMActionAsync { implicit rq => 
     import play.api.libs.concurrent.Execution.Implicits.defaultContext
     import utils.JSFormat._
-    //implicit val validationFrmt = Json.format[User]
-    UserDBRepository.userByUsername("ievgen.paliichuk@gmail.com")
-       .map(result => Json.toJson(result))
+    implicit val validationFrmt = Json.format[SignupToken]
+    SignupRepository.findToken("ef4ih074ul35886hrkci8b0cc963ddn1s486apgecb6d")
+        .map(result => Json.toJson(result))
   }
 
   def findTokenAsync = CRMActionAsync { implicit rq => 
@@ -100,6 +132,7 @@ class SignupController @Inject()  extends CRMController {
 
   }
 
+  */
 }
 
 case class Valid(

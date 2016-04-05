@@ -21,7 +21,7 @@ object UserDBRepository {
   import database.gen.current.dao._
 
 
-  def userByUsername(username: String): Future[User] = {
+  def getUserByUsername(username: String): Future[User] = {
     import utils.converters.UserConverter._
 
      val interaction = for {
