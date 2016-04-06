@@ -48,12 +48,17 @@ trait ContactProfileDBComponent extends DBComponent {
         (ContactProfileEntity.tupled, ContactProfileEntity.unapply)
   }
 
+  //CRUD ContactProfileEntity
   def insertProfile(profile: ContactProfileEntity): Future[ContactProfileEntity] = {
       val ts = Some(new Timestamp(System.currentTimeMillis()))
       db.run(((contactProfiles returning contactProfiles.map(_.id)
          into ((profile,id) => profile.copy(id=Some(id)))) 
             += profile.copy(lastModified = ts))
               .map(profileEntt => profileEntt))
+  }
+
+  def getProfileById(id: Int): Future[ContactProfileEntity] = {
+    db.run(contactProfiles.filter(_.id === id).result.head)
   }
   
   def updateProfile(profile: ContactProfileEntity): Future[ContactProfileEntity] = {
@@ -62,6 +67,8 @@ trait ContactProfileDBComponent extends DBComponent {
         .map( num => newProfile)
   }
 
+
+  //Profile Filters 
   def upsertProfile(profile: ContactProfileEntity): Future[ContactProfileEntity] = {
     if(profile.id.isDefined) {
       updateProfile(profile)

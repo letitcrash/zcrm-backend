@@ -37,13 +37,23 @@ object UserDBRepository {
     import utils.converters.UserConverter._
 
      val interaction = for {
-       user <- users if user.username === username
-       profile <- contactProfiles if user.profileId === profile.id
-     } yield (user, profile)
+       userEntt <- users if userEntt.username === username
+       profileEntt <- contactProfiles if userEntt.profileId === profileEntt.id
+     } yield (userEntt, profileEntt)
 
      db.run(interaction.result.head).map(_.asUser)
 
   }
+
+  def setPasswordForUser(userId: Int, password: String): Future[User] = {
+    import utils.converters.UserConverter.EntityToUser
+    import database.tables.ContactProfileEntity
+    for {
+      userEntt <- setUserPassword(userId, password)
+      profileEntt <- getProfileById(userEntt.profileId)
+    } yield (userEntt, profileEntt).asUser
+  }
+  
 
 
 }

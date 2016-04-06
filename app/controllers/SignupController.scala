@@ -179,6 +179,7 @@ class SignupController @Inject() (mailer: utils.Mailer) extends CRMController {
                 val tryUser = for {
                     user <- UserDBRepository.saveUser( User( username = body.get.email.toLowerCase,
                                                          contactProfile = body.get.contactProfile))
+                    pwSet <- UserDBRepository.setPasswordForUser(user.id.get, body.get.password)
                     markUsed <- SignupRepository.markTokenUsed(token.token)
                 } yield user 
 

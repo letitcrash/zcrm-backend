@@ -7,6 +7,7 @@ import scala.util.{Success, Failure, Try}
 import exceptions.UsernameAlreadyExistException
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import org.mindrot.jbcrypt.BCrypt
 
 case class UserEntity(
   id: Option[Int] = None,
@@ -55,6 +56,8 @@ trait UserDBComponent extends DBComponent {
 
   }
 
+
+  //CRUD UserEntity
   def insertUser(user: UserEntity): Future[UserEntity] = {
     db.run(users.filter(_.username === user.username).result.head)
       .map( userEntt => userEntt )
@@ -64,11 +67,24 @@ trait UserDBComponent extends DBComponent {
         }
   }
 
+  def getUserById(id: Int): Future[UserEntity] = {
+    db.run(users.filter(_.id === id).result.head)
+  }
+
   def updateUser(user: UserEntity): Future[UserEntity] = {
       db.run(users.filter(_.id === user.id).update(user))
         .map( num => user)
   }
+
+
+  //CRUD PasswordEntity
+  private def insertPassword(user: UserEntity, password: String): Future[PasswordEntity] = {
+    val hashedPwd = BCrypt.hashpw(password, BCrypt.gensalt())
+    val pwdEntt = PasswordEntity(user.id.get, hashedPwd, new Timestamp(System.currentTimeMillis()))
+    db.run(passwords += pwdEntt).map( num => pwdEntt)
+  }
   
+  //USER FILTERS 
   def upsertUser(user: UserEntity): Future[UserEntity] = {
     if(user.id.isDefined) {
       updateUser(user)
@@ -76,6 +92,15 @@ trait UserDBComponent extends DBComponent {
       insertUser(user)
     }
   }
+
+  //PWD FILTERS 
+  def setUserPassword(userId: Int, password: String): Future[UserEntity] = {
+    getUserById(userId).flatMap( user =>
+           insertPassword(user, password)
+             .map( pwd => user)
+               .recover{ case ex => user })
+  }
+
 
 }
 
