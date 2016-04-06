@@ -3,8 +3,6 @@ import java.time.Clock
 
 import services.{ApplicationTimer, AtomicCounter, Counter}
 import play.api.Logger
-import dbb.gen._
-import db.tables._
 
 
 /**

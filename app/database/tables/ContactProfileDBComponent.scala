@@ -1,12 +1,6 @@
 package database.tables
 
 import java.sql.Timestamp
-//import javax.inject.Inject
-//import play.api.db.slick.DatabaseConfigProvider
-//import slick.driver.JdbcProfile
-import models.UserLevels
-
-import play.api.Play
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 

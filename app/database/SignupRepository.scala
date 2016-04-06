@@ -10,8 +10,6 @@ import play.api.Logger
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
 
 import scala.util.{Success, Failure, Try}
 
