@@ -14,15 +14,9 @@ object EmployeeConverter {
       Employee(
         id = tup._1.id,
         user = Option(tup._2.asUser),
-        employmentNumberType = tup._1.employmentNumberType,
-        employmentNumberValue = tup._1.employmentNumberValue,
-        isSubContractor = tup._1.isSubContractor,
-        subContractorCompanyName = tup._1.subContractorCompanyName,
-        subContractorOrgNr = tup._1.subContractorOrgNr,
         companyId = tup._1.companyId,
         employeeType = tup._1.employeeType,
-        employeeLevel = tup._1.employeeLevel,
-        comment = tup._1.comment)
+        employeeLevel = tup._1.employeeLevel)
     }
   }
 
@@ -33,12 +27,6 @@ object EmployeeConverter {
         companyId = companyId,
         userId = Some(userId),
         employeeType = o.employeeType,
-        employmentNumberType = o.employmentNumberType,
-        employmentNumberValue = o.employmentNumberValue,
-        isSubContractor = o.isSubContractor,
-        subContractorOrgNr = o.subContractorOrgNr,
-        subContractorCompanyName = o.subContractorCompanyName,
-        comment = o.comment,
         employeeLevel = o.employeeLevel)
     }
   }
@@ -53,12 +41,6 @@ object EmployeeConverter {
       Employee(
         id = emp.id,
         user = Some((o._2, o._3).asUser),
-        employmentNumberType = emp.employmentNumberType,
-        employmentNumberValue = emp.employmentNumberValue,
-        isSubContractor = emp.isSubContractor,
-        subContractorCompanyName = emp.subContractorCompanyName,
-        subContractorOrgNr = emp.subContractorOrgNr,
-        comment = emp.comment,
         companyId = o._1.companyId,
         employeeType = o._1.employeeType,
         employeeLevel = o._1.employeeLevel)
@@ -71,12 +53,6 @@ object EmployeeConverter {
     } yield Employee(
         id = emp.id,
         user = Some(user),
-        employmentNumberType = emp.employmentNumberType,
-        employmentNumberValue = emp.employmentNumberValue,
-        isSubContractor = emp.isSubContractor,
-        subContractorCompanyName = emp.subContractorCompanyName,
-        subContractorOrgNr = emp.subContractorOrgNr,
-        comment = emp.comment,
         companyId = comp.id.getOrElse(0),
         employeeType = emp.employeeType,
         employeeLevel = emp.employeeLevel)

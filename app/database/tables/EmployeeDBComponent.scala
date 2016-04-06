@@ -12,12 +12,6 @@ case class EmployeeEntity(
                            companyId:  Int,
                            userId: Option[Int],
                            employeeType: Option[String],
-                           employmentNumberType: Option[String],
-                           employmentNumberValue: Option[String],
-                           isSubContractor: Boolean,
-                           subContractorOrgNr: Option[String],
-                           subContractorCompanyName: Option[String],
-                           comment: Option[String],
                            // The level the user has within a company, i.e admin or normal employee
                            // 1000 - 9999  = user level
                            // 100 - 999    = Human resource
@@ -43,11 +37,6 @@ trait EmployeeDBComponent extends DBComponent
     def companyId = column[Int]("company_id")
     def userId = column[Int]("user_id")
     def employeeType = column[String]("employee_type")
-    def employmentNumberType = column[String]("employment_number_type")
-    def employmentNumberValue = column[String]("employment_number_value")
-    def isSubContractor = column[Boolean]("employee_is_subcontractor")
-    def subContractorOrgNr = column[String]("subcontractor_org_nr")
-    def subContractorCompanyName = column[String]("subcontractor_company_name")
     def comment = column[String]("comment")
     def employeeLevel = column[Int]("employee_level", O.Default(UserLevels.USER))
     def recordStatus = column[Int]("record_status", O.Default(1))
@@ -59,21 +48,8 @@ trait EmployeeDBComponent extends DBComponent
     def fkEmployeeCompany =
       foreignKey("fk_employee_company", companyId, companies)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
 
-
     override def * =
-      ( id.?,
-        companyId,
-        userId.?,
-        employeeType.?,
-        employmentNumberType.?,
-        employmentNumberValue.?,
-        isSubContractor,
-        subContractorOrgNr.?,
-        subContractorCompanyName.?,
-        comment.?,
-        employeeLevel,
-        recordStatus) <>
-        (EmployeeEntity.tupled, EmployeeEntity.unapply)
+      ( id.?, companyId, userId.?, employeeType.?, employeeLevel, recordStatus) <> (EmployeeEntity.tupled, EmployeeEntity.unapply)
   }
   //CRUD EmployeeEntity
   def insertEmployee(empl: EmployeeEntity): Future[EmployeeEntity] = {
