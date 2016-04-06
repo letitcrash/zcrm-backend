@@ -20,6 +20,18 @@ object UserDBRepository {
   import database.gen.current.dao.dbConfig.driver.api._
   import database.gen.current.dao._
 
+  def saveUser(user: User): Future[User] = {
+    import utils.converters.UserConverter.{UserToEntity, EntityToUser}
+    import utils.converters.ContactProfileConverter.ContactProfileToEntity
+    import database.tables.ContactProfileEntity
+
+    //TODO: should be transactionally
+    (for {
+        profile <- upsertProfile(user.contactProfile.fold(ContactProfileEntity()) (_.asEntity()))
+        user    <- upsertUser(user.asEntity(profile.id.get))
+    } yield (user, profile)).map(_.asUser)
+
+  }
 
   def getUserByUsername(username: String): Future[User] = {
     import utils.converters.UserConverter._

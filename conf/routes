@@ -8,17 +8,13 @@ GET     /                           controllers.HomeController.index
 POST     /validation                controllers.HomeController.validationTest
 
 
+# Setup Database 
 GET     /setupdb                    controllers.SetupDBController.setupDataBase
-#GET     /token                      controllers.SignupController.token
-#GET     /gettoken                   controllers.SignupController.findTokenAsync
-#POST     /val                        controllers.SignupController.tokenAsync
-
-#GET  /getuser    controllers.SignupController.getUser
-
 
 
 # Signup
 POST    /signup                                 controllers.SignupController.sendSignupEmail
+POST    /activate-user                          controllers.SignupController.activateUserWithToken
 
 
 # Map static resources from the /public folder to the /assets URL path

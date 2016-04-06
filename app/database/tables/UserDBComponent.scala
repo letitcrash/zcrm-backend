@@ -3,13 +3,16 @@ package database.tables
 import java.sql.Timestamp
 import models.UserLevels
 import slick.model.ForeignKeyAction.{Cascade, Restrict}
-
+import scala.util.{Success, Failure, Try}
+import exceptions.UsernameAlreadyExistException
+import scala.concurrent.Future
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 case class UserEntity(
   id: Option[Int] = None,
   username: String,
   userLevel: Int,
-  profileId: Option[Int] = None,
+  profileId: Int,
   status: Char = 'I')
 
 case class PasswordEntity(
@@ -31,13 +34,13 @@ trait UserDBComponent extends DBComponent {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def userLevel = column[Int]("user_level", O.Default(UserLevels.USER))
     def username = column[String]("username", O.SqlType("VARCHAR(254)"))
-    def profileId = column[Int]("contact_profile_id")
+    def profileId = column[Int]("contact_profile_id")    
     def status = column[Char]("status", O.Default('P'))
 
     def fkContactProfile= foreignKey("fk_user_contact_profile", profileId, contactProfiles)(_.id, onUpdate = Restrict, onDelete = Cascade)
     def idxUsername = index("username_uniq", username, unique = true)
 
-    def * = (id.?, username, userLevel, profileId.?, status) <>
+    def * = (id.?, username, userLevel, profileId, status) <>
       (UserEntity.tupled, UserEntity.unapply)
   }
 
@@ -50,6 +53,28 @@ trait UserDBComponent extends DBComponent {
 
     def * = (userId, password, editedAt) <> (PasswordEntity.tupled, PasswordEntity.unapply)
 
+  }
+
+  def insertUser(user: UserEntity): Future[UserEntity] = {
+    db.run(users.filter(_.username === user.username).result.head)
+      .map( userEntt => userEntt )
+        .recoverWith{ case ex =>
+           db.run(((users returning users.map(_.id) into ((user,id) => user.copy(id=Some(id)))) += user)
+                    .map(userEntt => userEntt))
+        }
+  }
+
+  def updateUser(user: UserEntity): Future[UserEntity] = {
+      db.run(users.filter(_.id === user.id).update(user))
+        .map( num => user)
+  }
+  
+  def upsertUser(user: UserEntity): Future[UserEntity] = {
+    if(user.id.isDefined) {
+      updateUser(user)
+    } else {
+      insertUser(user)
+    }
   }
 
 }

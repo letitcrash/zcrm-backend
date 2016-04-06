@@ -7,6 +7,8 @@ import java.sql.Timestamp
 import models.UserLevels
 
 import play.api.Play
+import scala.concurrent.Future
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 case class ContactProfileEntity(
   id:                 Option[Int]    = None,
@@ -46,6 +48,27 @@ trait ContactProfileDBComponent extends DBComponent {
         (ContactProfileEntity.tupled, ContactProfileEntity.unapply)
   }
 
+  def insertProfile(profile: ContactProfileEntity): Future[ContactProfileEntity] = {
+      val ts = Some(new Timestamp(System.currentTimeMillis()))
+      db.run(((contactProfiles returning contactProfiles.map(_.id)
+         into ((profile,id) => profile.copy(id=Some(id)))) 
+            += profile.copy(lastModified = ts))
+              .map(profileEntt => profileEntt))
+  }
+  
+  def updateProfile(profile: ContactProfileEntity): Future[ContactProfileEntity] = {
+      val newProfile = profile.copy(lastModified = Some(new Timestamp(System.currentTimeMillis())))
+       db.run(contactProfiles.filter(_.id === profile.id).update(newProfile))
+        .map( num => newProfile)
+  }
+
+  def upsertProfile(profile: ContactProfileEntity): Future[ContactProfileEntity] = {
+    if(profile.id.isDefined) {
+      updateProfile(profile)
+    } else {
+      insertProfile(profile)
+    }
+  }
 
 }
 

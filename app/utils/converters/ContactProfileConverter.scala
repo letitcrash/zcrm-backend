@@ -3,9 +3,6 @@ package utils.converters
 import database.tables.ContactProfileEntity
 import models.ContactProfile
 
-/**
- * Created by nicros on 2014-05-22.
- */
 object ContactProfileConverter {
   implicit class EntityToProfile(e: ContactProfileEntity) {
     def asProfile: ContactProfile = {

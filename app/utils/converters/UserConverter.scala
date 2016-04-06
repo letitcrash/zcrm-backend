@@ -25,7 +25,7 @@ object UserConverter {
         id = user.id,
         username = user.username,
         userLevel = user.userLevel,
-        profileId = Some(profileId))
+        profileId = profileId)
     }
   }
 
