@@ -60,16 +60,16 @@ trait UserDBComponent extends DBComponent {
   //CRUD UserEntity
   def insertUser(user: UserEntity): Future[UserEntity] = {
     db.run(users.filter(_.username === user.username).result.head)
-      .map( userEntt => userEntt )
+      //.map( userEntt => userEntt )
         .recoverWith{ case ex =>
-           db.run(((users returning users.map(_.id) into ((user,id) => user.copy(id=Some(id)))) += user)
-                    .map(userEntt => userEntt))
+           db.run(((users returning users.map(_.id) into ((user,id) => user.copy(id=Some(id)))) += user))
         }
   }
 
   def getUserById(id: Int): Future[UserEntity] = {
     db.run(users.filter(_.id === id).result.head)
   }
+
 
   def updateUser(user: UserEntity): Future[UserEntity] = {
       db.run(users.filter(_.id === user.id).update(user))

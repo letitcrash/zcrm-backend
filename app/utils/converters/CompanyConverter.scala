@@ -10,13 +10,12 @@ object CompanyConverter {
   implicit class EntitiesToCompany
   [COMPANYENTITY <: CompanyEntity, CONTACTENTITY <: ContactProfileEntity]
   (tuple: (COMPANYENTITY, CONTACTENTITY)) {
-    def asCompany(employeeTypes: Seq[String]) = {
+    def asCompany = {
       Company(
         id = tuple._1.id,
         name = tuple._1.name,
         contactProfile = Some(tuple._2 asProfile),
         vatId = tuple._1.vatId,
-        employeeTypes = employeeTypes,
         lastModified = tuple._1.lastModified
       )
     }

@@ -8,7 +8,7 @@ import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 
-object EmployeeRepository {
+object EmployeeDBRepository {
   import database.gen.current.dao.dbConfig.driver.api._
   import database.gen.current.dao._
 

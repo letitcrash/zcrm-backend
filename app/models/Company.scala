@@ -7,5 +7,4 @@ case class Company(
   name: String,
   contactProfile: Option[ContactProfile] = None,
   vatId: String,
-  employeeTypes: Seq[String] = Seq(),
   lastModified: Option[Timestamp] = None)

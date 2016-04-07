@@ -18,10 +18,11 @@ trait CompanyDBComponent extends DBComponent
   this: DBComponent =>
 
   import dbConfig.driver.api._
+
   val companies = TableQuery[CompanyTable]
 
   class CompanyTable(tag: Tag) extends Table[CompanyEntity](tag, "tbl_company") {
-    def id = column[Int]("id", O.PrimaryKey)
+    def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
     def profileId = column[Int]("contact_profile_id")
     def vatId = column[String]("vat_id")
@@ -35,12 +36,12 @@ trait CompanyDBComponent extends DBComponent
 
   def companyWithProfile = companies joinLeft contactProfiles on (_.profileId === _.id)
 
-    //CRUD CompanyEntity
+  //CRUD CompanyEntity
   def insertCompany(company: CompanyEntity): Future[CompanyEntity] = {
       val ts = Some(new Timestamp(System.currentTimeMillis()))
-        db.run(companies returning companies.map(_.id)
-                        into ((company,id) => company.copy(id=Some(id)))
-                            += company.copy(lastModified = ts))
+      val row = company.copy(lastModified = ts)
+        db.run((companies returning companies.map(_.id) 
+          into ((company,id) => company.copy(id=Some(id)))) += row)
   }
 
   def updateCompany(company: CompanyEntity):Future[CompanyEntity] = {
@@ -48,6 +49,7 @@ trait CompanyDBComponent extends DBComponent
        db.run(companies.filter(_.id === company.id).update(newCompany))
                      .map(num => newCompany)
   }
+
 
   //CompanyEntity filters
   def upsertCompany(company: CompanyEntity): Future[CompanyEntity] = {
