@@ -25,10 +25,6 @@ class HomeController @Inject()  extends CRMController {
    * will be called when the application receives a `GET` request with
    * a path of `/`.
    */
-  def index = Action {
-    Ok(views.html.index("Your new application is ready."))
-  }
-
 
   val expectedValidationFormat = Json.toJson(Map(
     "foo"    -> Json.toJson("[M](string) foo string"),

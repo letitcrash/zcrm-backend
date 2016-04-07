@@ -14,11 +14,9 @@ class SetupDBController @Inject() (configuration: Configuration) extends CRMCont
     Logger.info("Trying to setup DB...") 
     val wipeDatabase = configuration.getBoolean("wipeDatabase").getOrElse(false)
     if(wipeDatabase){
-      database.gen.current.initializeDatabase()
-      Ok(views.html.index("DB is ready."))
+      Ok("DB is ready.\n")
     }else{
-      Logger.info("No access to setup DB.")
-      Ok(views.html.index("No access to setup DB."))
+      Ok("No access to setup DB.\n")
     }
 
   }
