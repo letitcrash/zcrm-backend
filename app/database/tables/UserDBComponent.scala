@@ -74,6 +74,10 @@ trait UserDBComponent extends DBComponent {
     db.run(users.filter(_.id === id).result.head)
   }
 
+  def getUserByUserUsername(username: String): Future[UserEntity] = {
+    db.run(users.filter(_.username === username ).result.head)
+  }
+ 
 
   def updateUser(user: UserEntity): Future[UserEntity] = {
       db.run(users.filter(_.id === user.id).update(user))
@@ -87,6 +91,8 @@ trait UserDBComponent extends DBComponent {
     val pwdEntt = PasswordEntity(user.id.get, hashedPwd, new Timestamp(System.currentTimeMillis()))
     db.run(passwords += pwdEntt).map( num => pwdEntt)
   }
+
+
   
   //USER FILTERS 
   def upsertUser(user: UserEntity): Future[UserEntity] = {
@@ -107,6 +113,17 @@ trait UserDBComponent extends DBComponent {
            insertPassword(user, password)
              .map( pwd => user)
                .recover{ case ex => user })
+  }
+
+  def getPasswordByUsername(username: String): Future[PasswordEntity] = {
+    getUserByUserUsername(username).flatMap( user =>
+        db.run(passwords.filter(_.userId === user.id.get).sortBy(_.editedAt.desc).result.head))
+  }
+
+
+  def checkPassword(username: String, rawPassword: String): Future[Boolean] = {
+    getPasswordByUsername(username).map( hash =>
+                                 BCrypt.checkpw(rawPassword, hash.password))
   }
 
 

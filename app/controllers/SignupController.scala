@@ -173,7 +173,6 @@ class SignupController @Inject() (mailer: utils.Mailer) extends CRMController {
               else if(token.isExpired) {Future{BadRequest(tokenExpiredErr)}}
               else if(token.isUsed){Future{ BadRequest(tokenUsedErr)}}
               else { 
-
                 //TODO: should be transactionally
                 val tryUser = for {
                     user <- UserDBRepository.saveUser( User( username = body.get.email.toLowerCase,
@@ -182,8 +181,10 @@ class SignupController @Inject() (mailer: utils.Mailer) extends CRMController {
                     company <- CompanyDBRepository.saveCompany(Company( name = body.get.companyName,
                                                                  vatId = body.get.vatId,
                                                                  contactProfile = body.get.contactProfile))
-
-                    emp <- EmployeeDBRepository.addEmployee(Employee( companyId = company.id.get, user = Some(user), employeeType = Some("Owner"), employeeLevel = UserLevels.SUPER))
+                    emp <- EmployeeDBRepository.addEmployee(Employee( companyId = company.id.get,
+                                                                      user = Some(user), 
+                                                                      employeeType = Some("Owner"),
+                                                                      employeeLevel = UserLevels.SUPER))
                     markUsed <- SignupRepository.markTokenUsed(token.token)
                 } yield user 
 

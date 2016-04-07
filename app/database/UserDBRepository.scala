@@ -53,7 +53,20 @@ object UserDBRepository {
       profileEntt <- getProfileById(userEntt.profileId)
     } yield (userEntt, profileEntt).asUser
   }
-  
 
+
+  def loginUser(username: String, rawPassword: String): Future[User] = {
+    import utils.converters.UserConverter.{EntityToUser}
+    checkPassword(username, rawPassword).flatMap( isPwdCorrect =>
+      if(isPwdCorrect){
+        (for {
+          user    <- getUserByUserUsername(username)
+          profile <- getProfileById(user.profileId)
+        } yield (user, profile)).map(_.asUser)
+      }else {
+         throw new Exception("Incorrect password") 
+      }
+    )
+  }
 
 }
