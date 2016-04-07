@@ -6,7 +6,7 @@ import play.api.mvc._
 
 import models._
 import play.api.libs.json.{Json, JsValue}
-import database.{SignupRepository, UserDBRepository, CompanyDBRepository}
+import database.{SignupRepository, UserDBRepository, CompanyDBRepository, EmployeeDBRepository}
 
 import play.api.Logger
 import scala.util.{Success, Failure, Try}
@@ -183,6 +183,7 @@ class SignupController @Inject() (mailer: utils.Mailer) extends CRMController {
                                                                  vatId = body.get.vatId,
                                                                  contactProfile = body.get.contactProfile))
 
+                    emp <- EmployeeDBRepository.addEmployee(Employee( companyId = company.id.get, user = Some(user), employeeType = Some("Owner"), employeeLevel = UserLevels.SUPER))
                     markUsed <- SignupRepository.markTokenUsed(token.token)
                 } yield user 
 

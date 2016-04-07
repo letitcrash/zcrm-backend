@@ -9,7 +9,7 @@ object EmployeeConverter {
   implicit class EntityUserWithProfile
   (tup: (EmployeeEntity, (UserEntity, ContactProfileEntity))) {
 
-    def toEmployee(): Employee = {
+    def asEmployee(): Employee = {
       import UserConverter.EntityToUser
       Employee(
         id = tup._1.id,
@@ -20,7 +20,16 @@ object EmployeeConverter {
     }
   }
 
-  implicit class Model(o: Employee) {
+  implicit class EmployeeToEmployeeEntity(o: Employee) {
+    def asEmployeeEntity: EmployeeEntity = {
+      EmployeeEntity(
+        id = o.id,
+        companyId = o.companyId,
+        userId = Some(o.user.get.id.get),
+        employeeType = o.employeeType,
+        employeeLevel = o.employeeLevel)
+    }
+
     def asEmployeeEntity(companyId: Int, userId: Int): EmployeeEntity = {
       EmployeeEntity(
         id = o.id,
@@ -31,7 +40,7 @@ object EmployeeConverter {
     }
   }
 
-  implicit class Entity
+  implicit class EmployeeEntityToEmployee
   (o: (EmployeeEntity, UserEntity, ContactProfileEntity)) {
 
     def asEmployee() = {

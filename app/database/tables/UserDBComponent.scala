@@ -57,6 +57,10 @@ trait UserDBComponent extends DBComponent {
   }
 
 
+  //JOINs 
+  def usersWithProfile = users join contactProfiles on (_.profileId === _.id)
+
+
   //CRUD UserEntity
   def insertUser(user: UserEntity): Future[UserEntity] = {
     db.run(users.filter(_.username === user.username).result.head)
@@ -91,6 +95,10 @@ trait UserDBComponent extends DBComponent {
     } else {
       insertUser(user)
     }
+  }
+
+  def getUserWithProfileByUserId(id: Int) = {
+    db.run(usersWithProfile.filter(_._1.id === id).result.head)
   }
 
   //PWD FILTERS 

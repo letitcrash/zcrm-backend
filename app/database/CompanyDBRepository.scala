@@ -20,6 +20,7 @@ object CompanyDBRepository {
         profile <- upsertProfile(company.contactProfile.fold(ContactProfileEntity())(_.asEntity()))
         company <- upsertCompany(company.asEntity(profile.id.get))
     } yield (company, profile)).map(_.asCompany)
-
   }
+
+
 }
