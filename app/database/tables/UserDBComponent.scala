@@ -14,6 +14,7 @@ case class UserEntity(
   username: String,
   userLevel: Int,
   profileId: Int,
+  updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()),
   status: Char = 'I')
 
 case class PasswordEntity(
@@ -36,12 +37,13 @@ trait UserDBComponent extends DBComponent {
     def userLevel = column[Int]("user_level", O.Default(UserLevels.USER))
     def username = column[String]("username", O.SqlType("VARCHAR(254)"))
     def profileId = column[Int]("contact_profile_id")    
-    def status = column[Char]("status", O.Default('P'))
+    def updatedAt = column[Timestamp]("updated_at", O.Default(new Timestamp(System.currentTimeMillis())))
+    def status = column[Char]("status") //O.Default('P'))
 
     def fkContactProfile= foreignKey("fk_user_contact_profile", profileId, contactProfiles)(_.id, onUpdate = Restrict, onDelete = Cascade)
     def idxUsername = index("username_uniq", username, unique = true)
 
-    def * = (id.?, username, userLevel, profileId, status) <>
+    def * = (id.?, username, userLevel, profileId, updatedAt, status) <>
       (UserEntity.tupled, UserEntity.unapply)
   }
 
@@ -84,6 +86,19 @@ trait UserDBComponent extends DBComponent {
         .map( num => user)
   }
 
+  def softDeleteById(userId: Int): Future[UserEntity] = {
+	  getUserById(userId).flatMap(res =>
+			  updateUser(res.copy(status = 'D', 
+				   	      updatedAt = new Timestamp(System.currentTimeMillis()))))
+
+  } 
+
+  def softDeleteByUserName(userName: String): Future[UserEntity] = {
+	  getUserByUserUsername(userName).flatMap(res =>
+			  updateUser(res.copy(status = 'D', 
+				   	      updatedAt = new Timestamp(System.currentTimeMillis()))))
+
+  }
 
   //CRUD PasswordEntity
   private def insertPassword(user: UserEntity, password: String): Future[PasswordEntity] = {
