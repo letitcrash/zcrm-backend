@@ -22,4 +22,6 @@ libraryDependencies ++= Seq(
   "org.mindrot" % "jbcrypt" % "0.3m"
 )
 
+libraryDependencies += filters
+
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
