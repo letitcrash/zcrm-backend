@@ -58,34 +58,18 @@ object UserDBRepository {
   def loginUser(username: String, rawPassword: String): Future[User] = {
     import utils.converters.UserConverter.{EntityToUser}
     checkUserStatusByUserName(username).flatMap(isUserActive =>
-	if(isUserActive){
-	    checkPassword(username, rawPassword).flatMap( isPwdCorrect =>
-	      if(isPwdCorrect){
-		(for {
-		  user    <- getUserByUserUsername(username)
-		  profile <- getProfileById(user.profileId)
-		} yield (user, profile)).map(_.asUser)
-	      }else {
-		 throw new Exception("Incorrect password") 
-	      }
-	    )
-	}else{
-	   throw new Exception("User inactive!")
-	}
+      if(isUserActive){
+          checkPassword(username, rawPassword).flatMap( isPwdCorrect =>
+            if(isPwdCorrect){
+              (for {
+                user    <- getUserByUserUsername(username)
+                profile <- getProfileById(user.profileId)
+              } yield (user, profile)).map(_.asUser)
+            }else { throw new Exception("Incorrect password") })
+        }else{ throw new Exception("User inactive!") }
     )
   }
 	
-  def checkUserStatusById(userId: Int): Future[Boolean] = {
-    getUserById(userId).map(user =>
-		    if(user.status == 'I') true
-		    else false)
-  }
-
-  def checkUserStatusByUserName(userName: String): Future[Boolean] = {
-    getUserByUserUsername(userName).map(user =>
-		    if(user.status == 'I') true
-		    else false)
-  }
-
+ 
 
 }

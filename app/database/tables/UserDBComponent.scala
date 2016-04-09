@@ -1,7 +1,7 @@
 package database.tables
 
 import java.sql.Timestamp
-import models.UserLevels
+import models.{UserLevels, UserStatus}
 import slick.model.ForeignKeyAction.{Cascade, Restrict}
 import scala.util.{Success, Failure, Try}
 import exceptions.UsernameAlreadyExistException
@@ -14,8 +14,8 @@ case class UserEntity(
   username: String,
   userLevel: Int,
   profileId: Int,
-  updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()),
-  status: Char = 'I')
+  status: Char = UserStatus.ACTIVE,
+  updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()))
 
 case class PasswordEntity(
   userId: Int,
@@ -37,13 +37,13 @@ trait UserDBComponent extends DBComponent {
     def userLevel = column[Int]("user_level", O.Default(UserLevels.USER))
     def username = column[String]("username", O.SqlType("VARCHAR(254)"))
     def profileId = column[Int]("contact_profile_id")    
+    def status = column[Char]("status", O.Default(UserStatus.ACTIVE))
     def updatedAt = column[Timestamp]("updated_at", O.Default(new Timestamp(System.currentTimeMillis())))
-    def status = column[Char]("status") //O.Default('P'))
 
     def fkContactProfile= foreignKey("fk_user_contact_profile", profileId, contactProfiles)(_.id, onUpdate = Restrict, onDelete = Cascade)
     def idxUsername = index("username_uniq", username, unique = true)
 
-    def * = (id.?, username, userLevel, profileId, updatedAt, status) <>
+    def * = (id.?, username, userLevel, profileId, status, updatedAt) <>
       (UserEntity.tupled, UserEntity.unapply)
   }
 
@@ -66,7 +66,6 @@ trait UserDBComponent extends DBComponent {
   //CRUD UserEntity
   def insertUser(user: UserEntity): Future[UserEntity] = {
     db.run(users.filter(_.username === user.username).result.head)
-      //.map( userEntt => userEntt )
         .recoverWith{ case ex =>
            db.run(((users returning users.map(_.id) into ((user,id) => user.copy(id=Some(id)))) += user))
         }
@@ -88,14 +87,14 @@ trait UserDBComponent extends DBComponent {
 
   def softDeleteById(userId: Int): Future[UserEntity] = {
 	  getUserById(userId).flatMap(res =>
-			  updateUser(res.copy(status = 'D', 
+			  updateUser(res.copy(status = UserStatus.DELETED, 
 				   	      updatedAt = new Timestamp(System.currentTimeMillis()))))
 
   } 
 
   def softDeleteByUserName(userName: String): Future[UserEntity] = {
 	  getUserByUserUsername(userName).flatMap(res =>
-			  updateUser(res.copy(status = 'D', 
+			  updateUser(res.copy(status = UserStatus.DELETED, 
 				   	      updatedAt = new Timestamp(System.currentTimeMillis()))))
 
   }
@@ -121,6 +120,19 @@ trait UserDBComponent extends DBComponent {
   def getUserWithProfileByUserId(id: Int) = {
     db.run(usersWithProfile.filter(_._1.id === id).result.head)
   }
+
+  def checkUserStatusById(userId: Int): Future[Boolean] = {
+     getUserById(userId).map(user =>
+       //if(user.status == UserStatus.ACTIVE) true else false)
+       user.status == UserStatus.ACTIVE)
+  }
+
+  def checkUserStatusByUserName(userName: String): Future[Boolean] = {
+    getUserByUserUsername(userName).map(user =>
+      //if(user.status == UserStatus.ACTIVE) true else false)
+      user.status == UserStatus.ACTIVE)
+  }
+
 
   //PWD FILTERS 
   def setUserPassword(userId: Int, password: String): Future[UserEntity] = {
