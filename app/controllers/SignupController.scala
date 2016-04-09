@@ -25,9 +25,6 @@ class SignupController @Inject() (mailer: utils.Mailer) extends CRMController {
   private implicit val activateUserRdr = Json.reads[ActivateUserRq]
   private implicit val sendEmailRdr = Json.reads[SendEmailRq]
 
-
-
-
   private val errInvalidEmail = 501
   private val errEmailAlreadyExist = 502
 
@@ -200,7 +197,8 @@ class SignupController @Inject() (mailer: utils.Mailer) extends CRMController {
 
       }
     }
- }
+  }
+
 
   def validEmail(str: String): Boolean = {
     str.contains("@")

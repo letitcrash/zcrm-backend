@@ -18,6 +18,7 @@ GET     /setupdb                                                            cont
 # Signup
 POST    /signup                                                             controllers.SignupController.sendSignupEmail
 POST    /activate-user                                                      controllers.SignupController.activateUserWithToken
+#POST    /deactivate-user                                                    controllers.SignupController.deactivateUser
 
 # Logon
 # ~~~~
