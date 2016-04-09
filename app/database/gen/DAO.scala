@@ -20,7 +20,8 @@ class DAO extends UserDBComponent
    with ContactProfileDBComponent
    with SignupTokenDBComponent
    with CompanyDBComponent
-   with EmployeeDBComponent {
+   with EmployeeDBComponent
+	 with PasswordTokenDBComponent{
  import dbConfig.driver.api._
 
  def setupTables() : Try[String] = {
@@ -45,6 +46,7 @@ class DAO extends UserDBComponent
     Logger.info("Creating signupTokens      -> " + tryCreate(signupTokens.schema))
     Logger.info("Creating employees      -> " + tryCreate(employees.schema))
     Logger.info("Creating companies      -> " + tryCreate(companies.schema))
+		Logger.info("Creating passworTokens  -> " + tryCreate(passwordTokens.schema))
     Success("Created All tables!")
   }
 
