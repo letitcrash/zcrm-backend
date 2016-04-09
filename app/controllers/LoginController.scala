@@ -20,11 +20,12 @@ case class LoginRequest(
 
 case class LogonResponse(
   user: User,
+  employee: Employee,
   sessionToken: Option[String] = None)
 
 @Singleton
 class LoginController @Inject() (mailer: utils.Mailer) extends CRMController {
-  import utils.JSFormat.{userFrmt, responseFrmt}
+  import utils.JSFormat.{userFrmt, responseFrmt, employeeFrmt}
   implicit val requestFormat = Json.format[LoginRequest]
   implicit val responseFormat = Json.format[LogonResponse]
 
@@ -35,21 +36,23 @@ class LoginController @Inject() (mailer: utils.Mailer) extends CRMController {
   def login = Action.async (parse.json) { rq =>
     rq.body.validate[LoginRequest] map { body =>
       UserDBRepository.loginUser(body.username, body.password)
-        .map( user => createResponse(user) match {
-          case Success(res) => Ok(Json.toJson(res))
-          case Failure(ex)  => Ok(Json.toJson(createFailedResponse(ex)))
-        })
+        .flatMap( user => EmployeeDBRepository.getEmployeesByUser(user).map(
+          employee => createResponse(user, employee) match {
+                        case Success(res) => Ok(Json.toJson(res))
+                        case Failure(ex)  => Ok(Json.toJson(createFailedResponse(ex)))
+        }))
         .recover{ case ex => Ok(Json.toJson(createFailedResponse(ex))) }
     } recoverTotal( e => Future { BadRequest(Json.toJson(Map(
                          "expected"  -> expectedLoginRq,
                          "error"     -> Json.toJson(JsError.toFlatJson(e)))))})
   }
   
-  private[LoginController] def createResponse(user: User): Try[CRMResponse] = {
+  private[LoginController] def createResponse(user: User, employee: Employee): Try[CRMResponse] = {
     for {
-      token <- Security.createSessionToken(user)
+      token <- Security.createSessionToken(user, employee)
     } yield CRMResponse(CRMResponseHeader(),
                        Option(Json.toJson(LogonResponse(user = user,
+                                                        employee = employee,
                                                         sessionToken = Some(token)))))
   }
 

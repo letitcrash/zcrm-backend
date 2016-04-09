@@ -62,6 +62,10 @@ trait EmployeeDBComponent extends DBComponent
                     .map( num => newEmpl)
   }
 
+  def getEmployeeByUserId(userId: Int): Future[EmployeeEntity] = {
+    db.run(employees.filter(_.userId === userId).result.head)
+  }
+
   //EmployeeEntity filters
   def upsertEmployee(empl: EmployeeEntity): Future[EmployeeEntity] = {
     if(empl.id.isDefined) {updateEmployee(empl)}

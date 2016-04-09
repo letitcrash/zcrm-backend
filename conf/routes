@@ -9,7 +9,6 @@ POST     /validation                controllers.HomeController.validationTest
 
 
 
-
 # Home page
 GET     /                                                                   controllers.Application.index
   

@@ -14,7 +14,7 @@ import controllers.session._
 
 
 object Security {
-    
+  import utils.JSFormat.employeeWithLevelFrmt
   private implicit val clearTokenFrmt  = Json.format[ClearToken]
 
   val validateRequests = current.configuration.getBoolean("validateRequests").getOrElse(false)
@@ -23,7 +23,9 @@ object Security {
     if(!validateRequests) {
       try {
         val id = Integer.parseInt(headers.get(settings.USER_ID_HEADER).getOrElse("1"))
-        Success(CRMRequestHeader(userId = id, userLevel = 9999))
+        Success(CRMRequestHeader(userId = id,
+                                 userLevel = 9999,
+                                 employeeAndLevel = EmployeeWithLevel(1, 23, 1)))
       } catch {
         case ex: Exception =>
           Logger.error("Failed to parse userId from headers", ex)
@@ -38,13 +40,17 @@ object Security {
     }
   }
   
-  def createSessionToken(user: User): Try[String] = {
+  def createSessionToken(user: User, employee: Employee): Try[String] = {
     if(user.id.isEmpty) {
       Logger.error("Tried to create session token with a User without id")
       return Failure(new Exception("Missing user id"))
     }
     try {
-       encryptToken(ClearToken(uid = user.id.get, ulvl = user.userLevel))
+       encryptToken(ClearToken(uid = user.id.get,
+                               ulvl = user.userLevel,
+                               clvl = EmployeeWithLevel(employee.companyId,
+                                                       employee.id.get,
+                                                       employee.employeeLevel)))
     } catch {
       case ex: Exception =>
         Logger.error(f"Failed to create session token for user id: ${user.id}", ex)
@@ -61,7 +67,8 @@ object Security {
         exp =  Some(ts + settings.TOKEN_EXPIRATION_TIME),
         iat = Some(ts),
         uid = header.userId,
-        ulvl = header.userLevel))
+        ulvl = header.userLevel,
+        clvl = header.employeeAndLevel))
   }
 
 
@@ -73,7 +80,7 @@ object Security {
     } else if(settings.TOKEN_EXPIRATION_ENABLED && System.currentTimeMillis() > token.exp.get){
       Failure(new ExpiredTokenException)
     } else {
-      Success(CRMRequestHeader(userId, token.ulvl))
+      Success(CRMRequestHeader(userId, token.ulvl, token.clvl))
     }
   }
 
@@ -141,7 +148,8 @@ object Security {
     exp: Option[Long] = None,
     iat: Option[Long] = None, 
     uid: Int, 
-    ulvl: Int 
+    ulvl: Int,
+    clvl: EmployeeWithLevel 
   )
 
 }

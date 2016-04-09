@@ -34,7 +34,8 @@ object JSFormat {
   // ~~~~~
   implicit val contactProfileFrmt           = Json.format[ContactProfile]
   implicit val userFrmt                     = Json.format[User]
-
+  implicit val employeeFrmt                 = Json.format[Employee]
+  implicit val employeeWithLevelFrmt        = Json.format[EmployeeWithLevel]
 
 }
 
