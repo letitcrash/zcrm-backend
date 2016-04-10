@@ -13,6 +13,7 @@ import play.api.Logger
 import play.api.libs.json.{JsError, Json}
 import security.Security
 import scala.util.{Try, Success, Failure}
+import utils.ExpectedFormat._
 
 case class LoginRequest(
   username: String,
@@ -29,10 +30,6 @@ class LoginController @Inject() (mailer: utils.Mailer) extends CRMController {
   implicit val requestFormat = Json.format[LoginRequest]
   implicit val responseFormat = Json.format[LogonResponse]
 
-  private val expectedLoginRq = Json.toJson(Map(
-    "username" -> "[M](string) Username",
-    "password"   -> "[M](string) Password"))
-
   def login = Action.async (parse.json) { rq =>
     rq.body.validate[LoginRequest] map { body =>
       UserDBRepository.loginUser(body.username, body.password)
@@ -43,8 +40,8 @@ class LoginController @Inject() (mailer: utils.Mailer) extends CRMController {
         }))
         .recover{ case ex => Ok(Json.toJson(createFailedResponse(ex))) }
     } recoverTotal( e => Future { BadRequest(Json.toJson(Map(
-                         "expected"  -> expectedLoginRq,
-                         "error"     -> Json.toJson(JsError.toFlatJson(e)))))})
+                         "expected"  -> expectedLoginRqFormat,
+                         "error"     -> Json.toJson(JsError.toJson(e)))))})
   }
   
   private[LoginController] def createResponse(user: User, employee: Employee): Try[CRMResponse] = {

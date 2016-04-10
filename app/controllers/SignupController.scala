@@ -16,6 +16,7 @@ import scala.concurrent.duration.Duration
 
 import controllers.session.{CRMResponseHeader, CRMResponse}
 import play.api.libs.json.{JsError, Reads, JsValue, Json, JsSuccess}
+import utils.ExpectedFormat._
 
 
 @Singleton
@@ -27,7 +28,6 @@ class SignupController @Inject() (mailer: utils.Mailer) extends CRMController {
 
   private val errInvalidEmail = 501
   private val errEmailAlreadyExist = 502
-
   private val errTokenAlreadyExists = 601
   private val errNoSuchToken = 602
   private val errTokenExpired = 603
@@ -48,28 +48,6 @@ class SignupController @Inject() (mailer: utils.Mailer) extends CRMController {
     vatId: String,
     contactProfile: Option[ContactProfile])
  
-  private val expectedSendEmailRq = Json.toJson(Map(
-    "email" -> "[M](string) The email to send the signup link to",
-    "url"   -> "[M](string) The url to use in the link"))
-
-
-  private val expectedActivateUserRq = Json.toJson(Map(
-    "token"           -> Json.toJson("[M] (string) The token used received in the activation email"),
-    "password"        -> Json.toJson("[M] (string) The desired password"),
-    "email"           -> Json.toJson("[M] (string) The email used to register"),
-    "companyName"     -> Json.toJson("[M] (string) The desired company name"),
-    "vatId"           -> Json.toJson("[M] (string) A valid vatId(organisationsnmr in sweden)"),
-    "contactProfile"  -> Json.toJson(
-      Map(
-        "firstname"         -> "(string) Person firstname",
-        "lastname"          -> "(string) Person lastname",
-        "address"           -> "(string)",
-        "city"              -> "(string)",
-        "zipCode"           -> "(string) numeric zipCode",
-        "phoneNumberHome"   -> "(string) numeric, space and '-'",
-        "phoneNumberMobile" -> "(string) numeric, space and '-'",
-        "phoneNumberWork"   -> "(string) numeric, space and '-'"))))
-
   import utils.JSFormat.responseFrmt
 
   private val tokenExistErr = Json.toJson(CRMResponse(
@@ -154,8 +132,8 @@ class SignupController @Inject() (mailer: utils.Mailer) extends CRMController {
                                                                     "reason" -> body.get.email)))}
                               }
                             case e: JsError => Future { BadRequest(Json.toJson(Map(
-                                                        "expected"  -> expectedSendEmailRq,
-                                                        "error"     -> Json.toJson(JsError.toFlatJson(e)))))}
+                                                        "expected"  -> expectedSendEmailRqFormat,
+                                                        "error"     -> Json.toJson(JsError.toJson(e)))))}
                             
     }
   }
@@ -192,8 +170,8 @@ class SignupController @Inject() (mailer: utils.Mailer) extends CRMController {
           .recover{case ex => BadRequest(badTokenErr)}
 
       case e: JsError => Future { BadRequest(Json.toJson(Map(
-                                  "expected" -> expectedActivateUserRq,
-                                  "error" -> Json.toJson(JsError.toFlatJson(e)))))
+                                  "expected" -> expectedActivateUserRqFormat,
+                                  "error" -> Json.toJson(JsError.toJson(e)))))
 
       }
     }
