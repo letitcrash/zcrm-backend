@@ -2,7 +2,6 @@ package security
 
 import exceptions._
 import models._
-import play.api.Play.current
 import play.api.Logger
 import play.api.libs.json.Json
 import play.api.libs.json.JsValue
@@ -17,7 +16,7 @@ object Security {
   import utils.JSFormat.employeeWithLevelFrmt
   private implicit val clearTokenFrmt  = Json.format[ClearToken]
 
-  val validateRequests = current.configuration.getBoolean("validateRequests").getOrElse(false)
+  val validateRequests = play.api.Configuration().getBoolean("validateRequests").getOrElse(false)
 
   def validateHeaders(headers: Headers): Try[CRMRequestHeader] = {
     if(!validateRequests) {

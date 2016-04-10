@@ -16,7 +16,7 @@ object ResponseHelper {
   }
 
   def makeHeader(errorMessage: String, details: JsError): CRMResponseHeader = {
-    new CRMResponseHeader(1, Some(errorMessage), Some(JsError.toFlatJson(details)))
+    new CRMResponseHeader(1, Some(errorMessage), Some(JsError.toJson(details)))
   }
 
   def makeHeader(responseCode: Int, error: String): CRMResponseHeader = {

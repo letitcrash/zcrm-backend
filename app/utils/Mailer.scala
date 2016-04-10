@@ -25,7 +25,7 @@ class Mailer @Inject() (mailerClient: MailerClient, configuration: Configuration
     val email = Email(subject,from,Seq(to),None, Some(body))
     try{
       mailerClient.send(email)
-      Success()
+      Success((): Unit)
     }catch {
       case ex: Exception =>
         Failure(ex)

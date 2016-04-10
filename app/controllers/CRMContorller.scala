@@ -21,7 +21,7 @@ class CRMController @Inject() extends Controller with AcceptedReturns  {
       CRMResponseHeader(
         response_code = 22,
         error_message = Some(message),
-        detailed_error = Some(JsError.toFlatJson(error))
+        detailed_error = Some(JsError.toJson(error))
       ),
      None))
 

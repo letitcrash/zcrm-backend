@@ -1,5 +1,3 @@
-import play.api.Play.current
-
 package object settings {
   val APP_NAME = play.api.Configuration().getString("application.name").getOrElse("Undefined")
   val SECRET_KEY = play.api.Configuration().getString("application.secret").getOrElse("secretkey")
