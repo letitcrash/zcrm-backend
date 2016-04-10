@@ -4,6 +4,7 @@ import models.UserLevels
 import slick.model.ForeignKeyAction._
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import slick.profile.SqlProfile.ColumnOption.Nullable
 
 
 
@@ -36,7 +37,7 @@ trait EmployeeDBComponent extends DBComponent
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def companyId = column[Int]("company_id")
     def userId = column[Int]("user_id")
-    def employeeType = column[String]("employee_type")
+    def employeeType = column[String]("employee_type", Nullable)
     def comment = column[String]("comment")
     def employeeLevel = column[Int]("employee_level", O.Default(UserLevels.USER))
     def recordStatus = column[Int]("record_status", O.Default(1))

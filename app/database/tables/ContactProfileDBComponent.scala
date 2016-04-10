@@ -3,6 +3,7 @@ package database.tables
 import java.sql.Timestamp
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import slick.profile.SqlProfile.ColumnOption.Nullable
 
 case class ContactProfileEntity(
   id:                 Option[Int]    = None,
@@ -26,15 +27,15 @@ trait ContactProfileDBComponent extends DBComponent {
 
   class ContactProfileTable(tag: Tag) extends Table[ContactProfileEntity](tag, "tbl_contact") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
-    def firstname = column[String]("firstname" )
-    def lastname = column[String]("lastname")
-    def email = column[String]("email")
-    def address = column[String]("address")
-    def city = column[String]("city")
-    def zipCode = column[String]("zip_code")
-    def phoneMobile = column[String]("phone_mobile")
-    def phoneHome = column[String]("phone_home")
-    def phoneWork = column[String]("phone_work")
+    def firstname = column[String]("firstname", Nullable)
+    def lastname = column[String]("lastname", Nullable)
+    def email = column[String]("email", Nullable)
+    def address = column[String]("address", Nullable)
+    def city = column[String]("city", Nullable)
+    def zipCode = column[String]("zip_code", Nullable)
+    def phoneMobile = column[String]("phone_mobile", Nullable)
+    def phoneHome = column[String]("phone_home", Nullable)
+    def phoneWork = column[String]("phone_work", Nullable)
     def lastModified = column[Timestamp]("last_modified", O.Default(new Timestamp(System.currentTimeMillis())))
 
     override def * = (id.?, firstname.?, lastname.?, email.?, address.?, city.?,
