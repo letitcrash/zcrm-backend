@@ -14,7 +14,7 @@ case class UserEntity(
   username: String,
   userLevel: Int,
   profileId: Int,
-  status: Char = UserStatus.ACTIVE,
+  status: String = UserStatus.ACTIVE,
   updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()))
 
 case class PasswordEntity(
@@ -37,8 +37,7 @@ trait UserDBComponent extends DBComponent {
     def userLevel = column[Int]("user_level", O.Default(UserLevels.USER))
     def username = column[String]("username", O.SqlType("VARCHAR(254)"))
     def profileId = column[Int]("contact_profile_id")    
-    //TODO: change to "recorod_status" && A -> ACITVE , D -> DELETED
-    def status = column[Char]("status", O.Default(UserStatus.ACTIVE))
+    def status = column[String]("record_status", O.Default(UserStatus.ACTIVE))
     def updatedAt = column[Timestamp]("updated_at", O.Default(new Timestamp(System.currentTimeMillis())))
 
     def fkContactProfile= foreignKey("fk_user_contact_profile", profileId, contactProfiles)(_.id, onUpdate = Restrict, onDelete = Cascade)

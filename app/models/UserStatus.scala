@@ -1,6 +1,6 @@
 package models
 
 object UserStatus {
-  val ACTIVE = 'A'
-  val DELETED = 'D'
+  val ACTIVE = "ACTIVE"
+  val DELETED = "DELETED" 
 }

@@ -40,6 +40,7 @@ trait EmployeeDBComponent extends DBComponent
     def employeeType = column[String]("employee_type", Nullable)
     def comment = column[String]("comment")
     def employeeLevel = column[Int]("employee_level", O.Default(UserLevels.USER))
+    //TODO: should be deleted ??
     def recordStatus = column[Int]("record_status", O.Default(1))
 
 
