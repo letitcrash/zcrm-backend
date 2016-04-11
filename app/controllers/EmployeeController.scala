@@ -17,26 +17,6 @@ import scala.concurrent.Future
 class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController {
   import utils.JSFormat.contactProfileFrmt
 
-
-/* 
-  def post(companyId: Int) = TTDBAction[EmployeePost](expectedPostFormat) { rq =>
-    import utils.JSFormat.employeeFrmt
-    if(rq.body.contactProfile.email.isEmpty) Failure(new Exception("Mail must be set"))
-    else {
-      for {
-        check <- rq.header.checkCompanyManagerOrAdmin(companyId)
-        employee <- EmployeeRepository.createNewEmployee(
-          username = rq.body.contactProfile.email.get,
-          contactProfile = rq.body.contactProfile,
-          employee = rq.body.toEmployee(companyId))(rq.dbSession)
-
-        token <- UserDBRepository.createForgotPasswordToken(employee.user.get)(rq.dbSession)
-        mailSent <- Mailer.sendSetPasswordLink(token, rq.body.baseUrl, employee.user.get)
-      } yield Json.toJson(employee)
-    }
-  }
-  */
-
   case class InviteEmployee(username: String,
                             baseUrl: String,
                             contactProfile: ContactProfile,
