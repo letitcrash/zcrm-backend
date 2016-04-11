@@ -23,4 +23,10 @@ object CompanyDBRepository {
   }
 
 
+  def getCompany(id: Int): Future[Company] = {
+    import utils.converters.CompanyConverter.EntitiesToCompany
+    getCompanyWithProfileById(id).map(_.asCompany)
+  }
+
+
 }

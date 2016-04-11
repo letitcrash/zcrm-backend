@@ -34,7 +34,7 @@ trait CompanyDBComponent extends DBComponent
     override def * = (id.?, name, profileId, vatId, lastModified.?) <> (CompanyEntity.tupled, CompanyEntity.unapply)
   }
 
-  def companyWithProfile = companies joinLeft contactProfiles on (_.profileId === _.id)
+  def companyWithProfile = companies join contactProfiles on (_.profileId === _.id)
 
   //CRUD CompanyEntity
   def insertCompany(company: CompanyEntity): Future[CompanyEntity] = {
@@ -42,6 +42,10 @@ trait CompanyDBComponent extends DBComponent
       val row = company.copy(lastModified = ts)
         db.run((companies returning companies.map(_.id) 
           into ((company,id) => company.copy(id=Some(id)))) += row)
+  }
+
+  def getCompanyWithProfileById(id: Int): Future[(CompanyEntity, ContactProfileEntity)] = {
+    db.run(companyWithProfile.filter(_._1.id === id).result.head)
   }
 
   def updateCompany(company: CompanyEntity):Future[CompanyEntity] = {

@@ -44,9 +44,8 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
                                                          contactProfile = rq.body.contactProfile,
                                                          employee = rq.body.toEmployee(companyId))
         token <- UserDBRepository.createPasswordToken(employee.user.get)
+        //mailSent <- Mailer.sendSetPasswordLink(token, rq.body.baseUrl, employee.user.get)
       } yield Json.toJson(employee)
-
-
     }else { Future{Failure(new InsufficientRightsException())} }
   }
 
