@@ -15,7 +15,7 @@ case class CRMRequestHeader(
 
   def isAdmin = userLevel <= UserLevels.ADMIN
 
-  def isCompanyOwnerOrManagerOrAdmin(companyId: Int) =
+  def isCompanyOwnerOrManagerOrAdmin(companyId: Int) = 
     isAdmin ||
     employeeAndLevel.companyId == companyId &&
     employeeAndLevel.employeeLevel <= EmployeeLevels.MANAGER

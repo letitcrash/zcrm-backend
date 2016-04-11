@@ -59,6 +59,9 @@ trait AcceptedReturns {
         case Failure(ex: CRMException) =>
           Ok(Json.toJson(CRMResponse(CRMResponseHeader(ex.ecode, Some(ex.getMessage)), None)))
 
+        case Failure(ex: CRMAuthenticationException) =>
+          BadRequest(Json.toJson(CRMResponse(CRMResponseHeader(400 , Some(ex.getMessage)), None)))
+
         case Failure(ex) =>
           InternalServerError(Json.toJson(CRMResponse(CRMResponseHeader(23, getMessage(ex)), getStacktrace(ex))))
       }

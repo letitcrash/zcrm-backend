@@ -33,6 +33,7 @@ object UserDBRepository {
 
   }
 
+  //TODO: should be refactored 
   def getUserByUsername(username: String): Future[User] = {
     import utils.converters.UserConverter._
 
@@ -54,7 +55,7 @@ object UserDBRepository {
     } yield (userEntt, profileEntt).asUser
   }
 
-
+  //TODO: refactore exception handling 
   def loginUser(username: String, rawPassword: String): Future[User] = {
     import utils.converters.UserConverter.{EntityToUser}
     checkUserStatusByUserName(username).flatMap(isUserActive =>

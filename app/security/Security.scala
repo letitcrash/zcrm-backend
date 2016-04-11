@@ -15,8 +15,10 @@ import controllers.session._
 object Security {
   import utils.JSFormat.employeeWithLevelFrmt
   private implicit val clearTokenFrmt  = Json.format[ClearToken]
-
-  val validateRequests = play.api.Configuration().getBoolean("validateRequests").getOrElse(false)
+  
+  //TODO: should be refactored
+  //val validateRequests = play.api.Configuration.getBoolean("validateRequests").getOrElse(false)
+  val validateRequests = play.api.Play.current.configuration.getBoolean("validateRequests").getOrElse(false)
 
   def validateHeaders(headers: Headers): Try[CRMRequestHeader] = {
     if(!validateRequests) {

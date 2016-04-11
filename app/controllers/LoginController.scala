@@ -54,7 +54,7 @@ class LoginController @Inject() (mailer: utils.Mailer) extends CRMController {
   }
 
   private[LoginController] def createFailedResponse(ex: Throwable): CRMResponse = {
-    CRMResponse(CRMResponseHeader(-1), None)
+    CRMResponse(CRMResponseHeader(-1, Some(ex.getMessage)), None)
   }
 
 }
