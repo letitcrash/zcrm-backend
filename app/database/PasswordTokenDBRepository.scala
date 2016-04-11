@@ -6,9 +6,11 @@ import java.sql.Timestamp
 import java.math.BigInteger
 import java.security.SecureRandom
 
+//TODO: delete it 
 object PasswordTokenDBRepository {
   import database.gen.current.dao.dbConfig.driver.api._
   import database.gen.current.dao._
+  /*
 
   private val random = new SecureRandom()
   random.setSeed(random.generateSeed(55))
@@ -34,5 +36,6 @@ object PasswordTokenDBRepository {
         token <- passwordTokens if token.userId === userId && token.token === strToken
       } yield token).sortBy(_.addedAt.desc).result.head)
   }
+  */
 		
 }

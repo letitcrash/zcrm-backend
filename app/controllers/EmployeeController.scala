@@ -8,7 +8,7 @@ import models._
 import utils.ExpectedFormat._
 import controllers.session.InsufficientRightsException
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import database.EmployeeDBRepository
+import database.{EmployeeDBRepository,UserDBRepository}
 import play.api.libs.json.Json
 import scala.util.{Failure, Success, Try}
 import scala.concurrent.Future
@@ -63,6 +63,7 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
         employee <- EmployeeDBRepository.createEmployee( username = rq.body.username,
                                                          contactProfile = rq.body.contactProfile,
                                                          employee = rq.body.toEmployee(companyId))
+        token <- UserDBRepository.createPasswordToken(employee.user.get)
       } yield Json.toJson(employee)
 
 

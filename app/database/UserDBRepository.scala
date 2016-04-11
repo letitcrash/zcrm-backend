@@ -55,7 +55,6 @@ object UserDBRepository {
     } yield (userEntt, profileEntt).asUser
   }
 
-  //TODO: refactore exception handling 
   def loginUser(username: String, rawPassword: String): Future[User] = {
     import utils.converters.UserConverter.{EntityToUser}
     checkUserStatusByUserName(username).flatMap(isUserActive =>
@@ -70,6 +69,11 @@ object UserDBRepository {
         }else{ throw new Exception("User inactive!") }
     )
   }
+
+
+ def createPasswordToken(user: User): Future[String] = {
+   newPwdToken(user.id.get).map( pwdToken => pwdToken.token)
+ }
 	
  
 

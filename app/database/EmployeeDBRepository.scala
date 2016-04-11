@@ -49,5 +49,6 @@ object EmployeeDBRepository {
           } yield (empEnt, userEnt, profEnt).asEmployee()
     })
   }
+
   
 }
