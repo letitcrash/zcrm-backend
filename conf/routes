@@ -24,7 +24,7 @@ POST    /activate-user                                                      cont
 POST /login                                                                 controllers.LoginController.login
 
 # Companies
-GET     /companies/:companyId                                                      controllers.CompanyController.get(companyId: Int)
+GET     /companies/:companyId                                               controllers.CompanyController.get(companyId: Int)
 
 
 # Employees

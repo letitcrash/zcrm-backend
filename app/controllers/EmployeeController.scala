@@ -39,14 +39,12 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
   def inviteEmployee(companyId: Int) = CRMActionAsync[InviteEmployee](expectedInviteEmployeeFormat) { rq =>
     import utils.JSFormat.employeeFrmt
     if(rq.header.isCompanyOwnerOrManagerOrAdmin(companyId)){
-      for{
-        employee <- EmployeeDBRepository.createEmployee( username = rq.body.username,
-                                                         contactProfile = rq.body.contactProfile,
-                                                         employee = rq.body.toEmployee(companyId))
-        token <- UserDBRepository.createPasswordToken(employee.user.get)
-        //mailSent <- Mailer.sendSetPasswordLink(token, rq.body.baseUrl, employee.user.get)
-      } yield Json.toJson(employee)
-    }else { Future{Failure(new InsufficientRightsException())} }
+      EmployeeDBRepository.createEmployee( username = rq.body.username,
+                                           contactProfile = rq.body.contactProfile,
+                                           employee = rq.body.toEmployee(companyId)).flatMap( employee => 
+                                             UserDBRepository.createPasswordToken(employee.user.get).map( token =>
+                                                 mailer.sendSetPasswordLink(token, rq.body.baseUrl, employee.user.get)
+                                                   .map( unit => Json.toJson(employee))))
+    }else{ Future{Failure(new InsufficientRightsException())} }
   }
-
 }
