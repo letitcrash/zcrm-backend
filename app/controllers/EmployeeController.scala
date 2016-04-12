@@ -38,7 +38,7 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
 
   def inviteEmployee(companyId: Int) = CRMActionAsync[InviteEmployee](expectedInviteEmployeeFormat) { rq =>
     import utils.JSFormat.employeeFrmt
-    if(rq.header.isCompanyOwnerOrManagerOrAdmin(companyId)){
+    if(rq.header.isCompanyManager || rq.header.isCompanyOwner){
       //TODO: should be transactionally
       EmployeeDBRepository.createEmployee( username = rq.body.username,
                                            contactProfile = rq.body.contactProfile,
