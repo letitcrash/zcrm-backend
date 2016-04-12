@@ -36,7 +36,6 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
 
   implicit val inviteEmployeeFrmt = Json.format[InviteEmployee]
 
-  //TODO: !!! expected format should be investigated.                             
   def inviteEmployee(companyId: Int) = CRMActionAsync[InviteEmployee](expectedInviteEmployeeFormat) { rq =>
     import utils.JSFormat.employeeFrmt
     if(rq.header.isCompanyOwnerOrManagerOrAdmin(companyId)){

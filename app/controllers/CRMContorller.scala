@@ -63,9 +63,9 @@ class CRMController @Inject() extends Controller with AcceptedReturns  {
                                     .recover{case e: Exception => BadRequest( Json.toJson(Map("result" -> "-1233",
                                                                                 "message" -> "Exception occured",
                                                                                 "reason" -> e.getMessage)))}
-                                 case e: JsError => Future { BadRequest(jsonError("Invalid format", e)) }
+                                 case e: JsError => Future{ BadRequest(expectedFormat) }
                                }
-                case None => Future{ BadRequest(expectedFormat) }
+                case None => Future { BadRequest(jsonError("Invalid format", JsError("JSON required")))}
             }
             case Failure(ex) =>
               Future { Unauthorized(Json.toJson(Map("result" -> "-1234",
