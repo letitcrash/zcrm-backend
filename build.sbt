@@ -19,6 +19,7 @@ libraryDependencies ++= Seq(
   "org.postgresql" % "postgresql" % "9.4.1208.jre7",
   "com.h2database" % "h2" % "1.4.191",
   "com.typesafe.play" % "play-mailer_2.11" % "5.0.0-M1",
+  "com.microsoft.ews-java-api" % "ews-java-api" % "2.0",
   "org.mindrot" % "jbcrypt" % "0.3m"
 )
 
