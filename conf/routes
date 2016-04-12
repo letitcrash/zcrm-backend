@@ -25,7 +25,7 @@ GET     /companies/:companyId                                               cont
 # Employees
 POST    /companies/:companyId/employees                                     controllers.EmployeeController.inviteEmployee(companyId: Int)
 
-#GET    /companies/:companyId/employees/:employeeId/mails                    controllers.MailController.getAllEmails(companyId: Int, employeeId: Int)
+GET    /companies/:companyId/employees/:employeeId/mails                    controllers.ExchangeController.getAllEmails(companyId: Int, employeeId: Int)
 
 
 

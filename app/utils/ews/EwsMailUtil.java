@@ -16,7 +16,7 @@ import models.MessageToSend;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EwsMailUtil {;
+public class EwsMailUtil {
 
     public MessageToReceive[] getInboxMail(ExchangeService service, int page, int size) throws Exception {
         ArrayList<MessageToReceive> result = new ArrayList<>(size);
