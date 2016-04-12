@@ -22,7 +22,7 @@ class ExchangeController @Inject() (ewsAuth: EwsAuthUtil, ewsMail: EwsMailUtil) 
     import utils.converters.MailConverter._
    // if(rq.header.belongsToCompany(companyId)){
       val ewsService = ewsAuth.checkUserLogin("Administrateur@multimedianordic.no", "Stein4201")
-      val mailsArray: Array[MessageToReceive] = ewsMail.getInboxMail(ewsService, 1, 1)
+      val mailsArray: Array[MessageToReceive] = ewsMail.getInboxMail(ewsService, 1, 20)
       val mailList = mailsArray.toList.map(_.asMail)
       Json.toJson(mailList) 
     //}else{ Failure(new InsufficientRightsException()) }

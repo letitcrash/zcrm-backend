@@ -18,16 +18,16 @@ import java.util.List;
 
 public class EwsMailUtil {
 
-    public MessageToReceive[] getInboxMail(ExchangeService service, int page, int size) throws Exception {
-        ArrayList<MessageToReceive> result = new ArrayList<>(size);
+    public MessageToReceive[] getInboxMail(ExchangeService service, int pageNr, int pageSize) throws Exception {
+        ArrayList<MessageToReceive> result = new ArrayList<>();
 
-        int offset = page*size;
-        ItemView view = new ItemView(size,offset);
+        int offset = (pageNr-1)*pageSize;
+        ItemView view = new ItemView(pageSize, offset); 
         FindItemsResults<Item> findResults = service.findItems(WellKnownFolderName.Inbox, view);
 
         service.loadPropertiesForItems(findResults, PropertySet.FirstClassProperties); //Need to load properties before any other action
 
-        for (Item item : findResults.getItems()) {
+        for (Item item : findResults) {
             EmailMessage message = EmailMessage.bind(service, new ItemId(item.getId().getUniqueId()));
             MessageToReceive msg = new MessageToReceive(item.getId(), item.getSubject(), message.getFrom().getAddress(),
                     message.getFrom().getName(), "no-avatar",
@@ -35,7 +35,7 @@ public class EwsMailUtil {
                     item.getBody().toString(), item.getDateTimeReceived(), item.getAttachments());
             result.add(msg);
         }
-        return result.toArray(new MessageToReceive[size]);
+        return result.toArray(new MessageToReceive[result.size()]);
     }
 
     public void sendMessage(ExchangeService service, MessageToSend message) throws Exception {
