@@ -1,7 +1,7 @@
 package models
 
 object UserLevels {
-  // The level the user has in the system, i.e admin or user
+  // The level the USER has in the system, i.e admin or user
   // 1000 - 9999  = User
   // 100 - 999    = Administrators
   // 0-99         = Super
@@ -11,7 +11,7 @@ object UserLevels {
 }
 
 object EmployeeLevels{
-  // The level the user has in the system, i.e admin or user
+  // The level the EMPLOYEE has in the system, i.e admin or user
   // 1000 - 9999  = Employee
   // 100 - 999    = Manager
   // 0-99         = Owner
