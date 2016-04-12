@@ -20,6 +20,10 @@ POST    /signup                                                             cont
 POST    /activate-user                                                      controllers.SignupController.activateUserWithToken
 #POST    /deactivate-user                                                   controllers.SignupController.deactivateUser
 
+# Password
+POST    /users/:userId/password/recover                                     controllers.UserController.setPasswordUsingToken(userId: Int)
+
+
 # Logon
 POST /login                                                                 controllers.LoginController.login
 

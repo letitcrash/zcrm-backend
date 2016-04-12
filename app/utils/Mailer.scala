@@ -32,7 +32,6 @@ class Mailer @Inject() (mailerClient: MailerClient, configuration: Configuration
     }
     val userId = user.id.get
     val email = user.contactProfile.get.email.get
-    //TODO: URL should be disscussed with front end devs.
     sendMail(email, sender, setPasswordTopic, setPasswordBody.format(f"$baseUrl/$userId/$token"))
   }
 

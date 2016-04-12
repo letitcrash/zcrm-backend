@@ -12,10 +12,7 @@ import database.tables.UserDBComponent
 import scala.concurrent.Future
 import play.api.Logger
 
-/**
- * This controller creates an `Action` to handle HTTP requests to the
- * application's home page.
- */
+//TODO: DELETE IT!
 @Singleton
 class HomeController @Inject()  extends CRMController {
 

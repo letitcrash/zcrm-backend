@@ -15,6 +15,7 @@ import scala.concurrent.duration.Duration
 
 import scala.util.{Success, Failure, Try}
 import models.User 
+import exceptions._
 
 object UserDBRepository {
   import database.gen.current.dao.dbConfig.driver.api._
@@ -33,7 +34,7 @@ object UserDBRepository {
 
   }
 
-  //TODO: should be refactored 
+  //TODO: should be refactored: move querys to component
   def getUserByUsername(username: String): Future[User] = {
     import utils.converters.UserConverter._
 
@@ -74,6 +75,24 @@ object UserDBRepository {
  def createPasswordToken(user: User): Future[String] = {
    newPwdToken(user.id.get).map( pwdToken => pwdToken.token)
  }
+
+ def setPasswordUsingToken(userId: Int, token: String, newPassword: String): Future[User] = {
+    validatePwdToken(userId, token).flatMap { pwdTokenEntt =>
+      if(pwdTokenEntt.usedAt.isDefined) {
+       throw new TokenAlreadyUsedException(pwdTokenEntt.usedAt.get)
+      }
+      else if(pwdTokenEntt.expires.before(new Timestamp(System.currentTimeMillis()))) {
+        throw new ExpiredTokenException
+      } else {
+        //TODO: should be transactionally
+          for {
+            user        <- setPasswordForUser(userId, newPassword)
+            markedToken <- markPwdTokenAsUsed(pwdTokenEntt)
+          } yield user
+      }
+    }
+  }
+
 	
  
 

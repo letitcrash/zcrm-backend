@@ -53,5 +53,11 @@ object ExpectedFormat {
         "phoneNumberWork"   -> "[O] (string) numeric, space and '-'"))))
 
 
+  val expectedSetPasswordUsingToken = Json.toJson(
+    Map("password" -> "[M](string) The password to set",
+        "token" -> "[M](string) The token used to validate")
+  )
+
+
 }
 
