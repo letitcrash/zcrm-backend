@@ -6,7 +6,7 @@ import microsoft.exchange.webservices.data.property.complex.ItemId;
 
 import java.util.Date;
 
-public class OutboxMessage {
+public class EwsInboxMail {
     public ItemId id;
     public String subject;
     public String fromEmail;
@@ -14,13 +14,14 @@ public class OutboxMessage {
     public String toEmail;
     public String toName;
     public String body;
+    public Boolean isRead;
     public Date date;
     public AttachmentCollection attachments;
 
-    public OutboxMessage() {}
+    public EwsInboxMail() {}
 
-    public OutboxMessage(ItemId id, String subject, String fromEmail, String fromName, String toEmail,
-                                                  String toName, String body, Date date, AttachmentCollection attachments) {
+    public EwsInboxMail(ItemId id, String subject, String fromEmail, String fromName, String toEmail,
+                        String toName, String body, Boolean isRead, Date date, AttachmentCollection attachments) {
         this.id = id;
         this.subject = subject;
         this.fromEmail = fromEmail;
@@ -28,6 +29,7 @@ public class OutboxMessage {
         this.toEmail = toEmail;
         this.toName = toName;
         this.body = body;
+        this.isRead  = isRead;
         this.date = date;
         this.attachments = attachments;
     }

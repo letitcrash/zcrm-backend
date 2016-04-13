@@ -24,7 +24,7 @@ class ExchangeController @Inject() (ewsAuth: EwsAuthUtil, ewsMail: EwsMailUtil) 
     import utils.converters.MailConverter._
    // if(rq.header.belongsToCompany(companyId)){
       val ewsService = ewsAuth.checkUserLogin("Administrateur@multimedianordic.no", "Stein4201")
-      val mailsArray: Array[InboxMessage] = ewsMail.getInboxMail(ewsService, 1, 20)
+      val mailsArray: Array[EwsInboxMail] = ewsMail.getInboxMail(ewsService, 1, 20)
       val mailList = mailsArray.toList.map(_.asInboxMail)
       Json.toJson(mailList) 
     //}else{ Failure(new InsufficientRightsException()) }
@@ -34,7 +34,7 @@ class ExchangeController @Inject() (ewsAuth: EwsAuthUtil, ewsMail: EwsMailUtil) 
     import utils.converters.MailConverter._
     // if(rq.header.belongsToCompany(companyId)){
     val ewsService = ewsAuth.checkUserLogin("Administrateur@multimedianordic.no", "Stein4201")
-    val mailsArray: Array[OutboxMessage] = ewsMail.getSentMail(ewsService, 1, 20)
+    val mailsArray: Array[EwsSentMail] = ewsMail.getSentMail(ewsService, 1, 20)
     val mailList = mailsArray.toList.map(_.asOutboxMail)
     Json.toJson(mailList)
     //}else{ Failure(new InsufficientRightsException()) }
@@ -57,7 +57,7 @@ class ExchangeController @Inject() (ewsAuth: EwsAuthUtil, ewsMail: EwsMailUtil) 
   
   def sendEmail(companyId: Int, employeeId: Int) = CRMAction[MailToSend](expectedMailToSendFormat) { rq => 
     val ewsService = ewsAuth.checkUserLogin("Administrateur@multimedianordic.no", "Stein4201")
-    ewsMail.sendMessage(ewsService, rq.body.asEwsMailToSend)
+    ewsMail.sendMail(ewsService, rq.body.asEwsMailToSend)
     //Json.toJson(rq.body.subject.getOrElse("")+", "+rq.body.body.getOrElse("")+", " + rq.body.to.toString)
     Json.toJson("mail sent")
   }

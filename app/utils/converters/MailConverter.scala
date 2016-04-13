@@ -4,7 +4,7 @@ import models._
 
 object MailConverter {
 
-  implicit class EwsMailToInboxMail(ewsMail: InboxMessage) {
+  implicit class EwsMailToInboxMail(ewsMail: EwsInboxMail) {
     def asInboxMail: InboxMail = {
       InboxMail(
       id = Some(ewsMail.id.getUniqueId),
@@ -19,7 +19,7 @@ object MailConverter {
     }
 
   }
-  implicit class EwsMailToOutboxMail(ewsMail: OutboxMessage) {
+  implicit class EwsMailToOutboxMail(ewsMail: EwsSentMail) {
     def asOutboxMail: OutboxMail = {
       OutboxMail(
         id = Some(ewsMail.id.getUniqueId),
