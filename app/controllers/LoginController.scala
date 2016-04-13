@@ -19,6 +19,7 @@ case class LoginRequest(
   username: String,
   password: String)
 
+//TODO: user: User may be deleted (Employee has User inside), check with FE
 case class LogonResponse(
   user: User,
   employee: Employee,
