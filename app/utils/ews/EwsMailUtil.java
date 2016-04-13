@@ -6,37 +6,63 @@ import microsoft.exchange.webservices.data.core.enumeration.property.WellKnownFo
 import microsoft.exchange.webservices.data.core.service.item.EmailMessage;
 import microsoft.exchange.webservices.data.core.service.item.Item;
 import microsoft.exchange.webservices.data.core.service.response.ResponseMessage;
+import microsoft.exchange.webservices.data.property.complex.EmailAddress;
 import microsoft.exchange.webservices.data.property.complex.ItemId;
 import microsoft.exchange.webservices.data.property.complex.MessageBody;
 import microsoft.exchange.webservices.data.search.FindItemsResults;
 import microsoft.exchange.webservices.data.search.ItemView;
-import models.MessageToReceive;
-import models.MessageToSend;
+import models.*;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class EwsMailUtil {
 
-    public MessageToReceive[] getInboxMail(ExchangeService service, int pageNr, int pageSize) throws Exception {
-        ArrayList<MessageToReceive> result = new ArrayList<>();
+    public InboxMessage[] getInboxMail(ExchangeService service, int pageNr, int pageSize) throws Exception {
+        ArrayList<InboxMessage> result = new ArrayList<>();
 
         int offset = (pageNr-1)*pageSize;
-        ItemView view = new ItemView(pageSize, offset); 
-        FindItemsResults<Item> findResults = service.findItems(WellKnownFolderName.Inbox, view);
+        FindItemsResults<Item> findResults = getItemsFromWellKnownFolder(WellKnownFolderName.Inbox, service, offset, pageSize);
 
         service.loadPropertiesForItems(findResults, PropertySet.FirstClassProperties); //Need to load properties before any other action
 
         for (Item item : findResults) {
             EmailMessage message = EmailMessage.bind(service, new ItemId(item.getId().getUniqueId()));
-            MessageToReceive msg = new MessageToReceive(item.getId(), item.getSubject(), message.getFrom().getAddress(),
-                    message.getFrom().getName(), "no-avatar",
-                    message.getReceivedBy().getAddress(), message.getReceivedBy().getName(),
-                    item.getBody().toString(), item.getDateTimeReceived(), item.getAttachments());
+            InboxMessage msg = new InboxMessage(item.getId(), item.getSubject(),
+                                                    message.getFrom().getAddress(), message.getFrom().getName(),
+                                                    message.getReceivedBy().getAddress(), message.getReceivedBy().getName(),
+                                                    item.getBody().toString(), message.getIsRead() ,
+                                                    item.getDateTimeReceived(), item.getAttachments());
             result.add(msg);
         }
-        return result.toArray(new MessageToReceive[result.size()]);
+        return result.toArray(new InboxMessage[result.size()]);
     }
+
+    public OutboxMessage[] getSentMail(ExchangeService service, int pageNr, int pageSize) throws Exception {
+        ArrayList<OutboxMessage> result = new ArrayList<>();
+
+        int offset = (pageNr-1)*pageSize;
+        FindItemsResults<Item> findResults = getItemsFromWellKnownFolder(WellKnownFolderName.SentItems, service, offset, pageSize);
+
+        service.loadPropertiesForItems(findResults, PropertySet.FirstClassProperties); //Need to load properties before any other action
+
+        for (Item item : findResults) {
+            EmailMessage message = EmailMessage.bind(service, new ItemId(item.getId().getUniqueId()));
+            EmailAddress recipient = message.getToRecipients().getPropertyAtIndex(0);
+            OutboxMessage msg = new OutboxMessage(item.getId(), item.getSubject(),
+                                                                                       message.getFrom().getAddress(), message.getFrom().getName(),
+                                                                                       recipient.getAddress(), recipient.getName(),
+                                                                                       item.getBody().toString(), item.getDateTimeSent(), item.getAttachments());
+            result.add(msg);
+        }
+        return result.toArray(new OutboxMessage[result.size()]);
+    }
+
+
+		private FindItemsResults<Item> getItemsFromWellKnownFolder(WellKnownFolderName folder, ExchangeService service, int offset, int pageSize) throws Exception {
+			  ItemView view = new ItemView(pageSize, offset);
+              return service.findItems(folder, view);
+		}
+
 
     public void sendMessage(ExchangeService service, MessageToSend message) throws Exception {
         EmailMessage msg = new EmailMessage(service);

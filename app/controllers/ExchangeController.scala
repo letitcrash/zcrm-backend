@@ -16,15 +16,26 @@ import scala.concurrent.Future
 
 @Singleton
 class ExchangeController @Inject() (ewsAuth: EwsAuthUtil, ewsMail: EwsMailUtil) extends CRMController {
-  import utils.JSFormat.mailFrmt
+  import utils.JSFormat.inboxMailFrmt
+  import utils.JSFormat.outboxMailFrmt
 
-  def getAllEmails(companyId: Int, employeeId: Int) = CRMAction  { rq =>
+  def getInboxEmails(companyId: Int, employeeId: Int) = CRMAction  { rq =>
     import utils.converters.MailConverter._
    // if(rq.header.belongsToCompany(companyId)){
       val ewsService = ewsAuth.checkUserLogin("Administrateur@multimedianordic.no", "Stein4201")
-      val mailsArray: Array[MessageToReceive] = ewsMail.getInboxMail(ewsService, 1, 20)
-      val mailList = mailsArray.toList.map(_.asMail)
+      val mailsArray: Array[InboxMessage] = ewsMail.getInboxMail(ewsService, 1, 20)
+      val mailList = mailsArray.toList.map(_.asInboxMail)
       Json.toJson(mailList) 
+    //}else{ Failure(new InsufficientRightsException()) }
+  }
+
+  def getOutboxEmails(companyId: Int, employeeId: Int) = CRMAction  { rq =>
+    import utils.converters.MailConverter._
+    // if(rq.header.belongsToCompany(companyId)){
+    val ewsService = ewsAuth.checkUserLogin("Administrateur@multimedianordic.no", "Stein4201")
+    val mailsArray: Array[OutboxMessage] = ewsMail.getSentMail(ewsService, 1, 20)
+    val mailList = mailsArray.toList.map(_.asOutboxMail)
+    Json.toJson(mailList)
     //}else{ Failure(new InsufficientRightsException()) }
   }
 
