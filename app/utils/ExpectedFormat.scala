@@ -58,6 +58,11 @@ object ExpectedFormat {
         "token" -> "[M](string) The token used to validate")
   )
 
+  val expectedMailToSendFormat = Json.toJson(Map(
+			"subject" -> "[O] (string) subject ",
+			"body" -> "[O] (string) body: HTML",
+      "to" -> "[M] (List[string]) TO:<email>"
+	))
 
 }
 

@@ -1,6 +1,7 @@
 package utils.converters
 import models._
 
+
 object MailConverter {
 
   implicit class EwsMailToInboxMail(ewsMail: InboxMessage) {

@@ -14,6 +14,7 @@ import microsoft.exchange.webservices.data.search.ItemView;
 import models.*;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class EwsMailUtil {
 
@@ -64,13 +65,16 @@ public class EwsMailUtil {
 		}
 
 
-    public void sendMessage(ExchangeService service, MessageToSend message) throws Exception {
+    public void sendMessage(ExchangeService service, EwsMailToSend message) throws Exception {
         EmailMessage msg = new EmailMessage(service);
-        msg.setSubject(message.getSubject());
-        msg.setBody(MessageBody.getMessageBodyFromText(message.getBody()));
-        for (String recipient : message.getTo()) {msg.getToRecipients().add(recipient);}
-        msg.getDateTimeCreated().setTime(message.getDate().getTime());
-        msg.getDateTimeSent().setTime(message.getDate().getTime());
+        msg.setSubject(message.subject);
+        msg.setBody(MessageBody.getMessageBodyFromText(message.body));
+        for (String recipient : message.to) {msg.getToRecipients().add(recipient);}
+        /*
+        Date date = new Date();
+        msg.getDateTimeCreated().setTime(date.getTime());
+        msg.getDateTimeSent().setTime(date.getTime());
+        */
 
         msg.sendAndSaveCopy();
     }
