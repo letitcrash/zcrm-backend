@@ -20,6 +20,8 @@ object current {
 
 @Singleton
 class DAO extends UserDBComponent
+   with TaskAttachedMailDBComponent
+   with TaskDBComponent
    with ContactProfileDBComponent
    with SignupTokenDBComponent
    with CompanyDBComponent
@@ -51,6 +53,8 @@ class DAO extends UserDBComponent
       Logger.info("Dropping employees      -> "    + tryDrop(employees.schema))
       Logger.info("Dropping companies      -> "    + tryDrop(companies.schema))
       Logger.info("Dropping passworTokens  -> "    + tryDrop(passwordTokens.schema))
+      Logger.info("Dropping tasks  -> "            + tryDrop(tasks.schema))
+      Logger.info("Dropping taskAttachedMails  -> "    + tryDrop(taskAttachedMails.schema))
       Success("Tables dropped")
     } catch {
       case ex: Exception =>
@@ -82,6 +86,8 @@ class DAO extends UserDBComponent
     Logger.info("Creating employees      -> " + tryCreate(employees.schema))
     Logger.info("Creating companies      -> " + tryCreate(companies.schema))
 		Logger.info("Creating passworTokens  -> " + tryCreate(passwordTokens.schema))
+		Logger.info("Creating tasks -> "          + tryCreate(tasks.schema))
+		Logger.info("Creating taskAttachedMails -> " + tryCreate(taskAttachedMails.schema))
     Success("Created All tables!")
   }
 
