@@ -5,7 +5,7 @@ import java.sql.Timestamp
 import slick.profile.SqlProfile.ColumnOption.Nullable
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import slick.model.ForeignKeyAction.{SetNull, Restrict}
+import slick.model.ForeignKeyAction.{Cascade, SetNull, Restrict}
 import java.math.BigInteger
 import java.security.SecureRandom
 import models._
@@ -30,6 +30,7 @@ case class TaskEntity(
 
 trait TaskDBComponent extends DBComponent
 	with CompanyDBComponent
+  with UserDBComponent
 	with TaskAttachedMailDBComponent{
  this: DBComponent =>
 
@@ -41,7 +42,7 @@ trait TaskDBComponent extends DBComponent
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def companyId = column[Int]("company_id")
     def createdByUserId = column[Int]("created_by_user_id")
-    def assignedToUserId = column[Int]("assigned_to_user_id")
+    def assignedToUserId = column[Int]("assigned_to_user_id", Nullable)
     def title = column[String]("title")
     def description = column[String]("description", Nullable)
     def status = column[String]("status",O.Default(TaskStatus.NEW))
@@ -52,10 +53,11 @@ trait TaskDBComponent extends DBComponent
     def updatedAt = column[Timestamp]("updated_at", O.Default(new Timestamp(System.currentTimeMillis())))
     def recordStatus = column[String]("record_status",O.Default(UserStatus.ACTIVE))
  
-    //TODO: add FKs
-
-    def fkCompanyId = foreignKey("fk_company_id", companyId, companies)(_.id, onUpdate = Restrict, onDelete = SetNull) 
-    def fkAttachedMailId = foreignKey("fk_attached_mail_id", attachedMailId, taskAttachedMails)(_.id, onUpdate = Restrict, onDelete = SetNull) 
+    //TODO: change onDelete = Cascade 
+    def fkCreatedByUserId = foreignKey("fk_task_created_user", createdByUserId, users)(_.id, onUpdate = Restrict, onDelete = Cascade ) 
+    def fkAssignedToUserId = foreignKey("fk_task_assigned_to_user", assignedToUserId, users)(_.id, onUpdate = Restrict, onDelete = Cascade ) 
+    def fkCompanyId = foreignKey("fk_task_company", companyId, companies)(_.id, onUpdate = Restrict, onDelete = Cascade ) 
+    def fkAttachedMailId = foreignKey("fk_task_attached_mail", attachedMailId, taskAttachedMails)(_.id, onUpdate = Restrict, onDelete = Cascade) 
 
     def * = (id.?, companyId, createdByUserId, assignedToUserId, title, description.?, status, attachedMailId.?, dueDate.?, createdAt, updatedAt, recordStatus) <>(TaskEntity.tupled, TaskEntity.unapply)
   }
