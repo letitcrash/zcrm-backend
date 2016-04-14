@@ -64,5 +64,14 @@ class ExchangeController @Inject() (ewsAuth: EwsAuthUtil, ewsMail: EwsMailUtil) 
     //TODO: add JSON response 
     Json.toJson("mail sent")
   }
+	
+	case class extMailId(extMailId: String)
+	implicit val expectedExtMailIdFrmt = Json.format[extMailId]	
+	def getMail(companyId: Int, employeeId:Int) = CRMAction[extMailId](expectedExtMailIdFormat){ rq =>
+    import utils.converters.MailConverter._
+		val ewsService = ewsAuth.checkUserLogin("Administrateur@multimedianordic.no", "Stein4201")
+		val mail = ewsMail.getMailById(ewsService, rq.body.extMailId)
+		Json.toJson(mail.asInboxMail)
+	}
 
 }

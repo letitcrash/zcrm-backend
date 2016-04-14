@@ -67,9 +67,15 @@ public class EwsMailUtil {
         return result.toArray(new EwsSentMail[result.size()]);
     }
 
-    public String getMailBodyById(ExchangeService service, String uniqueId) throws Exception{
+    public EwsInboxMail getMailById(ExchangeService service, String uniqueId) throws Exception{
 			  Item item = Item.bind(service, new ItemId(uniqueId));
-			  return item.getBody().toString();
+        EmailMessage message = EmailMessage.bind(service, new ItemId(item.getId().getUniqueId()));
+        EwsInboxMail msg = new EwsInboxMail(item.getId(), item.getSubject(),
+                                            message.getFrom().getAddress(), message.getFrom().getName(),
+                                            message.getReceivedBy().getAddress(), message.getReceivedBy().getName(),
+                                            item.getBody().toString(), message.getIsRead() ,
+                                            item.getDateTimeReceived(), item.getAttachments());
+			  return msg; 
 		}
 
     public void setMailAsRead(ExchangeService service, String uniqueId) throws Exception {

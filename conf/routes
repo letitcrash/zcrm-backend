@@ -29,6 +29,7 @@ POST    /companies/:companyId/employees                                     cont
 POST   /companies/:companyId/employees/:employeeId/mail/send                controllers.ExchangeController.sendEmail(companyId: Int, employeeId: Int)
 GET    /companies/:companyId/employees/:employeeId/mail/inbox               controllers.ExchangeController.getInboxEmails(companyId: Int, employeeId: Int)
 GET    /companies/:companyId/employees/:employeeId/mail/sentbox             controllers.ExchangeController.getOutboxEmails(companyId: Int, employeeId: Int)
+GET    /companies/:companyId/employees/:employeeId/mail/getOne							controllers.ExchangeController.getMail(companyId: Int, employeeId:Int)
 
 
 # Map static resources from the /public folder to the /assets URL path

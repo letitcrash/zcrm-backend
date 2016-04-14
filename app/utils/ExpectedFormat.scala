@@ -64,5 +64,9 @@ object ExpectedFormat {
       "to" -> "[M] (List[string]) TO:<email>"
 	))
 
+	val expectedExtMailIdFormat = Json.toJson(Map(
+		"id" -> "[M](string) Exchange unique Id"
+	))
+
 }
 
