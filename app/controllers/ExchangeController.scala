@@ -20,6 +20,7 @@ class ExchangeController @Inject() (ewsAuth: EwsAuthUtil, ewsMail: EwsMailUtil) 
   import utils.JSFormat.inboxMailFrmt
   import utils.JSFormat.outboxMailFrmt
 
+  //TODO: add pagination 
   def getInboxEmails(companyId: Int, employeeId: Int) = CRMAction  { rq =>
     import utils.converters.MailConverter._
    // if(rq.header.belongsToCompany(companyId)){
@@ -30,6 +31,7 @@ class ExchangeController @Inject() (ewsAuth: EwsAuthUtil, ewsMail: EwsMailUtil) 
     //}else{ Failure(new InsufficientRightsException()) }
   }
 
+  //TODO: add pagination 
   def getOutboxEmails(companyId: Int, employeeId: Int) = CRMAction  { rq =>
     import utils.converters.MailConverter._
     // if(rq.header.belongsToCompany(companyId)){
@@ -59,6 +61,7 @@ class ExchangeController @Inject() (ewsAuth: EwsAuthUtil, ewsMail: EwsMailUtil) 
     val ewsService = ewsAuth.checkUserLogin("Administrateur@multimedianordic.no", "Stein4201")
     ewsMail.sendMail(ewsService, rq.body.asEwsMailToSend)
     //Json.toJson(rq.body.subject.getOrElse("")+", "+rq.body.body.getOrElse("")+", " + rq.body.to.toString)
+    //TODO: add JSON response 
     Json.toJson("mail sent")
   }
 
