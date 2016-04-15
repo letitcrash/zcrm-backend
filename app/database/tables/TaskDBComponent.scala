@@ -19,7 +19,6 @@ case class TaskEntity(
   title: String,
   description: Option[String] = None,
   status: String = TaskStatus.NEW,
-  attachedMailId: Option[Int],
   //TODO: should be Date()
   dueDate: Option[String],
   createdAt: Timestamp = new Timestamp(System.currentTimeMillis()),
@@ -30,8 +29,7 @@ case class TaskEntity(
 
 trait TaskDBComponent extends DBComponent
 	with CompanyDBComponent
-  with UserDBComponent
-	with TaskAttachedMailDBComponent{
+  with UserDBComponent{
  this: DBComponent =>
 
   import dbConfig.driver.api._
@@ -46,7 +44,6 @@ trait TaskDBComponent extends DBComponent
     def title = column[String]("title")
     def description = column[String]("description", Nullable)
     def status = column[String]("status",O.Default(TaskStatus.NEW))
-    def attachedMailId = column[Int]("attached_mail_id", Nullable)
     def dueDate = column[String]("due_date_ts", Nullable)
     //TODO: check TS on DB
     def createdAt = column[Timestamp]("created_at", O.Default(new Timestamp(System.currentTimeMillis())))
@@ -57,9 +54,9 @@ trait TaskDBComponent extends DBComponent
     def fkCreatedByUserId = foreignKey("fk_task_created_user", createdByUserId, users)(_.id, onUpdate = Restrict, onDelete = Cascade ) 
     def fkAssignedToUserId = foreignKey("fk_task_assigned_to_user", assignedToUserId, users)(_.id, onUpdate = Restrict, onDelete = Cascade ) 
     def fkCompanyId = foreignKey("fk_task_company", companyId, companies)(_.id, onUpdate = Restrict, onDelete = Cascade ) 
-    def fkAttachedMailId = foreignKey("fk_task_attached_mail", attachedMailId, taskAttachedMails)(_.id, onUpdate = Restrict, onDelete = Cascade) 
+    //def fkAttachedMailId = foreignKey("fk_task_attached_mail", attachedMailId, taskAttachedMails)(_.id, onUpdate = Restrict, onDelete = Cascade) 
 
-    def * = (id.?, companyId, createdByUserId, assignedToUserId, title, description.?, status, attachedMailId.?, dueDate.?, createdAt, updatedAt, recordStatus) <>(TaskEntity.tupled, TaskEntity.unapply)
+    def * = (id.?, companyId, createdByUserId, assignedToUserId, title, description.?, status, dueDate.?, createdAt, updatedAt, recordStatus) <>(TaskEntity.tupled, TaskEntity.unapply)
   }
 
 	//TaskEntity CRUD

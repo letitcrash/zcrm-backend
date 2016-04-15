@@ -4,30 +4,36 @@ import java.sql.Timestamp
 import slick.profile.SqlProfile.ColumnOption.Nullable
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-
+import slick.model.ForeignKeyAction.{Cascade, SetNull, Restrict}
 
 case class TaskAttachedMailEntity(
   id: Option[Int], 
+  taskId: Int, 
   mailExtId: String,
   from: String, 
   subject: Option[String] = None
   )
 
 
-trait TaskAttachedMailDBComponent extends DBComponent{
+trait TaskAttachedMailDBComponent extends DBComponent
+ with TaskDBComponent {
  this: DBComponent =>
 
   import dbConfig.driver.api._
 
 	val taskAttachedMails = TableQuery[TaskAttachedMailTable]
 
+  //TODO: add fild/FK to tbl_task
   class TaskAttachedMailTable(tag: Tag) extends Table[TaskAttachedMailEntity](tag, "tbl_task_attached_mail") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
+    def taskId = column[Int]("task_id")
     def mailExtId = column[String]("mail_ext_id")
     def from = column[String]("mail_from")
     def subject = column[String]("mail_subject")
 
-    def * = (id.?, mailExtId, from, subject.?) <>(TaskAttachedMailEntity.tupled, TaskAttachedMailEntity.unapply)
+    def fkTaskId = foreignKey("fk_attachedtask_task", taskId, tasks)(_.id, onUpdate = Restrict, onDelete = Cascade ) 
+
+    def * = (id.?, taskId, mailExtId, from, subject.?) <>(TaskAttachedMailEntity.tupled, TaskAttachedMailEntity.unapply)
 
   }
 	
