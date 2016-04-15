@@ -1,10 +1,11 @@
 package utils
 
 import play.api.libs.json.Json
+import scala.collection.immutable.ListMap
 
 object ExpectedFormat {
 
-  val expectedContactProfileFormat = Json.toJson(Map(
+  val expectedContactProfileFormat = Json.toJson(ListMap(
     "id"                -> "[O] (int) id of the profile",
     "firstname"         -> "[O] (string)",
     "lastname"          -> "[O] (string)",
@@ -17,7 +18,7 @@ object ExpectedFormat {
     "phoneNumberWork"   -> "[O] (string)"
   ))
 
-  val expectedInviteEmployeeFormat = Json.toJson(Map(
+  val expectedInviteEmployeeFormat = Json.toJson(ListMap(
       "username"                -> Json.toJson("[M] (string) The desired username, normally email"),
       "baseUrl"                 -> Json.toJson("[M] (string) The baseUrl onto which to append the token and user id"),
       "contactProfile"          -> expectedContactProfileFormat,
@@ -25,24 +26,23 @@ object ExpectedFormat {
       "employeeType"            -> Json.toJson("[O] (string) The type of this employee, if not set, no type is set")
   ))
 
-  val expectedLoginRqFormat = Json.toJson(Map(
+  val expectedLoginRqFormat = Json.toJson(ListMap(
 			"username" -> "[M] (string) Username",
 			"password" -> "[M] (string) Password"
 	))
 
-  val expectedSendEmailRqFormat = Json.toJson(Map(
+  val expectedSendEmailRqFormat = Json.toJson(ListMap(
     "email" -> "[M] (string) The email to send the signup link to",
     "url"   -> "[M] (string) The url to use in the link"))
 
 
-  val expectedActivateUserRqFormat = Json.toJson(Map(
+  val expectedActivateUserRqFormat = Json.toJson(ListMap(
     "token"           -> Json.toJson("[M] (string) The token used received in the activation email"),
     "password"        -> Json.toJson("[M] (string) The desired password"),
     "email"           -> Json.toJson("[M] (string) The email used to register"),
     "companyName"     -> Json.toJson("[M] (string) The desired company name"),
     "vatId"           -> Json.toJson("[M] (string) A valid vatId(organisationsnmr in sweden)"),
-    "contactProfile"  -> Json.toJson(
-      Map(
+    "contactProfile"  -> Json.toJson(ListMap(
         "firstname"         -> "[O] (string) Person firstname",
         "lastname"          -> "[O] (string) Person lastname",
         "address"           -> "[O] (string) address",
@@ -53,25 +53,42 @@ object ExpectedFormat {
         "phoneNumberWork"   -> "[O] (string) numeric, space and '-'"))))
 
 
+
+	val expectedUserFormat = Json.toJson(ListMap(
+		"id" -> Json.toJson("[M](int) user id"),
+		"username" -> Json.toJson("[M](string) username"),
+		"userLevel" -> Json.toJson("[M](int) user level"),
+		"contactProfile" -> expectedContactProfileFormat
+	))
+
   val expectedSetPasswordUsingToken = Json.toJson(
-    Map("password" -> "[M](string) The password to set",
-        "token" -> "[M](string) The token used to validate")
+    ListMap("password" -> "[M](string) The password to set",
+            "token" -> "[M](string) The token used to validate")
   )
 
-  val expectedMailToSendFormat = Json.toJson(Map(
+  val expectedMailToSendFormat = Json.toJson(ListMap(
 			"subject" -> "[O] (string) subject ",
 			"body" -> "[O] (string) body: HTML",
       "to" -> "[M] (List[string]) TO:<email>"
 	))
 
-	val expectedExtMailIdFormat = Json.toJson(Map(
+	val expectedExtMailIdFormat = Json.toJson(ListMap(
 		"id" -> "[M](string) Exchange unique Id"
 	))
 
 
-  //TODO: add models.Task expected format 
-  val expectedTaskFormat =  Json.toJson(Map(
-		"Todo" -> "Todo"
+  val expectedTaskFormat =  Json.toJson(ListMap(
+		"companyId"      -> Json.toJson("[M](int) company ID"),
+		"createdByUser"  ->  expectedUserFormat,
+		"assignedToUser" ->  expectedUserFormat,
+		"title"          -> Json.toJson("[M](string) Task title"),
+		"description"    -> Json.toJson("[O](string) Task description"),
+		"status"         -> Json.toJson("[O](string) One of the task statuses: NEW|OPEN|POSTPONED|RESOLVED"),
+		"attachedMails"  -> Json.toJson(List(ListMap(
+				"Id"         -> "[M](string) Exchange mail ID",
+				"subject"    -> "[M](string) Mail subject",
+				"fromEmail"  -> "[M](string) Mail sender email"))),
+		"dueDate"        -> Json.toJson("[O](string) Task to due date")	
   ))
 
 
