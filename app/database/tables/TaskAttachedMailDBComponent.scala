@@ -7,7 +7,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.model.ForeignKeyAction.{Cascade, SetNull, Restrict}
 
 case class TaskAttachedMailEntity(
-  id: Option[Int], 
+  id: Option[Int] = None, 
   taskId: Int, 
   mailExtId: String,
   from: String, 
@@ -48,6 +48,12 @@ trait TaskAttachedMailDBComponent extends DBComponent
 			db.run(taskAttachedMails.filter(_.id === id).result.head)
 	}
 
+  
+	def getAttachedMailEntityByTaskId(taskId: Int): Future[List[TaskAttachedMailEntity]] = {
+			db.run(taskAttachedMails.filter(_.taskId === taskId).result).map(_.toList)
+	}
+
+
 	def getAttachedMailEntityByMailId(mailId: String): Future[TaskAttachedMailEntity] = {
 			db.run(taskAttachedMails.filter(_.mailExtId === mailId).result.head)
 	}
@@ -67,5 +73,12 @@ trait TaskAttachedMailDBComponent extends DBComponent
       insertAttachedMailEntity(mailEntity)
     }
   }
+
+
+  def insertAttachedMailEntities(mailEntities: List[TaskAttachedMailEntity]): Future[List[TaskAttachedMailEntity]] = {
+    mailEntities.map( mailEntt => insertAttachedMailEntity(mailEntt))
+    getAttachedMailEntityByTaskId(mailEntities.head.taskId)
+  }
+
 }
 

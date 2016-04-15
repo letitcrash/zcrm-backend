@@ -12,10 +12,10 @@ import models._
 
 
 case class TaskEntity(
-  id: Option[Int], 
+  id: Option[Int] = None, 
   companyId: Int,
   createdByUserId: Int,
-  assignedToUserId: Int,
+  assignedToUserId: Option[Int] = None,
   title: String,
   description: Option[String] = None,
   status: String = TaskStatus.NEW,
@@ -56,7 +56,7 @@ trait TaskDBComponent extends DBComponent
     def fkCompanyId = foreignKey("fk_task_company", companyId, companies)(_.id, onUpdate = Restrict, onDelete = Cascade ) 
     //def fkAttachedMailId = foreignKey("fk_task_attached_mail", attachedMailId, taskAttachedMails)(_.id, onUpdate = Restrict, onDelete = Cascade) 
 
-    def * = (id.?, companyId, createdByUserId, assignedToUserId, title, description.?, status, dueDate.?, createdAt, updatedAt, recordStatus) <>(TaskEntity.tupled, TaskEntity.unapply)
+    def * = (id.?, companyId, createdByUserId, assignedToUserId.?, title, description.?, status, dueDate.?, createdAt, updatedAt, recordStatus) <>(TaskEntity.tupled, TaskEntity.unapply)
   }
 
 	//TaskEntity CRUD

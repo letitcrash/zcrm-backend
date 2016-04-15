@@ -1,11 +1,11 @@
 package models
 
 case class Task(id: Option[Int] = None,
+                companyId: Int, 
                 createdByUser: User,
-								assignedToUser: User,
+								assignedToUser: Option[User] = None,
 								title: String,
 								description: Option[String] = None,
-								status: String = TaskStatus.NEW,
-								attachedMails: List[InboxMail],
-								dueDate: Option[String],
-								recordStatus: String = UserStatus.ACTIVE)
+								status: Option[String] = None,
+								attachedMails: Option[List[InboxMail]] = None,
+								dueDate: Option[String])

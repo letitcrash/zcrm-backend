@@ -16,3 +16,8 @@ curl -H "X-User-id: 14" -H "Content-Type: application/json" -H "X-Access-Token: 
 
 curl -H "X-User-id: 14" -H "Content-Type: application/json" -H "X-Access-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJDUk0iLCJleHAiOjE0NjA0Nzc0NDU5MTAsImlhdCI6MTQ2MDQ3NTY0NTkxMCwidWlkIjoxNCwidWx2bCI6OTk5OSwiY2x2bCI6eyJlbXBsb3llZUlkIjozLCJjb21wYW55SWQiOjE0LCJlbXBsb3llZUxldmVsIjo5OX19.AMg3bxFxyWhtQJdB6L6fRbFrsY5OrBPHhmU6Sr2TuAk" -X GET -d '{}' --include http://localhost:9000/companies/3/employees/14/mail/sentbox
 
+
+#Task
+#
+curl -H "X-User-id: 14" -H "Content-Type: application/json" -H "X-Access-Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJDUk0iLCJleHAiOjE0NjA0Nzc0NDU5MTAsImlhdCI6MTQ2MDQ3NTY0NTkxMCwidWlkIjoxNCwidWx2bCI6OTk5OSwiY2x2bCI6eyJlbXBsb3llZUlkIjozLCJjb21wYW55SWQiOjE0LCJlbXBsb3llZUxldmVsIjo5OX19.AMg3bxFxyWhtQJdB6L6fRbFrsY5OrBPHhmU6Sr2TuAk" -X POST -d '{"companyId":1,"createdByUser":{"id":6,"username":"ievgen.paliichuk@gmail.com", "userLevel":9999}, "dueDate":"some date" ,"title":"Task created from CURL","description":"Description from CURL","attachedMails":[{"id":"1lalksjdfas","subject":"mail curl subject","fromEmail":"test@gmail.com"},{"id":"1lalksjdfas","subject":"mail curl subject","fromEmail":"test@gmail.com"}]}' --include http://localhost:9000/companies/1/tasks
+

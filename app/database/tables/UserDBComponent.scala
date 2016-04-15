@@ -117,7 +117,7 @@ trait UserDBComponent extends DBComponent {
     }
   }
 
-  def getUserWithProfileByUserId(id: Int) = {
+  def getUserWithProfileByUserId(id: Int): Future[(UserEntity, ContactProfileEntity)] = {
     db.run(usersWithProfile.filter(_._1.id === id).result.head)
   }
 

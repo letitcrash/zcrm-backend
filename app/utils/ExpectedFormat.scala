@@ -68,5 +68,13 @@ object ExpectedFormat {
 		"id" -> "[M](string) Exchange unique Id"
 	))
 
+
+  //TODO: add models.Task expected format 
+  val expectedTaskFormat =  Json.toJson(Map(
+		"Todo" -> "Todo"
+  ))
+
+
+
 }
 

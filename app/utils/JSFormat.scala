@@ -41,6 +41,8 @@ object JSFormat {
   implicit val inboxMailFrmt                     = Json.format[InboxMail]
   implicit val outboxMailFrmt                   = Json.format[OutboxMail]
 
+  implicit val taskFrmt                  = Json.format[Task]
+
 }
 
 
