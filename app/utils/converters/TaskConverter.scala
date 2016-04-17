@@ -24,9 +24,10 @@ object TaskConverter {
 	implicit class TaskToEntity(task: Task){
 			def asTaskEntity: TaskEntity = {
         import play.api.Logger
-						val v = TaskEntity(companyId = task.companyId,
+						val v = TaskEntity(id = task.id,
+											 companyId = task.companyId,
 	  									 createdByUserId = task.createdByUser.id.get,
-                       assignedToUserId = task.assignedToUser match {case Some(user) => task.assignedToUser.get.id
+                       assignedToUserId = task.assignedToUser match {case Some(user) => user.id
                                                                      case _ => None},
 											 title = task.title,
 											 description = task.description,
@@ -41,8 +42,8 @@ object TaskConverter {
     def asAttachedMailEntt(taskId: Int): TaskAttachedMailEntity = {
       TaskAttachedMailEntity(
         taskId = taskId, 
-        mailExtId = inboxMail.id.get,
-        from = inboxMail.fromEmail.get, 
+        mailExtId = inboxMail.id.getOrElse(""),
+        from = inboxMail.fromEmail.getOrElse(""), 
         subject = inboxMail.subject
         )
     }

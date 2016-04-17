@@ -90,8 +90,17 @@ object ExpectedFormat {
 				"fromEmail"  -> "[M](string) Mail sender email"))),
 		"dueDate"        -> Json.toJson("[O](string) Task to due date")	
   ))
-
-
+	
+	val expectedInboxMailFormat = Json.toJson(ListMap(
+			"id"           -> Json.toJson("[M](string) Exchenge unique ID"),
+			"subject"      -> Json.toJson("[M](string) Mail subject"),
+			"fromEmail"    -> Json.toJson("[M](string) Sender Email"),
+			"fromName"		 -> Json.toJson("[O](string) Sender name"),
+			"toEmail"			 -> Json.toJson("[O](string) Recipient email"),
+			"toName"			 -> Json.toJson("[O](string) Recipient name"),
+			"body"				 -> Json.toJson("[O](string) Mail body"),
+			"isRead"			 -> Json.toJson("[O](boolean) Is mail read")
+	))
 
 }
 

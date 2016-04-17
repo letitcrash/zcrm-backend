@@ -62,7 +62,13 @@ trait TaskAttachedMailDBComponent extends DBComponent
                   .map( num => mailEntity)
   }
 
+	def deleteAttachedMailEntityById(id: Int):Future[Int] = {
+			db.run(taskAttachedMails.filter(_.id === id).delete)
+	}
 
+	def deleteAttachedMailEntityByExtMailId(uniqueId: String): Future[Int] = {
+			db.run(taskAttachedMails.filter(_.mailExtId === uniqueId).delete)
+	}
 
 	//TaskAttachedMailEntity Filters
   def upsertAttachedMailEntity(mailEntity: TaskAttachedMailEntity): Future[TaskAttachedMailEntity] = {
