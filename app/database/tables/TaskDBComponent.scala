@@ -79,9 +79,14 @@ trait TaskDBComponent extends DBComponent
 	}
 
 
-  def getTaskWitUsersByCompanyId(companyId: Int):
+  def getTasksWitUserByCompanyId(companyId: Int):
     Future[List[((TaskEntity, (UserEntity, ContactProfileEntity)) ,Option[(UserEntity, ContactProfileEntity)])]] = {
 		db.run(tasksWithUsersWihtProfile.filter(_._1._1.companyId === companyId).result).map(_.toList)
+  }
+
+  def getTaskWitUserById(taskId: Int):
+    Future[((TaskEntity, (UserEntity, ContactProfileEntity)) ,Option[(UserEntity, ContactProfileEntity)])] = {
+		db.run(tasksWithUsersWihtProfile.filter(_._1._1.id === taskId).result.head)
   }
 
 

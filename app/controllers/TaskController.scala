@@ -15,13 +15,17 @@ import scala.concurrent.Future
 
 @Singleton
 class TaskController @Inject() extends CRMController {
-
   import utils.JSFormat.taskFrmt
-  
 
   def newTask(companyId: Int) = CRMActionAsync[Task](expectedTaskFormat) { rq => 
     // if(rq.header.belongsToCompany(companyId)){
        TaskDBRepository.createTask( rq.body.copy(companyId = companyId) ).map( task => Json.toJson(task))
+    // }else{ Future{Failure(new InsufficientRightsException())} }
+  }
+
+  def getTask(companyId: Int, taskId: Int) = CRMActionAsync { rq =>
+    // if(rq.header.belongsToCompany(companyId)){
+    TaskDBRepository.getTask(taskId).map( tasks => Json.toJson(tasks))
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
