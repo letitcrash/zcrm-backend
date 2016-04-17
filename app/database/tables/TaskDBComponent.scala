@@ -81,12 +81,14 @@ trait TaskDBComponent extends DBComponent
 
   def getTasksWitUserByCompanyId(companyId: Int):
     Future[List[((TaskEntity, (UserEntity, ContactProfileEntity)) ,Option[(UserEntity, ContactProfileEntity)])]] = {
-		db.run(tasksWithUsersWihtProfile.filter(_._1._1.companyId === companyId).result).map(_.toList)
+		db.run(tasksWithUsersWihtProfile.filter(t =>(t._1._1.companyId === companyId && 
+																								 t._1._1.recordStatus === UserStatus.ACTIVE)).result).map(_.toList)
   }
 
   def getTaskWitUserById(taskId: Int):
     Future[((TaskEntity, (UserEntity, ContactProfileEntity)) ,Option[(UserEntity, ContactProfileEntity)])] = {
-		db.run(tasksWithUsersWihtProfile.filter(_._1._1.id === taskId).result.head)
+		db.run(tasksWithUsersWihtProfile.filter(t => (t._1._1.id === taskId && 
+																									t._1._1.recordStatus === UserStatus.ACTIVE)).result.head)
   }
 
 	def updateTaskEntity(task: TaskEntity): Future[TaskEntity] = {
@@ -97,7 +99,7 @@ trait TaskDBComponent extends DBComponent
 
 	def softDeleteTaskEntityById(taskId: Int): Future[TaskEntity] = {
 		getTaskEntityById(taskId).flatMap(res =>
-			  updateTaskEntity(res.copy(status = UserStatus.DELETED, 
+			  updateTaskEntity(res.copy(recordStatus = UserStatus.DELETED, 
 				   	                      updatedAt = new Timestamp(System.currentTimeMillis()))))
 
 	}

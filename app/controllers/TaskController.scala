@@ -50,20 +50,18 @@ class TaskController @Inject() extends CRMController {
 		// if(rq.header.belongsToCompany(companyId)){
 			import utils.converters.TaskConverter._
 			TaskAttachedMailDBRepository.saveInboxMailAsAttachedMail(rq.body, taskId).flatMap{inboxMail =>
-					TaskDBRepository.getTask(taskId).flatMap{task =>
-							TaskDBRepository.updateTask(task.copy(attachedMails = 
-															Some(task.attachedMails match
-																									   {case Some(list) => list:+inboxMail
-																									    case _ => List(inboxMail)})))
-									.map(task => Json.toJson(task))}
-				}
+					TaskDBRepository.getTask(taskId).map(task => Json.toJson(task))}
     // }else{ Future{Failure(new InsufficientRightsException())} }
 	}
 
 	def removeAttachedMailFromTask(companyId: Int, taskId:Int) = CRMActionAsync[InboxMail](expectedInboxMailFormat){rq =>
 		// if(rq.header.belongsToCompany(companyId)){
-			   TaskAttachedMailDBRepository.removeInboxMailFromTask(rq.body).map(num => Json.toJson("deleted"))
+			   TaskAttachedMailDBRepository.removeInboxMailFromTask(rq.body).map(deletedTask => Json.toJson(deletedTask))
     // }else{ Future{Failure(new InsufficientRightsException())} }
+	}
+
+	def softDeleteTaskByTaskId(companyId: Int, taskId:Int) = CRMActionAsync{rq =>
+			TaskDBRepository.softDeleteTaskById(taskId).map(deletedTask => Json.toJson(deletedTask))
 	}
  
 }

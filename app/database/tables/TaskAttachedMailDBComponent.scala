@@ -62,12 +62,16 @@ trait TaskAttachedMailDBComponent extends DBComponent
                   .map( num => mailEntity)
   }
 
-	def deleteAttachedMailEntityById(id: Int):Future[Int] = {
+	def deleteAttachedMailEntityById(id: Int):Future[TaskAttachedMailEntity] = {
+			val deletedMail = getAttachedMailEntityById(id)
 			db.run(taskAttachedMails.filter(_.id === id).delete)
+			deletedMail
 	}
 
-	def deleteAttachedMailEntityByExtMailId(uniqueId: String): Future[Int] = {
+	def deleteAttachedMailEntityByExtMailId(uniqueId: String): Future[TaskAttachedMailEntity] = {
+			val deletedMail = getAttachedMailEntityByMailId(uniqueId)
 			db.run(taskAttachedMails.filter(_.mailExtId === uniqueId).delete)
+			deletedMail
 	}
 
 	//TaskAttachedMailEntity Filters

@@ -42,8 +42,8 @@ object TaskConverter {
     def asAttachedMailEntt(taskId: Int): TaskAttachedMailEntity = {
       TaskAttachedMailEntity(
         taskId = taskId, 
-        mailExtId = inboxMail.id.getOrElse(""),
-        from = inboxMail.fromEmail.getOrElse(""), 
+        mailExtId = inboxMail.id.get,
+        from = inboxMail.fromEmail.get, 
         subject = inboxMail.subject
         )
     }
@@ -62,42 +62,5 @@ object TaskConverter {
 
 
 }
-/*
 
-
-case class TaskAttachedMailEntity(
-  id: Option[Int], 
-  taskId: Int, 
-  mailExtId: String,
-  from: String, 
-  subject: Option[String] = None
-  )
-
-
-  case class Task(id: Option[Int] = None,
-                createdByUser: User,
-								assignedToUser: User,
-								title: String,
-								description: Option[String] = None,
-								status: Option[String] = TaskStatus.NEW,
-								attachedMails: Option[List[InboxMail]] = None,
-								dueDate: Option[String])
-
-case class TaskEntity(
-  id: Option[Int], 
-  companyId: Int,
-  createdByUserId: Int,
-  assignedToUserId: Int,
-  title: String,
-  description: Option[String] = None,
-  status: String = TaskStatus.NEW,
-  attachedMailId: Option[Int],
-  //TODO: should be Date()
-  dueDate: Option[String],
-  createdAt: Timestamp = new Timestamp(System.currentTimeMillis()),
-  updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()),
-  //TODO: rename UserStatus -> RecrodStatus
-  recordStatus: String = UserStatus.ACTIVE
-  )
-*/
 

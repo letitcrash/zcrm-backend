@@ -34,11 +34,12 @@ GET    /companies/:companyId/employees/:employeeId/mail/getOne							controllers
 
 #Tasks
 POST   /companies/:companyId/tasks                                          controllers.TaskController.newTask(companyId: Int)
+POST   /companies/:companyId/tasks/:taskId/mail															controllers.TaskController.attachMailToTask(companyId: Int, taskId: Int)
 PUT    /companies/:companyId/tasks/:taskId                                  controllers.TaskController.updateTask(companyId: Int, taskId: Int)
+DELETE /companies/:companyId/tasks/:taskId/mail															controllers.TaskController.removeAttachedMailFromTask(companyId: Int, taskId: Int)
+DELETE /companies/:companyId/tasks/:taskId/														    	controllers.TaskController.softDeleteTaskByTaskId(companyId: Int, taskId: Int)
 GET    /companies/:companyId/tasks/:taskId                                  controllers.TaskController.getTask(companyId: Int, taskId: Int)
 GET    /companies/:companyId/tasks                                          controllers.TaskController.getAllTasks(companyId: Int)
-POST   /companies/:companyId/tasks/:taskId/mail															controllers.TaskController.attachMailToTask(companyId: Int, taskId: Int)
-DELETE /companies/:companyId/tasks/:taskId/mail															controllers.TaskController.removeAttachedMailFromTask(companyId: Int, taskId: Int)
 
 
 # Map static resources from the /public folder to the /assets URL path

@@ -17,8 +17,9 @@ object TaskAttachedMailDBRepository {
 		insertAttachedMailEntity(inboxMail.asAttachedMailEntt(taskId)).map(_.asInboxMail)
 	}
  
-	def removeInboxMailFromTask(attachedMail: InboxMail): Future[Int] = {
-			deleteAttachedMailEntityByExtMailId(attachedMail.id.get)
+	def removeInboxMailFromTask(attachedMail: InboxMail): Future[InboxMail] = {
+			import utils.converters.TaskConverter._
+			deleteAttachedMailEntityByExtMailId(attachedMail.id.get).map(_.asInboxMail)
 	} 
 
 }

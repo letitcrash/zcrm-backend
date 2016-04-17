@@ -74,6 +74,11 @@ object TaskDBRepository {
        )
      ) 
   }
+
+	def softDeleteTaskById(taskId:Int): Future[Task] = {
+			softDeleteTaskEntityById(taskId).flatMap(taskEntt =>
+					getTask(taskId))
+	}
   
 
 }
