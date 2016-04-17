@@ -49,10 +49,9 @@ trait TaskAttachedMailDBComponent extends DBComponent
 	}
 
   
-	def getAttachedMailEntityByTaskId(taskId: Int): Future[List[TaskAttachedMailEntity]] = {
+	def getAttachedMailEntitiesByTaskId(taskId: Int): Future[List[TaskAttachedMailEntity]] = {
 			db.run(taskAttachedMails.filter(_.taskId === taskId).result).map(_.toList)
 	}
-
 
 	def getAttachedMailEntityByMailId(mailId: String): Future[TaskAttachedMailEntity] = {
 			db.run(taskAttachedMails.filter(_.mailExtId === mailId).result.head)
@@ -77,7 +76,7 @@ trait TaskAttachedMailDBComponent extends DBComponent
 
   def insertAttachedMailEntities(mailEntities: List[TaskAttachedMailEntity]): Future[List[TaskAttachedMailEntity]] = {
     mailEntities.map( mailEntt => insertAttachedMailEntity(mailEntt))
-    getAttachedMailEntityByTaskId(mailEntities.head.taskId)
+    getAttachedMailEntitiesByTaskId(mailEntities.head.taskId)
   }
 
 }

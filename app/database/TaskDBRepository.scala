@@ -15,17 +15,33 @@ object TaskDBRepository {
   def createTask(task: Task): Future[Task] = {
     import utils.converters.TaskConverter._
     //TODO: should be transactionally
-    import play.api.libs.json.Json
-    import utils.JSFormat._
-    Logger.info(Json.toJson(task).toString)
-
     for {
       taskEntt <- insertTaskEntity(task.asTaskEntity)
       attachedMailEntts <- task.attachedMails match { case Some(mails) => insertAttachedMailEntities(mails.map(_.asAttachedMailEntt(taskEntt.id.get))).map(list => Some(list))
                                                       case _ =>  Future{ None } }
     } yield (taskEntt, task.createdByUser, task.assignedToUser, attachedMailEntts).asTask
-
-
   }
+
+  def getAllTasks(companyId: Int): Future[List[Task]] = {
+    import utils.converters.TaskConverter._
+    import utils.converters.UserConverter._
+    getTaskWitUsersByCompanyId(companyId).flatMap( listTasksWithUser =>
+      Future.sequence(
+        listTasksWithUser.map( taskWithUser => 
+          getAttachedMailEntitiesByTaskId(taskWithUser._1._1.id.get).map( attachedMailEntts => 
+              (taskWithUser._1._1, 
+               taskWithUser._1._2.asUser, 
+               taskWithUser._2 match {
+                                       case Some(userTuple) => Some(userTuple.asUser)
+                                       case _ => None },
+               attachedMailEntts match {
+                                       case mails  => Some(mails)
+                                       case _ => None}).asTask
+            )
+         )
+       )
+     ) 
+  }
+  
 
 }

@@ -34,6 +34,7 @@ GET    /companies/:companyId/employees/:employeeId/mail/getOne							controllers
 
 #Tasks
 POST   /companies/:companyId/tasks                                          controllers.TaskController.newTask(companyId: Int)
+GET    /companies/:companyId/tasks                                          controllers.TaskController.getAllTasks(companyId: Int) 
 
 
 

@@ -29,6 +29,7 @@ case class TaskEntity(
 
 trait TaskDBComponent extends DBComponent
 	with CompanyDBComponent
+  with ContactProfileDBComponent
   with UserDBComponent{
  this: DBComponent =>
 
@@ -59,6 +60,10 @@ trait TaskDBComponent extends DBComponent
     def * = (id.?, companyId, createdByUserId, assignedToUserId.?, title, description.?, status, dueDate.?, createdAt, updatedAt, recordStatus) <>(TaskEntity.tupled, TaskEntity.unapply)
   }
 
+  def tasksWithUsersWihtProfile = 
+    tasks join usersWithProfile on (_.createdByUserId === _._1.id) joinLeft  usersWithProfile on (_._1.assignedToUserId === _._1.id)
+
+
 	//TaskEntity CRUD
 	def insertTaskEntity(task: TaskEntity): Future[TaskEntity] = {
 			db.run(((tasks returning tasks.map(_.id) 
@@ -69,9 +74,16 @@ trait TaskDBComponent extends DBComponent
 			db.run(tasks.filter(_.id === id).result.head)
 	}
 
-	def getTaskEntitiesByCompanyId(companyId: Int): Future[Seq[TaskEntity]] = {
-			db.run(tasks.filter(_.companyId === companyId).result)
+	def getTaskEntitiesByCompanyId(companyId: Int): Future[List[TaskEntity]] = {
+		db.run(tasks.filter(_.companyId === companyId).result).map(_.toList)
 	}
+
+
+  def getTaskWitUsersByCompanyId(companyId: Int):
+    Future[List[((TaskEntity, (UserEntity, ContactProfileEntity)) ,Option[(UserEntity, ContactProfileEntity)])]] = {
+		db.run(tasksWithUsersWihtProfile.filter(_._1._1.companyId === companyId).result).map(_.toList)
+  }
+
 
 	def updateTaskEntity(task: TaskEntity): Future[TaskEntity] = {
 			db.run(tasks.filter(_.id === task.id).update(task))

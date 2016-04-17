@@ -25,7 +25,10 @@ class TaskController @Inject() extends CRMController {
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
-  
-
-
+  def getAllTasks(companyId: Int) = CRMActionAsync { rq =>
+    // if(rq.header.belongsToCompany(companyId)){
+    TaskDBRepository.getAllTasks(companyId).map( tasks => Json.toJson(tasks))
+    // }else{ Future{Failure(new InsufficientRightsException())} }
+  }
+ 
 }
