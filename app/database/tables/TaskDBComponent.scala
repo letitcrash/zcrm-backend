@@ -89,11 +89,11 @@ trait TaskDBComponent extends DBComponent
 		db.run(tasksWithUsersWihtProfile.filter(_._1._1.id === taskId).result.head)
   }
 
-
 	def updateTaskEntity(task: TaskEntity): Future[TaskEntity] = {
 			db.run(tasks.filter(_.id === task.id).update(task))
         .map( num => task)
 	}
+
 
 	def softDeleteTaskEntityById(taskId: Int): Future[TaskEntity] = {
 		getTaskEntityById(taskId).flatMap(res =>
@@ -103,6 +103,12 @@ trait TaskDBComponent extends DBComponent
 	}
 
 	//TaskEntity Filters
+	def updateTaskWithUserByEntity(task: TaskEntity):
+    Future[((TaskEntity, (UserEntity, ContactProfileEntity)) ,Option[(UserEntity, ContactProfileEntity)])] = {
+    updateTaskEntity(task).flatMap( taskEntt =>
+        getTaskWitUserById(taskEntt.id.get))
+	}
+
   def upsertTaskEntity(task: TaskEntity): Future[TaskEntity] = {
     if(task.id.isDefined) {
       updateTaskEntity(task)

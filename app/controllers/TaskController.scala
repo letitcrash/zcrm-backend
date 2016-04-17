@@ -17,18 +17,28 @@ import scala.concurrent.Future
 class TaskController @Inject() extends CRMController {
   import utils.JSFormat.taskFrmt
 
+  //TODO: add permissions check
   def newTask(companyId: Int) = CRMActionAsync[Task](expectedTaskFormat) { rq => 
     // if(rq.header.belongsToCompany(companyId)){
        TaskDBRepository.createTask( rq.body.copy(companyId = companyId) ).map( task => Json.toJson(task))
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
+  //TODO: add permissions check
+  def updateTask(companyId: Int, taskId: Int) = CRMActionAsync[Task](expectedTaskFormat){ rq =>
+    // if(rq.header.belongsToCompany(companyId)){
+    TaskDBRepository.updateTask(rq.body).map( tasks => Json.toJson(tasks))
+    // }else{ Future{Failure(new InsufficientRightsException())} }
+  }
+
+  //TODO: add permissions check
   def getTask(companyId: Int, taskId: Int) = CRMActionAsync { rq =>
     // if(rq.header.belongsToCompany(companyId)){
     TaskDBRepository.getTask(taskId).map( tasks => Json.toJson(tasks))
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
+  //TODO: add permissions check
   def getAllTasks(companyId: Int) = CRMActionAsync { rq =>
     // if(rq.header.belongsToCompany(companyId)){
     TaskDBRepository.getAllTasks(companyId).map( tasks => Json.toJson(tasks))

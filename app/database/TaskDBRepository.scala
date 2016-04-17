@@ -22,6 +22,22 @@ object TaskDBRepository {
     } yield (taskEntt, task.createdByUser, task.assignedToUser, attachedMailEntts).asTask
   }
 
+  def updateTask(task: Task): Future[Task] = {
+    import utils.converters.TaskConverter._
+    import utils.converters.UserConverter._
+    for {
+      taskWithUser <- updateTaskWithUserByEntity(task.asTaskEntity)
+      attachedMails <- getAttachedMailEntitiesByTaskId(taskWithUser._1._1.id.get)
+    } yield (taskWithUser._1._1, 
+             taskWithUser._1._2.asUser, 
+             taskWithUser._2 match {
+                                     case Some(userTuple) => Some(userTuple.asUser)
+                                     case _ => None },
+             attachedMails match {
+                                     case mails  => Some(mails)
+                                     case _ => None}).asTask
+  }
+
   def getTask(taskId: Int): Future[Task] = {
     import utils.converters.TaskConverter._
     import utils.converters.UserConverter._
