@@ -27,9 +27,11 @@ POST    /companies/:companyId/employees                                         
 
 
 #Mailbox
-#POST   /companies/:companyId/employees/:employeeId/mailboxes                   
-#GET    /companies/:companyId/employees/:employeeId/mailboxes/:mailboxId/connect
-#GET    /companies/:companyId/employees/:employeeId/mailboxes
+POST   /users/:userId/mailboxes																																controllers.MailboxController.newMailbox(userId: Int)                   
+PUT    /users/:userId/mailboxes/:mailboxId																										controllers.MailboxController.updateMailBox(userId: Int, mailboxId: Int)
+DELETE /users/:userId/mailboxes/:mailboxId																										controllers.MailboxController.softDeleteMailbox(userId: Int, mailboxId: Int)
+GET    /users/:userId/mailboxes/:mailboxId																										controllers.MailboxController.getMailboxById(userId: Int, mailboxId: Int)
+GET    /users/:userId/mailboxes																																controllers.MailboxController.getAllMailboxesByUserId(userId: Int)
 
 
 #Mail
@@ -44,7 +46,7 @@ POST   /companies/:companyId/tasks                                              
 POST   /companies/:companyId/tasks/:taskId/mail                                               controllers.TaskController.attachMailToTask(companyId: Int, taskId: Int)
 PUT    /companies/:companyId/tasks/:taskId                                                    controllers.TaskController.updateTask(companyId: Int, taskId: Int)
 DELETE /companies/:companyId/tasks/:taskId/mail                                               controllers.TaskController.removeAttachedMailFromTask(companyId: Int, taskId: Int)
-DELETE /companies/:companyId/tasks/:taskId/                                                   controllers.TaskController.softDeleteTaskByTaskId(companyId: Int, taskId: Int)
+DELETE /companies/:companyId/tasks/:taskId                                                    controllers.TaskController.softDeleteTaskByTaskId(companyId: Int, taskId: Int)
 GET    /companies/:companyId/tasks/:taskId                                                    controllers.TaskController.getTask(companyId: Int, taskId: Int)
 GET    /companies/:companyId/tasks                                                            controllers.TaskController.getAllTasks(companyId: Int)
 

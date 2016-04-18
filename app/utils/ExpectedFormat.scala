@@ -101,6 +101,12 @@ object ExpectedFormat {
 			"body"				 -> Json.toJson("[O](string) Mail body"),
 			"isRead"			 -> Json.toJson("[O](boolean) Is mail read")
 	))
-
+	
+	val expectedMailboxFormat = Json.toJson(ListMap(
+		"userId"				 -> Json.toJson("[M](int) User id"),
+		"server"				 -> Json.toJson("[M](string) Exchange server address(full)"),
+		"login"					 -> Json.toJson("[M](string) Exchange mailbox login formatted like username@domain"),
+		"password"			 -> Json.toJson("[M](string) Exchange mailbox password")
+	))
 }
 
