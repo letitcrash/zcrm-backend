@@ -6,17 +6,25 @@ import play.api.mvc._
 
 import models._
 import utils.ExpectedFormat._
+import utils.ews.EwsAuthUtil
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import database.MailboxDBRepository
 import play.api.libs.json.Json
 import scala.concurrent.Future
 
 @Singleton
-class MailboxController @Inject() extends CRMController {
+class MailboxController @Inject() (ewsAuth: EwsAuthUtil) extends CRMController {
   import utils.JSFormat.mailboxFrmt
 
 	def newMailbox(userId: Int) = CRMActionAsync[Mailbox](expectedMailboxFormat){rq =>
-		MailboxDBRepository.saveMailbox(rq.body).map(res => Json.toJson(res))
+		try{
+				ewsAuth.checkUserLogin(rq.body.login, rq.body.password)
+				MailboxDBRepository.saveMailbox(rq.body).map(res => Json.toJson(res))
+		}catch{
+				case e =>	Future(Json.toJson(Map("result" -> "-1233",
+                                  "message" -> "Incorrect login/password",
+                                  "reason" -> e.getMessage)))
+		}
 	}
 
 	def getMailboxById(userId: Int, mailboxId: Int) = CRMActionAsync{rq =>
