@@ -14,11 +14,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class EwsAuthUtil {
-    public static  String DEFAULT_EXCHANGE_SERVER = "https://sd-74609.multimedianordic.no/EWS/Exchange.asmx";
 
-    public ExchangeService checkUserLogin(String login, String password) throws BadCredentialsException {
+    public ExchangeService checkUserLogin(String server, String login, String password) throws BadCredentialsException {
         try {
-            ExchangeService service = createService(login, password);
+            ExchangeService service = createService(server, login, password);
             Folder.bind(service, WellKnownFolderName.Inbox, PropertySet.IdOnly); //Connection test
             return service;
         } catch (Exception e) {
@@ -28,12 +27,12 @@ public class EwsAuthUtil {
         }
     }
 
-    private ExchangeService createService(String login, String password) throws URISyntaxException {
+    private ExchangeService createService(String server, String login, String password) throws URISyntaxException {
         ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2010_SP2);
         ExchangeCredentials credentials = new WebCredentials(login, password);
         service.setCredentials(credentials);
         try {
-            service.setUrl(new URI(DEFAULT_EXCHANGE_SERVER));
+            service.setUrl(new URI(server));
             return service;
         } catch (URISyntaxException e) {
             //Logger.error("BAD SERVER ADDRESS \n Find more: https://docs.oracle.com/javase/8/docs/api/java/net/URI.html \n "+e.getMessage());

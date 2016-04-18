@@ -18,12 +18,12 @@ class MailboxController @Inject() (ewsAuth: EwsAuthUtil) extends CRMController {
 
 	def newMailbox(userId: Int) = CRMActionAsync[Mailbox](expectedMailboxFormat){rq =>
 		try{
-				ewsAuth.checkUserLogin(rq.body.login, rq.body.password)
+				ewsAuth.checkUserLogin(rq.body.server, rq.body.login, rq.body.password)
 				MailboxDBRepository.saveMailbox(rq.body).map(res => Json.toJson(res))
 		}catch{
 				case e =>	Future(Json.toJson(Map("result" -> "-1233",
-                                  "message" -> "Incorrect login/password",
-                                  "reason" -> e.getMessage)))
+                                         "message" -> "Incorrect login/password",
+                                  			 "reason" -> e.getMessage)))
 		}
 	}
 
