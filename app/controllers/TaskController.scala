@@ -49,6 +49,7 @@ class TaskController @Inject() extends CRMController {
 	def attachMailToTask(companyId: Int, taskId: Int) = CRMActionAsync[InboxMail](expectedInboxMailFormat){rq =>	
 		// if(rq.header.belongsToCompany(companyId)){
 			import utils.converters.TaskConverter._
+      //TODO: move logic to TaskRepo
 			TaskAttachedMailDBRepository.saveInboxMailAsAttachedMail(rq.body, taskId).flatMap{inboxMail =>
 					TaskDBRepository.getTask(taskId).map(task => Json.toJson(task))}
     // }else{ Future{Failure(new InsufficientRightsException())} }

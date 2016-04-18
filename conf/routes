@@ -3,43 +3,50 @@
 # ~~~~
 
 # Home page
-GET     /                                                                   controllers.Application.index
+GET     /                                                                                     controllers.Application.index
   
 # Setup Database 
-GET     /setupdb                                                            controllers.SetupDBController.setupDataBase
+GET     /setupdb                                                                              controllers.SetupDBController.setupDataBase
 
 # Signup
-POST    /signup                                                             controllers.SignupController.sendSignupEmail
-POST    /activate-user                                                      controllers.SignupController.activateUserWithToken
-#POST    /deactivate-user                                                   controllers.SignupController.deactivateUser
+POST    /signup                                                                               controllers.SignupController.sendSignupEmail
+POST    /activate-user                                                                        controllers.SignupController.activateUserWithToken
+#POST    /deactivate-user                                                                     controllers.SignupController.deactivateUser
 
 # Password
-POST    /users/:userId/password/recover                                     controllers.UserController.setPasswordUsingToken(userId: Int)
+POST    /users/:userId/password/recover                                                       controllers.UserController.setPasswordUsingToken(userId: Int)
 
 # Logon
-POST /login                                                                 controllers.LoginController.login
+POST /login                                                                                   controllers.LoginController.login
 
 # Companies
-GET     /companies/:companyId                                               controllers.CompanyController.get(companyId: Int)
+GET     /companies/:companyId                                                                 controllers.CompanyController.get(companyId: Int)
 
 # Employees
-POST    /companies/:companyId/employees                                     controllers.EmployeeController.inviteEmployee(companyId: Int)
+POST    /companies/:companyId/employees                                                       controllers.EmployeeController.inviteEmployee(companyId: Int)
+
 
 #Mailbox
-POST   /companies/:companyId/employees/:employeeId/mail/send                controllers.ExchangeController.sendEmail(companyId: Int, employeeId: Int)
-GET    /companies/:companyId/employees/:employeeId/mail/inbox               controllers.ExchangeController.getInboxEmails(companyId: Int, employeeId: Int)
-GET    /companies/:companyId/employees/:employeeId/mail/sentbox             controllers.ExchangeController.getOutboxEmails(companyId: Int, employeeId: Int)
-GET    /companies/:companyId/employees/:employeeId/mail/getOne							controllers.ExchangeController.getMail(companyId: Int, employeeId:Int)
+#POST   /companies/:companyId/employees/:employeeId/mailboxes                   
+#GET    /companies/:companyId/employees/:employeeId/mailboxes/:mailboxId/connect
+#GET    /companies/:companyId/employees/:employeeId/mailboxes
+
+
+#Mail
+POST   /companies/:companyId/employees/:employeeId/mail/send                                  controllers.ExchangeController.sendEmail(companyId: Int, employeeId: Int)
+GET    /companies/:companyId/employees/:employeeId/mail/inbox                                 controllers.ExchangeController.getInboxEmails(companyId: Int, employeeId: Int)
+GET    /companies/:companyId/employees/:employeeId/mail/sentbox                               controllers.ExchangeController.getOutboxEmails(companyId: Int, employeeId: Int)
+GET    /companies/:companyId/employees/:employeeId/mail/getOne                                controllers.ExchangeController.getMail(companyId: Int, employeeId:Int)
 
 
 #Tasks
-POST   /companies/:companyId/tasks                                          controllers.TaskController.newTask(companyId: Int)
-POST   /companies/:companyId/tasks/:taskId/mail															controllers.TaskController.attachMailToTask(companyId: Int, taskId: Int)
-PUT    /companies/:companyId/tasks/:taskId                                  controllers.TaskController.updateTask(companyId: Int, taskId: Int)
-DELETE /companies/:companyId/tasks/:taskId/mail															controllers.TaskController.removeAttachedMailFromTask(companyId: Int, taskId: Int)
-DELETE /companies/:companyId/tasks/:taskId/														    	controllers.TaskController.softDeleteTaskByTaskId(companyId: Int, taskId: Int)
-GET    /companies/:companyId/tasks/:taskId                                  controllers.TaskController.getTask(companyId: Int, taskId: Int)
-GET    /companies/:companyId/tasks                                          controllers.TaskController.getAllTasks(companyId: Int)
+POST   /companies/:companyId/tasks                                                            controllers.TaskController.newTask(companyId: Int)
+POST   /companies/:companyId/tasks/:taskId/mail                                               controllers.TaskController.attachMailToTask(companyId: Int, taskId: Int)
+PUT    /companies/:companyId/tasks/:taskId                                                    controllers.TaskController.updateTask(companyId: Int, taskId: Int)
+DELETE /companies/:companyId/tasks/:taskId/mail                                               controllers.TaskController.removeAttachedMailFromTask(companyId: Int, taskId: Int)
+DELETE /companies/:companyId/tasks/:taskId/                                                   controllers.TaskController.softDeleteTaskByTaskId(companyId: Int, taskId: Int)
+GET    /companies/:companyId/tasks/:taskId                                                    controllers.TaskController.getTask(companyId: Int, taskId: Int)
+GET    /companies/:companyId/tasks                                                            controllers.TaskController.getAllTasks(companyId: Int)
 
 
 # Map static resources from the /public folder to the /assets URL path

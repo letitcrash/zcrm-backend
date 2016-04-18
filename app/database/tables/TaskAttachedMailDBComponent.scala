@@ -15,9 +15,9 @@ case class TaskAttachedMailEntity(
   )
 
 
-trait TaskAttachedMailDBComponent extends DBComponent
- with TaskDBComponent {
- this: DBComponent =>
+trait TaskAttachedMailDBComponent extends DBComponent {
+ this: DBComponent 
+ with TaskDBComponent =>
 
   import dbConfig.driver.api._
 

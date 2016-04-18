@@ -27,11 +27,11 @@ case class TaskEntity(
   recordStatus: String = UserStatus.ACTIVE
   )
 
-trait TaskDBComponent extends DBComponent
+trait TaskDBComponent extends DBComponent {
+ this: DBComponent 
 	with CompanyDBComponent
   with ContactProfileDBComponent
-  with UserDBComponent{
- this: DBComponent =>
+  with UserDBComponent =>
 
   import dbConfig.driver.api._
 

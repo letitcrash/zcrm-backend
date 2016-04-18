@@ -26,6 +26,7 @@ class DAO extends UserDBComponent
    with SignupTokenDBComponent
    with CompanyDBComponent
    with EmployeeDBComponent
+   with MailboxDBComponent
 	 with PasswordTokenDBComponent{
  import dbConfig.driver.api._
 
@@ -55,6 +56,7 @@ class DAO extends UserDBComponent
       Logger.info("Dropping passworTokens  -> "    + tryDrop(passwordTokens.schema))
       Logger.info("Dropping tasks  -> "            + tryDrop(tasks.schema))
       Logger.info("Dropping taskAttachedMails  -> "    + tryDrop(taskAttachedMails.schema))
+      Logger.info("Dropping mailboxes  -> "    + tryDrop(mailboxes.schema))
       Success("Tables dropped")
     } catch {
       case ex: Exception =>
@@ -88,6 +90,7 @@ class DAO extends UserDBComponent
 		Logger.info("Creating passworTokens  -> " + tryCreate(passwordTokens.schema))
 		Logger.info("Creating tasks -> "          + tryCreate(tasks.schema))
 		Logger.info("Creating taskAttachedMails -> " + tryCreate(taskAttachedMails.schema))
+		Logger.info("Creating mailboxes -> " + tryCreate(mailboxes.schema))
     Success("Created All tables!")
   }
 
