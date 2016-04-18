@@ -26,6 +26,14 @@ object ExpectedFormat {
       "employeeType"            -> Json.toJson("[O] (string) The type of this employee, if not set, no type is set")
   ))
 
+	val expectedEmployeeFormat = Json.toJson(ListMap(
+			"id"											-> Json.toJson("[O] (int) Employee Id"),
+			"user"										-> expectedUserFormat,
+			"companyId"								-> Json.toJson("[M] (int) Company Id for user"),
+			"employeeType"						-> Json.toJson("[O] (string) "),
+			"employeeLevel"						-> Json.toJson("[M] (int) Level of employee")
+		))
+
   val expectedLoginRqFormat = Json.toJson(ListMap(
 			"username" -> "[M] (string) Username",
 			"password" -> "[M] (string) Password"

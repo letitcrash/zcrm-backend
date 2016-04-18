@@ -34,7 +34,7 @@ class LoginController @Inject() (mailer: utils.Mailer) extends CRMController {
   def login = Action.async (parse.json) { rq =>
     rq.body.validate[LoginRequest] map { body =>
       UserDBRepository.loginUser(body.username, body.password)
-        .flatMap( user => EmployeeDBRepository.getEmployeesByUser(user).map(
+        .flatMap( user => EmployeeDBRepository.getEmployeeByUser(user).map(
           employee => createResponse(user, employee) match {
                         case Success(res) => Ok(Json.toJson(res))
                         case Failure(ex)  => Ok(Json.toJson(createFailedResponse(ex)))

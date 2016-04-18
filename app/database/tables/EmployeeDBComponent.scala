@@ -1,6 +1,6 @@
 package database.tables
 
-import models.UserLevels
+import models.{UserLevels, RowStatus}
 import slick.model.ForeignKeyAction._
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -18,16 +18,16 @@ case class EmployeeEntity(
                            // 100 - 999    = Human resource
                            // 0-99         = Admin levels
                            employeeLevel: Int,
-                           recordStatus: Int = 1)
+                           recordStatus: String = RowStatus.ACTIVE)
 
 
 
-trait EmployeeDBComponent extends DBComponent
+trait EmployeeDBComponent extends DBComponent{
+  this: DBComponent 
     with UserDBComponent
     with ContactProfileDBComponent
-    with CompanyDBComponent {
+    with CompanyDBComponent =>
 
-  this: DBComponent =>
 
   import dbConfig.driver.api._
 
@@ -41,7 +41,7 @@ trait EmployeeDBComponent extends DBComponent
     def comment = column[String]("comment")
     def employeeLevel = column[Int]("employee_level", O.Default(UserLevels.USER))
     //TODO: should be deleted ??
-    def recordStatus = column[Int]("record_status", O.Default(1))
+    def recordStatus = column[String]("record_status", O.Default(RowStatus.ACTIVE))
 
 
     def fkEmployeeUser =
@@ -53,24 +53,64 @@ trait EmployeeDBComponent extends DBComponent
     override def * =
       ( id.?, companyId, userId.?, employeeType.?, employeeLevel, recordStatus) <> (EmployeeEntity.tupled, EmployeeEntity.unapply)
   }
+
+  def employeesWithUsersWihtProfile = employees join usersWithProfile on (_.userId === _._1.id)
+
   //CRUD EmployeeEntity
   def insertEmployee(empl: EmployeeEntity): Future[EmployeeEntity] = {
     db.run((employees returning employees.map(_.id)
                   into ((empl,id) => empl.copy(id=Some(id)))) += empl)
   }
 
-  def updateEmployee(newEmpl: EmployeeEntity): Future[EmployeeEntity] = {
-      db.run(employees.filter(_.id === newEmpl.id).update(newEmpl))
-                    .map( num => newEmpl)
+  def getEmployeeById(id: Int): Future[EmployeeEntity] = {
+   	db.run(employees.filter(t => (t.id === id &&
+																	t.recordStatus === RowStatus.ACTIVE)).result.head)
   }
 
   def getEmployeeByUserId(userId: Int): Future[EmployeeEntity] = {
-    db.run(employees.filter(_.userId === userId).result.head)
+   	db.run(employees.filter(t => (t.userId === userId &&
+																	t.recordStatus === RowStatus.ACTIVE)).result.head)
   }
+
+  def updateEmployeeEntity(newEmpl: EmployeeEntity): Future[EmployeeEntity] = {
+    db.run(employees.filter(_.id === newEmpl.id).update(newEmpl))
+                    .map( num => newEmpl)
+  }
+
+	def softDeleteEmployeeEntityByUserId(userId: Int): Future[EmployeeEntity] = {
+		getEmployeeByUserId(userId).flatMap(empl =>
+					updateEmployeeEntity(empl.copy(recordStatus = RowStatus.DELETED)))
+	}
+
+	def softDeleteEmployeeEntityById(id: Int): Future[EmployeeEntity] = {
+		getEmployeeById(id).flatMap(empl =>
+					updateEmployeeEntity(empl.copy(recordStatus = RowStatus.DELETED)))
+	}
 
   //EmployeeEntity filters
   def upsertEmployee(empl: EmployeeEntity): Future[EmployeeEntity] = {
-    if(empl.id.isDefined) {updateEmployee(empl)}
+    if(empl.id.isDefined) {updateEmployeeEntity(empl)}
     else {insertEmployee(empl)}
   }
+
+	def getAllEmployeesWithUsersByCompanyId(companyId: Int): Future[List[(EmployeeEntity,  (UserEntity, ContactProfileEntity))]] = {
+		db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.companyId === companyId && 
+																								     t._1.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
+	}
+
+	def getEmployeeWithUserById(employeeId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
+		db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.id === employeeId && 
+																								     t._1.recordStatus === RowStatus.ACTIVE)).result.head)
+	}
+
+	def getEmployeeWithUserByUserId(userId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
+		db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.userId === userId && 
+																								     t._1.recordStatus === RowStatus.ACTIVE)).result.head)
+	}
+
+	def updateEmployeeWithUser(emplEntt: EmployeeEntity): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
+		updateEmployeeEntity(emplEntt).flatMap(updatedEmpl =>
+				getEmployeeWithUserById(updatedEmpl.id.get))
+	}
+
 }

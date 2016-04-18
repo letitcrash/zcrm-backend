@@ -8,20 +8,12 @@ import scala.util.{Failure, Success, Try}
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.Logger
+import utils.converters.EmployeeConverter._
 
 
 object EmployeeDBRepository {
   import database.gen.current.dao.dbConfig.driver.api._
   import database.gen.current.dao._
-
- def getEmployeesByUser(user: User): Future[Employee] = {
-   import utils.converters.EmployeeConverter._
-   for {
-     employeeEntt <- getEmployeeByUserId(user.id.get)
-     userWithProfileEntt <- getUserWithProfileByUserId(user.id.get) 
-   } yield (employeeEntt, userWithProfileEntt).asEmployee
-
- }
 
  def addEmployee(employee: Employee): Future[Employee] = {
    import utils.converters.EmployeeConverter._
@@ -50,5 +42,27 @@ object EmployeeDBRepository {
     })
   }
 
-  
+
+ def getEmployeeByUser(user: User): Future[Employee] = {
+	 getEmployeeWithUserByUserId(user.id.get).map(empl => empl.asEmployee)
+ }
+
+ def getEmployeesByCompanyId(companyId: Int): Future[List[Employee]] = {
+	 getAllEmployeesWithUsersByCompanyId(companyId).map(list => list.map(_.asEmployee))
+ }
+
+ def getEmployeeByEmployeeId(employeeId: Int): Future[Employee] = {
+	 getEmployeeWithUserById(employeeId).map(empl => empl.asEmployee)
+ }
+
+	def updateEmployee(employee: Employee): Future[Employee] = {
+		updateEmployeeWithUser(employee.asEmployeeEntity).map(updatedEmpl => updatedEmpl.asEmployee)
+	}
+
+	def softDeleteEmployeeById(employeeId: Int): Future[Employee] = {
+			for{
+					deleted <- softDeleteEmployeeEntityById(employeeId)
+				  userWithProfileEntt <- getUserWithProfileByUserId(deleted.userId.get)
+			} yield(deleted, userWithProfileEntt).asEmployee
+	}
 }

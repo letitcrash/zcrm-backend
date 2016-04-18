@@ -12,6 +12,7 @@ import database.{EmployeeDBRepository,UserDBRepository}
 import play.api.libs.json.Json
 import scala.util.{Failure, Success, Try}
 import scala.concurrent.Future
+import utils.JSFormat.employeeFrmt
 
 @Singleton
 class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController {
@@ -48,4 +49,20 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
                                                    .map( unit => Json.toJson(employee))))
     }else{ Future{Failure(new InsufficientRightsException())} }
   }
+
+	def getEmployee(companyId: Int, employeeId: Int) = CRMActionAsync{rq =>
+		EmployeeDBRepository.getEmployeeByEmployeeId(employeeId).map(empl => Json.toJson(empl))
+	}
+
+	def updateEmployee(companyId: Int, employeeId: Int) = CRMActionAsync[Employee](expectedEmployeeFormat){rq =>
+		EmployeeDBRepository.updateEmployee(rq.body).map(updated => Json.toJson(updated))			
+	}
+
+	def softDeleteEmployee(companyId: Int, employeeId: Int) = CRMActionAsync{rq =>
+		EmployeeDBRepository.softDeleteEmployeeById(employeeId).map(deletedEmpl => Json.toJson(deletedEmpl))
+	}
+
+	def getAllEmployeesByCompanyId(companyId: Int) = CRMActionAsync{rq =>
+		EmployeeDBRepository.getEmployeesByCompanyId(companyId).map(list => Json.toJson(list))
+	}
 }
