@@ -35,10 +35,10 @@ GET    /users/:userId/mailboxes																																controllers.Mailb
 
 
 #Mail
-POST   /companies/:companyId/employees/:employeeId/mail/send                                  controllers.ExchangeController.sendEmail(companyId: Int, employeeId: Int)
-GET    /companies/:companyId/employees/:employeeId/mail/inbox                                 controllers.ExchangeController.getInboxEmails(companyId: Int, employeeId: Int)
-GET    /companies/:companyId/employees/:employeeId/mail/sentbox                               controllers.ExchangeController.getOutboxEmails(companyId: Int, employeeId: Int)
-GET    /companies/:companyId/employees/:employeeId/mail/getOne                                controllers.ExchangeController.getMail(companyId: Int, employeeId:Int)
+POST   /users/:userId/mailboxes/:mailboxId/send																								 controllers.ExchangeController.sendEmail(userId: Int, mailboxId: Int)
+GET    /users/:userId/mailboxes/:mailboxId/inbox																							 controllers.ExchangeController.getInboxEmails(userId: Int, mailboxId: Int)
+GET    /users/:userId/mailboxes/:mailboxId/sentbox																						 controllers.ExchangeController.getOutboxEmails(userId: Int, mailboxId: Int)
+GET    /users/:userId/mailboxes/:mailboxId/getOne                														   controllers.ExchangeController.getMail(userId: Int, mailboxId: Int)
 
 
 #Tasks

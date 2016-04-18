@@ -9,7 +9,7 @@ import utils.ExpectedFormat._
 import utils.ews._
 import controllers.session.InsufficientRightsException
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import database.{EmployeeDBRepository,UserDBRepository}
+import database.{EmployeeDBRepository,UserDBRepository, MailboxDBRepository}
 import play.api.libs.json.Json
 import scala.util.{Failure, Success, Try}
 import scala.concurrent.Future
@@ -22,24 +22,28 @@ class ExchangeController @Inject() (ewsAuth: EwsAuthUtil, ewsMail: EwsMailUtil) 
 
    val DEFAULT_EXCHANGE_SERVER = "https://sd-74609.multimedianordic.no/EWS/Exchange.asmx";
   //TODO: add pagination 
-  def getInboxEmails(companyId: Int, employeeId: Int) = CRMAction  { rq =>
+  def getInboxEmails(userId: Int, mailboxId: Int) = CRMActionAsync { rq =>
     import utils.converters.MailConverter._
    // if(rq.header.belongsToCompany(companyId)){
-      val ewsService = ewsAuth.checkUserLogin(DEFAULT_EXCHANGE_SERVER, "Administrateur@multimedianordic.no", "Stein4201")
-      val mailsArray: Array[EwsInboxMail] = ewsMail.getInboxMail(ewsService, 1, 20)
-      val mailList = mailsArray.toList.map(_.asInboxMail)
-      Json.toJson(mailList) 
+			MailboxDBRepository.getMailboxById(mailboxId).flatMap{mailBox =>	
+      		val ewsService = ewsAuth.checkUserLogin(mailBox.server, mailBox.login, mailBox.password)
+      		val mailsArray: Array[EwsInboxMail] = ewsMail.getInboxMail(ewsService, 1, 20)
+      		val mailList = mailsArray.toList.map(_.asInboxMail)
+          Future(Json.toJson(mailList)) 
+				}
     //}else{ Failure(new InsufficientRightsException()) }
   }
 
   //TODO: add pagination 
-  def getOutboxEmails(companyId: Int, employeeId: Int) = CRMAction  { rq =>
+  def getOutboxEmails(userId: Int, mailboxId: Int) = CRMActionAsync  { rq =>
     import utils.converters.MailConverter._
     // if(rq.header.belongsToCompany(companyId)){
-    val ewsService = ewsAuth.checkUserLogin(DEFAULT_EXCHANGE_SERVER, "Administrateur@multimedianordic.no", "Stein4201")
-    val mailsArray: Array[EwsSentMail] = ewsMail.getSentMail(ewsService, 1, 20)
-    val mailList = mailsArray.toList.map(_.asOutboxMail)
-    Json.toJson(mailList)
+			MailboxDBRepository.getMailboxById(mailboxId).flatMap{mailBox =>	
+      		val ewsService = ewsAuth.checkUserLogin(mailBox.server, mailBox.login, mailBox.password)
+      		val mailsArray: Array[EwsSentMail] = ewsMail.getSentMail(ewsService, 1, 20)      
+					val mailList = mailsArray.toList.map(_.asOutboxMail)
+          Future(Json.toJson(mailList)) 
+				}
     //}else{ Failure(new InsufficientRightsException()) }
   }
 
@@ -58,21 +62,24 @@ class ExchangeController @Inject() (ewsAuth: EwsAuthUtil, ewsMail: EwsMailUtil) 
 
   implicit val mailToSendFrmt = Json.format[MailToSend]
   
-  def sendEmail(companyId: Int, employeeId: Int) = CRMAction[MailToSend](expectedMailToSendFormat) { rq => 
-    val ewsService = ewsAuth.checkUserLogin(DEFAULT_EXCHANGE_SERVER, "Administrateur@multimedianordic.no", "Stein4201")
-    ewsMail.sendMail(ewsService, rq.body.asEwsMailToSend)
-    //Json.toJson(rq.body.subject.getOrElse("")+", "+rq.body.body.getOrElse("")+", " + rq.body.to.toString)
-    //TODO: add JSON response 
-    Json.toJson("mail sent")
+  def sendEmail(userId: Int, mailboxId: Int) = CRMActionAsync[MailToSend](expectedMailToSendFormat) { rq =>
+ 			MailboxDBRepository.getMailboxById(mailboxId).flatMap{mailBox =>	
+      		val ewsService = ewsAuth.checkUserLogin(mailBox.server, mailBox.login, mailBox.password)
+      		ewsMail.sendMail(ewsService, rq.body.asEwsMailToSend)
+          //TODO: add JSON response 
+    			Future(Json.toJson("mail sent")) 
+				}
   }
 	
 	case class extMailId(extMailId: String)
 	implicit val expectedExtMailIdFrmt = Json.format[extMailId]	
-	def getMail(companyId: Int, employeeId:Int) = CRMAction[extMailId](expectedExtMailIdFormat){ rq =>
+	def getMail(userId: Int, mailboxId: Int) = CRMActionAsync[extMailId](expectedExtMailIdFormat){ rq =>
     import utils.converters.MailConverter._
-		val ewsService = ewsAuth.checkUserLogin(DEFAULT_EXCHANGE_SERVER, "Administrateur@multimedianordic.no", "Stein4201")
-		val mail = ewsMail.getMailById(ewsService, rq.body.extMailId)
-		Json.toJson(mail.asInboxMail)
+ 			MailboxDBRepository.getMailboxById(mailboxId).flatMap{mailBox =>	
+      		val ewsService = ewsAuth.checkUserLogin(mailBox.server, mailBox.login, mailBox.password)
+      		val mail = ewsMail.getMailById(ewsService, rq.body.extMailId)
+					Future(Json.toJson(mail.asInboxMail))
+				}
 	}
 
 }
