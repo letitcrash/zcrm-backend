@@ -1,7 +1,7 @@
 package database.tables
 
 import java.sql.Timestamp
-import models.{UserLevels, UserStatus}
+import models.{UserLevels, RowStatus}
 import slick.model.ForeignKeyAction.{Cascade, Restrict}
 import scala.util.{Success, Failure, Try}
 import exceptions.UsernameAlreadyExistException
@@ -14,7 +14,7 @@ case class UserEntity(
   username: String,
   userLevel: Int,
   profileId: Int,
-  status: String = UserStatus.ACTIVE,
+  status: String = RowStatus.ACTIVE,
   updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()))
 
 case class PasswordEntity(
@@ -37,7 +37,7 @@ trait UserDBComponent extends DBComponent {
     def userLevel = column[Int]("user_level", O.Default(UserLevels.USER))
     def username = column[String]("username", O.SqlType("VARCHAR(254)"))
     def profileId = column[Int]("contact_profile_id")    
-    def status = column[String]("record_status", O.Default(UserStatus.ACTIVE))
+    def status = column[String]("record_status", O.Default(RowStatus.ACTIVE))
     def updatedAt = column[Timestamp]("updated_at", O.Default(new Timestamp(System.currentTimeMillis())))
 
     def fkContactProfile= foreignKey("fk_user_contact_profile", profileId, contactProfiles)(_.id, onUpdate = Restrict, onDelete = Cascade)
@@ -87,14 +87,14 @@ trait UserDBComponent extends DBComponent {
 
   def softDeleteById(userId: Int): Future[UserEntity] = {
 	  getUserById(userId).flatMap(res =>
-			  updateUser(res.copy(status = UserStatus.DELETED, 
+			  updateUser(res.copy(status = RowStatus.DELETED, 
 				   	      updatedAt = new Timestamp(System.currentTimeMillis()))))
 
   } 
 
   def softDeleteByUserName(userName: String): Future[UserEntity] = {
 	  getUserByUserUsername(userName).flatMap(res =>
-			  updateUser(res.copy(status = UserStatus.DELETED, 
+			  updateUser(res.copy(status = RowStatus.DELETED, 
 				   	      updatedAt = new Timestamp(System.currentTimeMillis()))))
 
   }
@@ -123,12 +123,12 @@ trait UserDBComponent extends DBComponent {
 
   def checkUserStatusById(userId: Int): Future[Boolean] = {
      getUserById(userId).map(user =>
-       user.status == UserStatus.ACTIVE)
+       user.status == RowStatus.ACTIVE)
   }
 
   def checkUserStatusByUserName(userName: String): Future[Boolean] = {
     getUserByUserUsername(userName).map(user =>
-      user.status == UserStatus.ACTIVE)
+      user.status == RowStatus.ACTIVE)
   }
 
   def isUserExists(userName: String): Future[Boolean] = {

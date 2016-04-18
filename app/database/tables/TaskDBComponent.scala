@@ -23,8 +23,8 @@ case class TaskEntity(
   dueDate: Option[String],
   createdAt: Timestamp = new Timestamp(System.currentTimeMillis()),
   updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()),
-  //TODO: rename UserStatus -> RecrodStatus
-  recordStatus: String = UserStatus.ACTIVE
+  //TODO: rename RowStatus -> RecrodStatus
+  recordStatus: String = RowStatus.ACTIVE
   )
 
 trait TaskDBComponent extends DBComponent {
@@ -49,7 +49,7 @@ trait TaskDBComponent extends DBComponent {
     //TODO: check TS on DB
     def createdAt = column[Timestamp]("created_at", O.Default(new Timestamp(System.currentTimeMillis())))
     def updatedAt = column[Timestamp]("updated_at", O.Default(new Timestamp(System.currentTimeMillis())))
-    def recordStatus = column[String]("record_status",O.Default(UserStatus.ACTIVE))
+    def recordStatus = column[String]("record_status",O.Default(RowStatus.ACTIVE))
  
     //TODO: change onDelete = Cascade 
     def fkCreatedByUserId = foreignKey("fk_task_created_user", createdByUserId, users)(_.id, onUpdate = Restrict, onDelete = Cascade ) 
@@ -82,13 +82,13 @@ trait TaskDBComponent extends DBComponent {
   def getTasksWitUserByCompanyId(companyId: Int):
     Future[List[((TaskEntity, (UserEntity, ContactProfileEntity)) ,Option[(UserEntity, ContactProfileEntity)])]] = {
 		db.run(tasksWithUsersWihtProfile.filter(t =>(t._1._1.companyId === companyId && 
-																								 t._1._1.recordStatus === UserStatus.ACTIVE)).result).map(_.toList)
+																								 t._1._1.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
   }
 
   def getTaskWitUserById(taskId: Int):
     Future[((TaskEntity, (UserEntity, ContactProfileEntity)) ,Option[(UserEntity, ContactProfileEntity)])] = {
 		db.run(tasksWithUsersWihtProfile.filter(t => (t._1._1.id === taskId && 
-																									t._1._1.recordStatus === UserStatus.ACTIVE)).result.head)
+																									t._1._1.recordStatus === RowStatus.ACTIVE)).result.head)
   }
 
 	def updateTaskEntity(task: TaskEntity): Future[TaskEntity] = {
@@ -99,7 +99,7 @@ trait TaskDBComponent extends DBComponent {
 
 	def softDeleteTaskEntityById(taskId: Int): Future[TaskEntity] = {
 		getTaskEntityById(taskId).flatMap(res =>
-			  updateTaskEntity(res.copy(recordStatus = UserStatus.DELETED, 
+			  updateTaskEntity(res.copy(recordStatus = RowStatus.DELETED, 
 				   	                      updatedAt = new Timestamp(System.currentTimeMillis()))))
 
 	}
