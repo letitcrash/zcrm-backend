@@ -55,5 +55,12 @@ GET    /companies/:companyId/tasks/:taskId                                      
 GET    /companies/:companyId/tasks                                                            controllers.TaskController.getAllTasks(companyId: Int)
 
 
+#File
+POST 	 /users/:userId/files																																		controllers.FileController.uploadFile(userId: Int)
+#DELETE /users/:userId/files/:fileId																													  controllers.FileController.deleteFile(userId: Int, fileId: Int)
+#GET		 /users/:userId/files																																	  controllers.FileController.getFileList(userId: Int)
+#GET		 /users/:userId/files/:fileId																														controllers.FileController.getFileById(userId: Int, fileId: Int)
+
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
