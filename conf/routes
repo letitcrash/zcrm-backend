@@ -59,7 +59,7 @@ GET    /companies/:companyId/tasks                                              
 POST 	 /users/:userId/files																																		controllers.FileController.uploadFile(userId: Int)
 #DELETE /users/:userId/files/:fileId																													  controllers.FileController.deleteFile(userId: Int, fileId: Int)
 #GET		 /users/:userId/files																																	  controllers.FileController.getFileList(userId: Int)
-#GET		 /users/:userId/files/:fileId																														controllers.FileController.getFileById(userId: Int, fileId: Int)
+GET		 /users/:userId/files/:fileId																														controllers.FileController.getFile(userId: Int, fileId: Int)
 
 
 # Map static resources from the /public folder to the /assets URL path

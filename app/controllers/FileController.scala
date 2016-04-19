@@ -28,5 +28,12 @@ class FileController @Inject() extends CRMController {
 																		fileName = filePart.get.filename) 
 		FileRepository.saveFile(uploadedFile).map(file => Ok(Json.toJson(file)))
 	}
+
+	def getFile(userId : Int, id: Int) = Action.async{
+		FileRepository.getFileById(id).map(uploadedFile =>
+			Ok.sendFile(content = new File("/tmp/crm/"+uploadedFile.hash),
+    							fileName = _ => uploadedFile.fileName
+  		))
+	}
 	 
 }
