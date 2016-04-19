@@ -22,6 +22,13 @@ object FileRepository {
 	def getFileById(id: Int): Future[UploadedFile] = {
 		getFileEntityById(id).map(_.asUploadedFile)	
 	}
-  
+ 	
+	def getFilesForUserByUserId(userId: Int): Future[List[UploadedFile]] = {
+		getFileEntitiesByUserId(userId).map(list => list.map(_.asUploadedFile))
+	} 
+
+	def deleteFileById(id: Int): Future[UploadedFile] = {
+		deleteFileEntity(id).map(deleted => deleted.asUploadedFile)
+	}
 
 }

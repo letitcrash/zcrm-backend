@@ -35,5 +35,12 @@ class FileController @Inject() extends CRMController {
     							fileName = _ => uploadedFile.fileName
   		))
 	}
-	 
+
+	def getFilesListForUser(userId: Int) = Action.async{
+		FileRepository.getFilesForUserByUserId(userId).map(list => Ok(Json.toJson(list)))
+	}
+
+	def deleteFile(userId: Int, fileId: Int) = Action.async{
+		FileRepository.deleteFileById(fileId).map(deleted => Ok(Json.toJson(deleted)))
+	} 
 }

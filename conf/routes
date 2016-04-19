@@ -57,8 +57,8 @@ GET    /companies/:companyId/tasks                                              
 
 #File
 POST 	 /users/:userId/files																																		controllers.FileController.uploadFile(userId: Int)
-#DELETE /users/:userId/files/:fileId																													  controllers.FileController.deleteFile(userId: Int, fileId: Int)
-#GET		 /users/:userId/files																																	  controllers.FileController.getFileList(userId: Int)
+DELETE /users/:userId/files/:fileId																													  controllers.FileController.deleteFile(userId: Int, fileId: Int)
+GET		 /users/:userId/files																																	  controllers.FileController.getFilesListForUser(userId: Int)
 GET		 /users/:userId/files/:fileId																														controllers.FileController.getFile(userId: Int, fileId: Int)
 
 

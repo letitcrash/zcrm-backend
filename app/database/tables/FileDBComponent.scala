@@ -55,5 +55,10 @@ trait FileDBComponent extends DBComponent {
 		db.run(files.filter(_.userId === userId).result).map(_.toList)
 	}
 
+	def deleteFileEntity(id: Int): Future[FileEntity] = {
+		val deletedFile = getFileEntityById(id)
+		db.run(files.filter(_.id === id).delete)
+		deletedFile
+	}
 }
 
