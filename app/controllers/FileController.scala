@@ -17,30 +17,36 @@ import java.io.File
 @Singleton
 class FileController @Inject() extends CRMController {
   import utils.JSFormat.uploadedFileFrmt
-	
 
-	def uploadFile(userId: Int) = Action.async(parse.multipartFormData){rq =>
-		val filePart = rq.body.file("fileUpload").map(file => file)
-		val uuid = java.util.UUID.randomUUID.toString
-		filePart.get.ref.moveTo(new File(s"/tmp/crm/$uuid"))
-		val uploadedFile = UploadedFile(userId = userId,
-																		hash = uuid,
-																		fileName = filePart.get.filename) 
-		FileRepository.saveFile(uploadedFile).map(file => Ok(Json.toJson(file)))
-	}
+  // TODO:
+  //   - Use CRMActionAsync instead of Action.async, to accomplish that in the right way,
+  //     I guess we should implement our CMRAction* helpers leveraging Play's way to do this,
+  //     see link for details: https://www.playframework.com/documentation/2.5.x/ScalaActionsComposition
+  def uploadFile(userId: Int) = Action.async(parse.multipartFormData){rq =>
+    val filePart = rq.body.file("fileUpload").map(file => file)
+    val uuid = java.util.UUID.randomUUID.toString
+    filePart.get.ref.moveTo(new File(s"/tmp/crm/$uuid"))
+    val uploadedFile = UploadedFile(userId = userId,
+    								hash = uuid,
+    								fileName = filePart.get.filename) 
+    FileRepository.saveFile(uploadedFile).map(file => Ok(Json.toJson(file)))
+  }
 
-	def getFile(userId : Int, id: Int) = Action.async{
-		FileRepository.getFileById(id).map(uploadedFile =>
-			Ok.sendFile(content = new File("/tmp/crm/"+uploadedFile.hash),
-    							fileName = _ => uploadedFile.fileName
-  		))
-	}
+  // FIXME:
+  //   - This method works but it also raises an exception: java.util.NoSuchElementException: http-handler-body-subscriber
+  def getFile(userId : Int, id: Int) = CRMActionAsync { req =>
+    FileRepository.getFileById(id).map(uploadedFile => new File(s"/tmp/crm/${uploadedFile.hash}"))
+  }
 
-	def getFilesListForUser(userId: Int) = Action.async{
-		FileRepository.getFilesForUserByUserId(userId).map(list => Ok(Json.toJson(list)))
-	}
 
-	def deleteFile(userId: Int, fileId: Int) = Action.async{
-		FileRepository.deleteFileById(fileId).map(deleted => Ok(Json.toJson(deleted)))
-	} 
+  def getFilesListForUser(userId: Int) = CRMActionAsync { req =>
+    FileRepository.getFilesForUserByUserId(userId).map(list => Json.toJson(list))
+  }
+  
+  def deleteFile(userId: Int, fileId: Int) = CRMActionAsync { req =>
+    // FIXME:
+    //   - Should we also delete a file from the filesystem?
+	FileRepository.deleteFileById(fileId).map(deleted => Json.toJson(deleted))
+  }
+
 }
