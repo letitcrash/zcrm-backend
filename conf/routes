@@ -22,6 +22,48 @@ POST /login                                                                     
 # Companies
 GET     /companies/:companyId                                                                 controllers.CompanyController.get(companyId: Int)
 
+# Delegate
+# POST	  /companies/:companyId/delegates	
+# PUT	    /companies/:companyId/delegates/:delegateId	
+# DELETE	/companies/:companyId/delegates/:delegateId
+# GET	    /companies/:companyId/delegates
+# GET	    /companies/:companyId/delegates/:delegateId
+
+# Shift 
+# POST	  /companies/:companyId/shifts	
+# PUT	    /companies/:companyId/shifts/:shiftId	
+# DELETE	/companies/:companyId/shifts/:shiftId
+# GET	    /companies/:companyId/shifts
+# GET	    /companies/:companyId/shifts/:shiftId	
+
+#Department 
+#POST	   /companies/:companyId/departments	
+#PUT	   /companies/:companyId/departments/:departmentId
+#DELETE	 /companies/:companyId/departments/:departmentId	
+#GET	   /companies/:companyId/departments
+#GET	   /companies/:companyId/departments/:departmentId	
+
+#Union 
+#POST	   /companies/:companyId/unions	
+#PUT	   /companies/:companyId/unions/:unionId	
+#DELETE	 /companies/:companyId/unions/:unionId	
+#GET	   /companies/:companyId/unions
+#GET	   /companies/:companyId/unions/:unionId	
+
+#Team 
+#POST	   /companies/:companyId/teams	
+#PUT	   /companies/:companyId/teams/:teamId	
+#DELETE	 /companies/:companyId/teams/:teamId	
+#GET	   /companies/:companyId/teams
+#GET	   /companies/:companyId/teams/:teamId	
+
+#Position
+#POST	   /companies/:companyId/positions
+#PUT	   /companies/:companyId/teams/:positionId
+#DELETE	 /companies/:companyId/teams/:positionId
+#GET	   /companies/:companyId/positions
+#GET	   /companies/:companyId/positions/:positionId
+ 
 # Employees
 POST    /companies/:companyId/employees                                                       controllers.EmployeeController.inviteEmployee(companyId: Int)
 PUT     /companies/:companyId/employees/:employeeId																						controllers.EmployeeController.updateEmployee(companyId: Int, employeeId: Int)
