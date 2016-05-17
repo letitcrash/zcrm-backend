@@ -47,6 +47,7 @@ object JSFormat {
   implicit val taskFrmt                     = Json.format[Task]
 	implicit val mailboxFrmt							    = Json.format[Mailbox]
 	implicit val uploadedFileFrmt							= Json.format[UploadedFile]
+  implicit val positionFrmt                 = Json.format[Position]
 }
 
 

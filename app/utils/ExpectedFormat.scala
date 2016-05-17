@@ -132,5 +132,11 @@ object ExpectedFormat {
 		"login"					 -> Json.toJson("[M](string) Exchange mailbox login formatted like username@domain"),
 		"password"			 -> Json.toJson("[M](string) Exchange mailbox password")
 	))
+
+	val expectedPositionFormat = Json.toJson(ListMap(
+			"id"											-> Json.toJson("[O] (int) Position Id"),
+			"companyId"								-> Json.toJson("[M] (int) Company Id"),
+			"name"						        -> Json.toJson("[M] (string) name ")
+		))
 }
 
