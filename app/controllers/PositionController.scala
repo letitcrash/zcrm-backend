@@ -24,10 +24,14 @@ class PositionController @Inject() extends CRMController {
       .map( position => Json.toJson(position))
   }
 
-
-  def putPosition(companyId: Int) = CRMActionAsync[Position](expectedPositionFormat){ rq =>
+  def putPosition(companyId: Int, positionId: Int) = CRMActionAsync[Position](expectedPositionFormat){ rq =>
     PositionRepository.changePosition(rq.body, companyId).map( position => Json.toJson(position))
   }
+
+	def deletePosition(companyId: Int, positionId:Int) = CRMActionAsync{rq =>
+    PositionRepository.removePosition(positionId).map( deletedPosition => Json.toJson(deletedPosition))
+	}
+
 
 
 }

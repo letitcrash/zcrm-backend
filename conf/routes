@@ -59,8 +59,8 @@ GET	     /companies/:companyId/teams/:teamId																								 controllers
 
 #Position
 POST	   /companies/:companyId/positions                                                      controllers.PositionController.postPosition(companyId: Int)
-#PUT	   /companies/:companyId/teams/:positionId
-#DELETE	 /companies/:companyId/teams/:positionId
+PUT	   /companies/:companyId/teams/:positionId                                                controllers.PositionController.putPosition(companyId: Int, positionId: Int)
+DELETE	 /companies/:companyId/teams/:positionId                                              controllers.PositionController.deletePosition(companyId: Int, positionId: Int)
 #GET	   /companies/:companyId/positions
 #GET	   /companies/:companyId/positions/:positionId
  

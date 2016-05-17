@@ -21,6 +21,10 @@ object PositionRepository {
 		updatePosition(position.asPositionEntity(companyId)).map(updated => updated.asPosition)
 	}
 
+  def removePosition(positionId: Int): Future[Position] = {
+  import utils.converters.PositionConverter._
+    deletePosition(positionId).map(deleted => deleted.asPosition) 
+  }
 
   
 
