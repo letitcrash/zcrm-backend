@@ -16,14 +16,20 @@ case class TeamEntity(
   createdAt: Timestamp = new Timestamp(System.currentTimeMillis()),
   updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()))
 
+case class TeamGroupEntity(
+	teamId: Int,
+	userId: Int
+)
 
 trait TeamDBComponent extends DBComponent {
     this: DBComponent 
-		with CompanyDBComponent => 
+		with CompanyDBComponent
+		with UserDBComponent => 
 
   import dbConfig.driver.api._
 
   val teams = TableQuery[TeamTable]
+	val teamGroups = TableQuery[TeamGroupTable]
   
   class TeamTable(tag: Tag) extends Table[TeamEntity](tag, "tbl_team") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
@@ -38,6 +44,16 @@ trait TeamDBComponent extends DBComponent {
 
     def * = (id.?, companyId, name, description.?, recordStatus, createdAt, updatedAt)<>(TeamEntity.tupled, TeamEntity.unapply)
   }
+
+	class TeamGroupTable(tag: Tag) extends Table[TeamGroupEntity](tag, "tbl_group_team"){
+		def teamId = column[Int]("team_id")
+		def userId = column[Int]("user_id")
+
+		def fkTeamId = foreignKey("fk_team_id", teamId, teams)(_.id, onUpdate = Restrict, onDelete = Cascade)
+		def fkUserId = foreignKey("fk_user_id", userId, users)(_.id, onUpdate = Restrict, onDelete = Cascade)
+
+		def * = (teamId, userId)<>(TeamGroupEntity.tupled, TeamGroupEntity.unapply)
+	}
 
   //CRUD TeamEntity
   def insertTeam(team: TeamEntity): Future[TeamEntity] = {

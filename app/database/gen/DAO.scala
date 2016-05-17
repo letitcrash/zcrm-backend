@@ -60,7 +60,8 @@ class DAO extends UserDBComponent
       Logger.info("Dropping taskAttachedMails  -> "    + tryDrop(taskAttachedMails.schema))
       Logger.info("Dropping mailboxes  -> "    + tryDrop(mailboxes.schema))
       Logger.info("Dropping files  -> "    + tryDrop(files.schema))
-			Logger.info("Dropping files  -> "    + tryDrop(teams.schema))
+			Logger.info("Dropping teams  -> "    + tryDrop(teams.schema))
+			Logger.info("Dropping teams  -> "    + tryDrop(teamGroups.schema))
 
       Success("Tables dropped")
     } catch {
@@ -97,7 +98,8 @@ class DAO extends UserDBComponent
 		Logger.info("Creating taskAttachedMails -> " + tryCreate(taskAttachedMails.schema))
 		Logger.info("Creating mailboxes -> " + tryCreate(mailboxes.schema))
     Logger.info("Creating files  -> "    + tryCreate(files.schema))
-    Logger.info("Creating files  -> "    + tryCreate(teams.schema))
+    Logger.info("Creating teams -> "    + tryCreate(teams.schema))
+    Logger.info("Creating teams -> "    + tryCreate(teamGroups.schema))
     Success("Created All tables!")
   }
 
