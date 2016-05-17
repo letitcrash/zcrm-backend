@@ -40,7 +40,7 @@ trait TeamDBComponent extends DBComponent {
     def createdAt = column[Timestamp]("created_at", O.Default(new Timestamp(System.currentTimeMillis())))
     def updatedAt = column[Timestamp]("updated_at", O.Default(new Timestamp(System.currentTimeMillis())))
 
-		def fkCompanyId = foreignKey("fk_company_id", companyId, companies)(_.id, onUpdate = Restrict, onDelete = Cascade)
+		def fkCompanyId = foreignKey("fk_team_company", companyId, companies)(_.id, onUpdate = Restrict, onDelete = Cascade)
 
     def * = (id.?, companyId, name, description.?, recordStatus, createdAt, updatedAt)<>(TeamEntity.tupled, TeamEntity.unapply)
   }
@@ -66,8 +66,10 @@ trait TeamDBComponent extends DBComponent {
   }
 
   def updateTeamEntity(team: TeamEntity): Future[TeamEntity] = {
-      db.run(teams.filter(_.id === team.id).update(team))
-        .map(num => team)
+      db.run(teams.filter(t =>(t.id === team.id && 
+														    t.recordStatus === RowStatus.ACTIVE)).update(team)
+									.map{num => if(num != 0) team 
+															else throw new Exception("Can't update team, is it deleted?")})
   }
 
   def softDeleteTeamById(id: Int): Future[TeamEntity] = {

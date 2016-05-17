@@ -29,6 +29,7 @@ class DAO extends UserDBComponent
    with MailboxDBComponent
 	 with PasswordTokenDBComponent
 	 with TeamDBComponent
+	 with UnionDBComponent
 	 with	FileDBComponent{
  import dbConfig.driver.api._
 
@@ -61,6 +62,7 @@ class DAO extends UserDBComponent
       Logger.info("Dropping mailboxes  -> "    + tryDrop(mailboxes.schema))
       Logger.info("Dropping files  -> "    + tryDrop(files.schema))
 			Logger.info("Dropping teams  -> "    + tryDrop(teams.schema))
+			Logger.info("Dropping unions  -> "    + tryDrop(unions.schema))
 			Logger.info("Dropping teams  -> "    + tryDrop(teamGroups.schema))
 
       Success("Tables dropped")
@@ -99,6 +101,7 @@ class DAO extends UserDBComponent
 		Logger.info("Creating mailboxes -> " + tryCreate(mailboxes.schema))
     Logger.info("Creating files  -> "    + tryCreate(files.schema))
     Logger.info("Creating teams -> "    + tryCreate(teams.schema))
+    Logger.info("Creating unions -> "    + tryCreate(unions.schema))
     Logger.info("Creating teams -> "    + tryCreate(teamGroups.schema))
     Success("Created All tables!")
   }

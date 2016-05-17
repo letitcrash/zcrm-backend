@@ -44,11 +44,11 @@ GET     /companies/:companyId                                                   
 #GET	   /companies/:companyId/departments/:departmentId	
 
 #Union 
-#POST	   /companies/:companyId/unions	
-#PUT	   /companies/:companyId/unions/:unionId	
-#DELETE	 /companies/:companyId/unions/:unionId	
-#GET	   /companies/:companyId/unions
-#GET	   /companies/:companyId/unions/:unionId	
+POST	   /companies/:companyId/unions																												 controllers.UnionController.newUnion(companyId: Int)                	
+PUT	   	 /companies/:companyId/unions/:unionId	                                             controllers.UnionController.updateUnion(companyId: Int, unionId: Int)
+DELETE	 /companies/:companyId/unions/:unionId	                                             controllers.UnionController.deleteUnionById(companyId: Int, unionId: Int) 
+GET	   	 /companies/:companyId/unions                                                        controllers.UnionController.getAllUnions(companyId: Int)
+GET	   	 /companies/:companyId/unions/:unionId	                                             controllers.UnionController.getUnion(companyId: Int, unionId: Int)	
 
 #Team 
 POST	   /companies/:companyId/teams																												 controllers.TeamController.newTeam(companyId: Int)
