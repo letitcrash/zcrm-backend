@@ -8,16 +8,15 @@ object PositionConverter{
     def asPosition = {
       Position(
         id = Some(positionEntt.id.get),
-        companyId = positionEntt.companyId,
         name = positionEntt.name
       )
     }
   }
 
   implicit class PositionToEntity[ T <: Position](position: T) {
-    def asPositionEntity = {
+    def asPositionEntity(companyId: Int) = {
       PositionEntity(
-        companyId = position.companyId,
+        companyId = companyId,
         name = position.name
       )
     }

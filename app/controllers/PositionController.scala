@@ -19,9 +19,15 @@ class PositionController @Inject() extends CRMController {
   import utils.JSFormat.positionFrmt 
   
   
-  def newPosition(companyId: Int) = CRMActionAsync[Position](expectedPositionFormat){ rq =>
-    PositionRepository.savePosition(rq.body)
+  def postPosition(companyId: Int) = CRMActionAsync[Position](expectedPositionFormat){ rq =>
+    PositionRepository.savePosition(rq.body, companyId)
       .map( position => Json.toJson(position))
   }
+
+
+  def putPosition(companyId: Int) = CRMActionAsync[Position](expectedPositionFormat){ rq =>
+    PositionRepository.changePosition(rq.body, companyId).map( position => Json.toJson(position))
+  }
+
 
 }
