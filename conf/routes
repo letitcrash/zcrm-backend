@@ -51,11 +51,11 @@ GET     /companies/:companyId                                                   
 #GET	   /companies/:companyId/unions/:unionId	
 
 #Team 
-#POST	   /companies/:companyId/teams	
-#PUT	   /companies/:companyId/teams/:teamId	
-#DELETE	 /companies/:companyId/teams/:teamId	
-#GET	   /companies/:companyId/teams
-#GET	   /companies/:companyId/teams/:teamId	
+POST	   /companies/:companyId/teams																												 controllers.TeamController.newTeam(companyId: Int)
+PUT	     /companies/:companyId/teams/:teamId																								 controllers.TeamController.updateTeam(companyId: Int, teamId: Int)	
+DELETE	 /companies/:companyId/teams/:teamId																								 controllers.TeamController.deleteTeamById(companyId: Int, teamId: Int)	
+GET	  	 /companies/:companyId/teams																												 controllers.TeamController.getAllTeams(companyId: Int)
+GET	     /companies/:companyId/teams/:teamId																								 controllers.TeamController.getTeam(companyId: Int, teamId: Int)	
 
 #Position
 #POST	   /companies/:companyId/positions
