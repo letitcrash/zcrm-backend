@@ -30,6 +30,7 @@ class DAO extends UserDBComponent
 	 with PasswordTokenDBComponent
 	 with TeamDBComponent
 	 with UnionDBComponent
+	 with ShiftDBComponent
 	 with	FileDBComponent{
  import dbConfig.driver.api._
 
@@ -61,9 +62,10 @@ class DAO extends UserDBComponent
       Logger.info("Dropping taskAttachedMails  -> "    + tryDrop(taskAttachedMails.schema))
       Logger.info("Dropping mailboxes  -> "    + tryDrop(mailboxes.schema))
       Logger.info("Dropping files  -> "    + tryDrop(files.schema))
+			Logger.info("Dropping shifts  -> "    + tryDrop(shifts.schema))
 			Logger.info("Dropping teams  -> "    + tryDrop(teams.schema))
 			Logger.info("Dropping unions  -> "    + tryDrop(unions.schema))
-			Logger.info("Dropping teams  -> "    + tryDrop(teamGroups.schema))
+			Logger.info("Dropping groups  -> "    + tryDrop(teamGroups.schema))
 
       Success("Tables dropped")
     } catch {
@@ -101,8 +103,9 @@ class DAO extends UserDBComponent
 		Logger.info("Creating mailboxes -> " + tryCreate(mailboxes.schema))
     Logger.info("Creating files  -> "    + tryCreate(files.schema))
     Logger.info("Creating teams -> "    + tryCreate(teams.schema))
+    Logger.info("Creating shifts -> "    + tryCreate(shifts.schema))
     Logger.info("Creating unions -> "    + tryCreate(unions.schema))
-    Logger.info("Creating teams -> "    + tryCreate(teamGroups.schema))
+    Logger.info("Creating groups -> "    + tryCreate(teamGroups.schema))
     Success("Created All tables!")
   }
 

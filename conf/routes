@@ -30,11 +30,11 @@ GET     /companies/:companyId                                                   
 # GET	    /companies/:companyId/delegates/:delegateId
 
 # Shift 
-# POST	  /companies/:companyId/shifts	
-# PUT	    /companies/:companyId/shifts/:shiftId	
-# DELETE	/companies/:companyId/shifts/:shiftId
-# GET	    /companies/:companyId/shifts
-# GET	    /companies/:companyId/shifts/:shiftId	
+POST	  /companies/:companyId/shifts																											 controllers.ShiftController.newShift(companyId: Int)                 	
+PUT	    /companies/:companyId/shifts/:shiftId	                                             controllers.ShiftController.updateShift(companyId: Int, shiftId: Int)
+DELETE	/companies/:companyId/shifts/:shiftId                                              controllers.ShiftController.deleteShiftById(companyId: Int, shiftId: Int)
+GET	    /companies/:companyId/shifts                                                       controllers.ShiftController.getAllShifts(companyId: Int)
+GET	    /companies/:companyId/shifts/:shiftId	                                             controllers.ShiftController.getShift(companyId: Int, shiftId: Int)	
 
 #Department 
 #POST	   /companies/:companyId/departments	
