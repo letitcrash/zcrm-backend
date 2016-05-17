@@ -25,6 +25,7 @@ class DAO extends UserDBComponent
    with ContactProfileDBComponent
    with SignupTokenDBComponent
    with CompanyDBComponent
+   with PositionDBComponent
    with EmployeeDBComponent
    with MailboxDBComponent
 	 with PasswordTokenDBComponent
@@ -64,7 +65,7 @@ class DAO extends UserDBComponent
 			Logger.info("Dropping teams  -> "    + tryDrop(teams.schema))
 			Logger.info("Dropping unions  -> "    + tryDrop(unions.schema))
 			Logger.info("Dropping teams  -> "    + tryDrop(teamGroups.schema))
-
+      Logger.info("Dropping positions -> " + tryDrop(positions.schema))
       Success("Tables dropped")
     } catch {
       case ex: Exception =>
@@ -103,6 +104,7 @@ class DAO extends UserDBComponent
     Logger.info("Creating teams -> "    + tryCreate(teams.schema))
     Logger.info("Creating unions -> "    + tryCreate(unions.schema))
     Logger.info("Creating teams -> "    + tryCreate(teamGroups.schema))
+    Logger.info("Creating positions -> " + tryCreate(positions.schema))
     Success("Created All tables!")
   }
 

@@ -58,7 +58,7 @@ GET	  	 /companies/:companyId/teams																												 controllers.Team
 GET	     /companies/:companyId/teams/:teamId																								 controllers.TeamController.getTeam(companyId: Int, teamId: Int)	
 
 #Position
-#POST	   /companies/:companyId/positions
+POST	   /companies/:companyId/positions                                                      controllers.PositionController.newPosition(companyId: Int)
 #PUT	   /companies/:companyId/teams/:positionId
 #DELETE	 /companies/:companyId/teams/:positionId
 #GET	   /companies/:companyId/positions
