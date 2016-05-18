@@ -25,7 +25,15 @@ object PositionRepository {
   import utils.converters.PositionConverter._
     deletePosition(positionId).map(deleted => deleted.asPosition) 
   }
-
   
+  def getPositionById(id: Int): Future[Position] = {
+  import utils.converters.PositionConverter._
+    getPositionEntityById(id).map( position => position.asPosition)
+  }
+  
+  def getPositionsByCompanyId(companyId: Int): Future[List[Position]] = {
+  import utils.converters.PositionConverter._
+    getPositionEntitiesByCompanyId(companyId).map( list => list.map(_.asPosition))
+  }
 
 }

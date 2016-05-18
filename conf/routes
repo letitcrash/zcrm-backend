@@ -59,10 +59,10 @@ GET      /companies/:companyId/teams/:teamId                                    
 
 #Position
 POST     /companies/:companyId/positions                                                     controllers.PositionController.postPosition(companyId: Int)
-PUT    /companies/:companyId/teams/:positionId                                               controllers.PositionController.putPosition(companyId: Int, positionId: Int)
+PUT      /companies/:companyId/teams/:positionId                                             controllers.PositionController.putPosition(companyId: Int, positionId: Int)
 DELETE   /companies/:companyId/teams/:positionId                                             controllers.PositionController.deletePosition(companyId: Int, positionId: Int)
-#GET     /companies/:companyId/positions
-#GET     /companies/:companyId/positions/:positionId
+GET      /companies/:companyId/positions                                                     controllers.PositionController.getAllPositions(companyId: Int)
+GET      /companies/:companyId/positions/:positionId                                         controllers.PositionController.getPosition(companyId: Int, positionId: Int) 
  
 # Employees
 POST    /companies/:companyId/employees                                                      controllers.EmployeeController.inviteEmployee(companyId: Int)
