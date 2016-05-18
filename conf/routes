@@ -20,6 +20,7 @@ POST    /users/:userId/password/recover                                         
 POST /login                                                                                   controllers.LoginController.login
 
 # Companies
+GET     /companies                                                                            controllers.CompanyController.getAll
 GET     /companies/:companyId                                                                 controllers.CompanyController.get(companyId: Int)
 
 # Delegate

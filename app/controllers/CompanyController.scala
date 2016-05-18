@@ -19,9 +19,12 @@ class CompanyController @Inject() extends CRMController {
 
   def get(companyId: Int) = CRMActionAsync { rq =>
     //if(rq.header.belongsToCompany(companyId) || rq.header.isAdmin){
-       CompanyDBRepository.getCompany(companyId)
-         .map( company => Json.toJson(company)) 
+       CompanyDBRepository.getCompany(companyId).map( company => Json.toJson(company)) 
     //}else { Future{Failure(new InsufficientRightsException())} }
+  }
+
+  def getAll = CRMActionAsync { rq => 
+    CompanyDBRepository.getAllCompanies.map( company => Json.toJson(company)) 
   }
 
 }

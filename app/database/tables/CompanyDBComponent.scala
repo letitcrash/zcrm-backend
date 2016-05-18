@@ -61,5 +61,10 @@ trait CompanyDBComponent extends DBComponent
     else {insertCompany(company)}
   }
 
+
+  def getCompanyEntities: Future[List[(CompanyEntity, ContactProfileEntity)]] = {
+    db.run(companyWithProfile.result).map(_.toList)
+  }
+
 }
 

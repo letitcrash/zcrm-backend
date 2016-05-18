@@ -29,4 +29,9 @@ object CompanyDBRepository {
   }
 
 
+  def getAllCompanies :Future[List[Company]] = {
+    import utils.converters.CompanyConverter._
+    getCompanyEntities.map(list => list.map(_.asCompany))
+  }
+
 }
