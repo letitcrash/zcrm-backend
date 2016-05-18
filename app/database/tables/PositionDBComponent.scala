@@ -55,15 +55,15 @@ trait PositionDBComponent extends DBComponent{
   }
 
   def getPositionById(id: Int): Future[PositionEntity] = {
-		db.run(positions.filter(_.id === id).result.head)
-	}
+    db.run(positions.filter(_.id === id).result.head)
+  }
  
 
-	def deletePosition(id: Int): Future[PositionEntity] = {
+  def deletePosition(id: Int): Future[PositionEntity] = {
     val deletedPosition = getPositionById(id)
-		db.run(positions.filter(_.id === id).delete)
+    db.run(positions.filter(_.id === id).delete)
     deletedPosition
-	}
+  }
 
 
   //Position filters

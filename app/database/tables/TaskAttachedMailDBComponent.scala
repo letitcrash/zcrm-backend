@@ -21,7 +21,7 @@ trait TaskAttachedMailDBComponent extends DBComponent {
 
   import dbConfig.driver.api._
 
-	val taskAttachedMails = TableQuery[TaskAttachedMailTable]
+  val taskAttachedMails = TableQuery[TaskAttachedMailTable]
 
   //TODO: add fild/FK to tbl_task
   class TaskAttachedMailTable(tag: Tag) extends Table[TaskAttachedMailEntity](tag, "tbl_task_attached_mail") {
@@ -36,45 +36,45 @@ trait TaskAttachedMailDBComponent extends DBComponent {
     def * = (id.?, taskId, mailExtId, from, subject.?) <>(TaskAttachedMailEntity.tupled, TaskAttachedMailEntity.unapply)
 
   }
-	
+  
 
-	//TaskAttachedMailEntity CRUD
-	def insertAttachedMailEntity(mailEntity: TaskAttachedMailEntity): Future[TaskAttachedMailEntity] = {
-			db.run(((taskAttachedMails returning taskAttachedMails.map(_.id) 
-								into ((mailEntity,id) => mailEntity.copy(id=Some(id)))) += mailEntity))
-	}
+  //TaskAttachedMailEntity CRUD
+  def insertAttachedMailEntity(mailEntity: TaskAttachedMailEntity): Future[TaskAttachedMailEntity] = {
+      db.run(((taskAttachedMails returning taskAttachedMails.map(_.id) 
+                into ((mailEntity,id) => mailEntity.copy(id=Some(id)))) += mailEntity))
+  }
 
-	def getAttachedMailEntityById(id: Int): Future[TaskAttachedMailEntity] = {
-			db.run(taskAttachedMails.filter(_.id === id).result.head)
-	}
+  def getAttachedMailEntityById(id: Int): Future[TaskAttachedMailEntity] = {
+      db.run(taskAttachedMails.filter(_.id === id).result.head)
+  }
 
   
-	def getAttachedMailEntitiesByTaskId(taskId: Int): Future[List[TaskAttachedMailEntity]] = {
-			db.run(taskAttachedMails.filter(_.taskId === taskId).result).map(_.toList)
-	}
+  def getAttachedMailEntitiesByTaskId(taskId: Int): Future[List[TaskAttachedMailEntity]] = {
+      db.run(taskAttachedMails.filter(_.taskId === taskId).result).map(_.toList)
+  }
 
-	def getAttachedMailEntityByMailId(mailId: String): Future[TaskAttachedMailEntity] = {
-			db.run(taskAttachedMails.filter(_.mailExtId === mailId).result.head)
-	}
+  def getAttachedMailEntityByMailId(mailId: String): Future[TaskAttachedMailEntity] = {
+      db.run(taskAttachedMails.filter(_.mailExtId === mailId).result.head)
+  }
 
   def updateAttachedMailEntity(mailEntity: TaskAttachedMailEntity): Future[TaskAttachedMailEntity] = {
       db.run(taskAttachedMails.filter(_.id === mailEntity.id).update(mailEntity))
                   .map( num => mailEntity)
   }
 
-	def deleteAttachedMailEntityById(id: Int):Future[TaskAttachedMailEntity] = {
-			val deletedMail = getAttachedMailEntityById(id)
-			db.run(taskAttachedMails.filter(_.id === id).delete)
-			deletedMail
-	}
+  def deleteAttachedMailEntityById(id: Int):Future[TaskAttachedMailEntity] = {
+      val deletedMail = getAttachedMailEntityById(id)
+      db.run(taskAttachedMails.filter(_.id === id).delete)
+      deletedMail
+  }
 
-	def deleteAttachedMailEntityByExtMailId(uniqueId: String): Future[TaskAttachedMailEntity] = {
-			val deletedMail = getAttachedMailEntityByMailId(uniqueId)
-			db.run(taskAttachedMails.filter(_.mailExtId === uniqueId).delete)
-			deletedMail
-	}
+  def deleteAttachedMailEntityByExtMailId(uniqueId: String): Future[TaskAttachedMailEntity] = {
+      val deletedMail = getAttachedMailEntityByMailId(uniqueId)
+      db.run(taskAttachedMails.filter(_.mailExtId === uniqueId).delete)
+      deletedMail
+  }
 
-	//TaskAttachedMailEntity Filters
+  //TaskAttachedMailEntity Filters
   def upsertAttachedMailEntity(mailEntity: TaskAttachedMailEntity): Future[TaskAttachedMailEntity] = {
     if(mailEntity.id.isDefined) {
       updateAttachedMailEntity(mailEntity)

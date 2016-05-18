@@ -50,19 +50,19 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
     }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
-	def getEmployee(companyId: Int, employeeId: Int) = CRMActionAsync{rq =>
-		EmployeeDBRepository.getEmployeeByEmployeeId(employeeId).map(empl => Json.toJson(empl))
-	}
+  def getEmployee(companyId: Int, employeeId: Int) = CRMActionAsync{rq =>
+    EmployeeDBRepository.getEmployeeByEmployeeId(employeeId).map(empl => Json.toJson(empl))
+  }
 
-	def updateEmployee(companyId: Int, employeeId: Int) = CRMActionAsync[Employee](expectedEmployeeFormat){rq =>
-		EmployeeDBRepository.updateEmployee(rq.body).map(updated => Json.toJson(updated))			
-	}
+  def updateEmployee(companyId: Int, employeeId: Int) = CRMActionAsync[Employee](expectedEmployeeFormat){rq =>
+    EmployeeDBRepository.updateEmployee(rq.body).map(updated => Json.toJson(updated))     
+  }
 
-	def softDeleteEmployee(companyId: Int, employeeId: Int) = CRMActionAsync{rq =>
-		EmployeeDBRepository.softDeleteEmployeeById(employeeId).map(deletedEmpl => Json.toJson(deletedEmpl))
-	}
+  def softDeleteEmployee(companyId: Int, employeeId: Int) = CRMActionAsync{rq =>
+    EmployeeDBRepository.softDeleteEmployeeById(employeeId).map(deletedEmpl => Json.toJson(deletedEmpl))
+  }
 
-	def getAllEmployeesByCompanyId(companyId: Int) = CRMActionAsync{rq =>
-		EmployeeDBRepository.getEmployeesByCompanyId(companyId).map(list => Json.toJson(list))
-	}
+  def getAllEmployeesByCompanyId(companyId: Int) = CRMActionAsync{rq =>
+    EmployeeDBRepository.getEmployeesByCompanyId(companyId).map(list => Json.toJson(list))
+  }
 }

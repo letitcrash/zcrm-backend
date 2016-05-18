@@ -16,13 +16,13 @@ case class PasswordTokenEntity(
   usedAt: Option[Timestamp] = None)
 
 trait PasswordTokenDBComponent extends DBComponent{
-	this: DBComponent =>
+  this: DBComponent =>
 
   import dbConfig.driver.api._
 
-	val passwordTokens = TableQuery[PasswordTokenTable]
+  val passwordTokens = TableQuery[PasswordTokenTable]
 
-	class PasswordTokenTable(tag: Tag) extends Table[PasswordTokenEntity](tag, "tbl_password_tokens") {
+  class PasswordTokenTable(tag: Tag) extends Table[PasswordTokenEntity](tag, "tbl_password_tokens") {
     def userId = column[Int]("user_id")
     def token = column[String]("token")
     def expires = column[Timestamp]("expires_at")
@@ -30,47 +30,47 @@ trait PasswordTokenDBComponent extends DBComponent{
     def usedAt = column[Timestamp]("used_at", Nullable)
 
     def * = (userId, token, expires, addedAt, usedAt.?) <>(PasswordTokenEntity.tupled, PasswordTokenEntity.unapply)
-			
+      
   }
 
   private val random = new SecureRandom()
   random.setSeed(random.generateSeed(55))
 
 
-	//CRUD PasswordTokenDBComponent
-	def insertPasswordToken(token: PasswordTokenEntity): Future[PasswordTokenEntity] = {
+  //CRUD PasswordTokenDBComponent
+  def insertPasswordToken(token: PasswordTokenEntity): Future[PasswordTokenEntity] = {
     db.run(passwordTokens += token).flatMap( num => getPasswordToken(token.userId))
-	}
+  }
 
 
   def getPasswordToken(userId: Int): Future[PasswordTokenEntity] = {
     db.run(passwordTokens.filter(_.userId === userId).result.head)
   }
 
-	def updatePasswordToken(token: PasswordTokenEntity): Future[PasswordTokenEntity] = {
-		db.run(passwordTokens.filter(_.userId === token.userId).update(token))
+  def updatePasswordToken(token: PasswordTokenEntity): Future[PasswordTokenEntity] = {
+    db.run(passwordTokens.filter(_.userId === token.userId).update(token))
                     .map( num => token)
-	}
+  }
 
   //PswToken filters 
-	def markPwdTokenAsUsed(token: PasswordTokenEntity): Future[PasswordTokenEntity] = {
+  def markPwdTokenAsUsed(token: PasswordTokenEntity): Future[PasswordTokenEntity] = {
       val updatedTkn = token.copy(usedAt = Some(new Timestamp(System.currentTimeMillis())))
-			updatePasswordToken(updatedTkn)
+      updatePasswordToken(updatedTkn)
   }
 
   def newPwdToken(userId: Int, validFor: Long = 86400000): Future[PasswordTokenEntity] = {
     val strToken = new BigInteger(220, random).toString(32)
     val currentTime = System.currentTimeMillis()
     val token = PasswordTokenEntity(userId = userId,
-																		token = strToken,
-																		expires = new Timestamp(currentTime + validFor),
-																		addedAt = new Timestamp(currentTime),
-																		usedAt = None)
-		insertPasswordToken(token)
-	}
+                                    token = strToken,
+                                    expires = new Timestamp(currentTime + validFor),
+                                    addedAt = new Timestamp(currentTime),
+                                    usedAt = None)
+    insertPasswordToken(token)
+  }
 
   def validatePwdToken(userId: Int, strToken: String): Future[PasswordTokenEntity] = {
-			db.run((for {
+      db.run((for {
         token <- passwordTokens if token.userId === userId && token.token === strToken
       } yield token).sortBy(_.addedAt.desc).result.head)
   }

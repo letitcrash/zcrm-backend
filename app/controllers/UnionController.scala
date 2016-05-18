@@ -28,7 +28,7 @@ class UnionController @Inject() extends CRMController {
   //TODO: add permissions check
   def updateUnion(companyId: Int, unionId: Int) = CRMActionAsync[Union](expectedUnionFormat){ rq =>
     // if(rq.header.belongsToCompany(companyId)){
-    	UnionDBRepository.updateUnion(rq.body.copy(id = Some(unionId)), companyId).map( union => Json.toJson(union))
+      UnionDBRepository.updateUnion(rq.body.copy(id = Some(unionId)), companyId).map( union => Json.toJson(union))
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
@@ -36,19 +36,19 @@ class UnionController @Inject() extends CRMController {
   //TODO: add permissions check
   def getUnion(companyId: Int, unionId: Int) = CRMActionAsync { rq =>
     // if(rq.header.belongsToCompany(companyId)){
-    	UnionDBRepository.getUnionById(unionId).map( union => Json.toJson(union))
+      UnionDBRepository.getUnionById(unionId).map( union => Json.toJson(union))
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
   //TODO: add permissions check
   def getAllUnions(companyId: Int) = CRMActionAsync { rq =>
     // if(rq.header.belongsToCompany(companyId)){
-   	 	UnionDBRepository.getUnionsByCompanyId(companyId).map( union => Json.toJson(union))
+      UnionDBRepository.getUnionsByCompanyId(companyId).map( union => Json.toJson(union))
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
-	
-	def deleteUnionById(companyId: Int, unionId:Int) = CRMActionAsync{rq =>
-			UnionDBRepository.deleteUnion(unionId).map(deletedUnion => Json.toJson(deletedUnion))
-	}
+  
+  def deleteUnionById(companyId: Int, unionId:Int) = CRMActionAsync{rq =>
+      UnionDBRepository.deleteUnion(unionId).map(deletedUnion => Json.toJson(deletedUnion))
+  }
  
 }

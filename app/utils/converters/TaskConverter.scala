@@ -10,32 +10,32 @@ object TaskConverter {
   def asTask: Task = {
       Task(id = tuple._1.id,
            companyId = tuple._1.companyId,
-					 createdByUser = tuple._2, 
-					 assignedToUser = tuple._3,
-					 title = tuple._1.title,
-					 description = tuple._1.description,
+           createdByUser = tuple._2, 
+           assignedToUser = tuple._3,
+           title = tuple._1.title,
+           description = tuple._1.description,
            status = Some(tuple._1.status), 
            attachedMails = tuple._4 match { case Some(list) => Some(list.map(_.asInboxMail))
                                             case _ => None},
-					 dueDate = tuple._1.dueDate)
+           dueDate = tuple._1.dueDate)
     }
   }
 
-	implicit class TaskToEntity(task: Task){
-			def asTaskEntity: TaskEntity = {
+  implicit class TaskToEntity(task: Task){
+      def asTaskEntity: TaskEntity = {
         import play.api.Logger
-						val v = TaskEntity(id = task.id,
-											 companyId = task.companyId,
-	  									 createdByUserId = task.createdByUser.id.get,
+            val v = TaskEntity(id = task.id,
+                       companyId = task.companyId,
+                       createdByUserId = task.createdByUser.id.get,
                        assignedToUserId = task.assignedToUser match {case Some(user) => user.id
                                                                      case _ => None},
-											 title = task.title,
-											 description = task.description,
-											 dueDate = task.dueDate)
+                       title = task.title,
+                       description = task.description,
+                       dueDate = task.dueDate)
             Logger.info(v.toString)
             v
-			}
-	}
+      }
+  }
 
 
   implicit class InboxMailToAttachedMailEntt(inboxMail: InboxMail){

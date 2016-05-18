@@ -63,13 +63,13 @@ trait EmployeeDBComponent extends DBComponent{
   }
 
   def getEmployeeById(id: Int): Future[EmployeeEntity] = {
-   	db.run(employees.filter(t => (t.id === id &&
-																	t.recordStatus === RowStatus.ACTIVE)).result.head)
+    db.run(employees.filter(t => (t.id === id &&
+                                  t.recordStatus === RowStatus.ACTIVE)).result.head)
   }
 
   def getEmployeeByUserId(userId: Int): Future[EmployeeEntity] = {
-   	db.run(employees.filter(t => (t.userId === userId &&
-																	t.recordStatus === RowStatus.ACTIVE)).result.head)
+    db.run(employees.filter(t => (t.userId === userId &&
+                                  t.recordStatus === RowStatus.ACTIVE)).result.head)
   }
 
   def updateEmployeeEntity(newEmpl: EmployeeEntity): Future[EmployeeEntity] = {
@@ -77,15 +77,15 @@ trait EmployeeDBComponent extends DBComponent{
                     .map( num => newEmpl)
   }
 
-	def softDeleteEmployeeEntityByUserId(userId: Int): Future[EmployeeEntity] = {
-		getEmployeeByUserId(userId).flatMap(empl =>
-					updateEmployeeEntity(empl.copy(recordStatus = RowStatus.DELETED)))
-	}
+  def softDeleteEmployeeEntityByUserId(userId: Int): Future[EmployeeEntity] = {
+    getEmployeeByUserId(userId).flatMap(empl =>
+          updateEmployeeEntity(empl.copy(recordStatus = RowStatus.DELETED)))
+  }
 
-	def softDeleteEmployeeEntityById(id: Int): Future[EmployeeEntity] = {
-		getEmployeeById(id).flatMap(empl =>
-					updateEmployeeEntity(empl.copy(recordStatus = RowStatus.DELETED)))
-	}
+  def softDeleteEmployeeEntityById(id: Int): Future[EmployeeEntity] = {
+    getEmployeeById(id).flatMap(empl =>
+          updateEmployeeEntity(empl.copy(recordStatus = RowStatus.DELETED)))
+  }
 
   //EmployeeEntity filters
   def upsertEmployee(empl: EmployeeEntity): Future[EmployeeEntity] = {
@@ -93,24 +93,24 @@ trait EmployeeDBComponent extends DBComponent{
     else {insertEmployee(empl)}
   }
 
-	def getAllEmployeesWithUsersByCompanyId(companyId: Int): Future[List[(EmployeeEntity,  (UserEntity, ContactProfileEntity))]] = {
-		db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.companyId === companyId && 
-																								     t._1.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
-	}
+  def getAllEmployeesWithUsersByCompanyId(companyId: Int): Future[List[(EmployeeEntity,  (UserEntity, ContactProfileEntity))]] = {
+    db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.companyId === companyId && 
+                                                     t._1.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
+  }
 
-	def getEmployeeWithUserById(employeeId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
-		db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.id === employeeId && 
-																								     t._1.recordStatus === RowStatus.ACTIVE)).result.head)
-	}
+  def getEmployeeWithUserById(employeeId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
+    db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.id === employeeId && 
+                                                     t._1.recordStatus === RowStatus.ACTIVE)).result.head)
+  }
 
-	def getEmployeeWithUserByUserId(userId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
-		db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.userId === userId && 
-																								     t._1.recordStatus === RowStatus.ACTIVE)).result.head)
-	}
+  def getEmployeeWithUserByUserId(userId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
+    db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.userId === userId && 
+                                                     t._1.recordStatus === RowStatus.ACTIVE)).result.head)
+  }
 
-	def updateEmployeeWithUser(emplEntt: EmployeeEntity): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
-		updateEmployeeEntity(emplEntt).flatMap(updatedEmpl =>
-				getEmployeeWithUserById(updatedEmpl.id.get))
-	}
+  def updateEmployeeWithUser(emplEntt: EmployeeEntity): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
+    updateEmployeeEntity(emplEntt).flatMap(updatedEmpl =>
+        getEmployeeWithUserById(updatedEmpl.id.get))
+  }
 
 }

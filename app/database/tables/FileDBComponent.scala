@@ -41,24 +41,24 @@ trait FileDBComponent extends DBComponent {
 
   def filesWithUsersWihtProfile = files join usersWithProfile on (_.userId === _._1.id)
 
-	//FileEntity CRUD
-	def insertFileEntity(file: FileEntity): Future[FileEntity] = {
-		db.run((files returning files.map(_.id)
+  //FileEntity CRUD
+  def insertFileEntity(file: FileEntity): Future[FileEntity] = {
+    db.run((files returning files.map(_.id)
                   into ((file,id) => file.copy(id=Some(id)))) += file)
-	}
+  }
 
-	def getFileEntityById(id: Int): Future[FileEntity] = {
-		db.run(files.filter(_.id === id).result.head)
-	}
+  def getFileEntityById(id: Int): Future[FileEntity] = {
+    db.run(files.filter(_.id === id).result.head)
+  }
 
-	def getFileEntitiesByUserId(userId: Int): Future[List[FileEntity]] = {
-		db.run(files.filter(_.userId === userId).result).map(_.toList)
-	}
+  def getFileEntitiesByUserId(userId: Int): Future[List[FileEntity]] = {
+    db.run(files.filter(_.userId === userId).result).map(_.toList)
+  }
 
-	def deleteFileEntity(id: Int): Future[FileEntity] = {
-		val deletedFile = getFileEntityById(id)
-		db.run(files.filter(_.id === id).delete)
-		deletedFile
-	}
+  def deleteFileEntity(id: Int): Future[FileEntity] = {
+    val deletedFile = getFileEntityById(id)
+    db.run(files.filter(_.id === id).delete)
+    deletedFile
+  }
 }
 

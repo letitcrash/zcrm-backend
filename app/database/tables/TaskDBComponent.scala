@@ -29,13 +29,13 @@ case class TaskEntity(
 
 trait TaskDBComponent extends DBComponent {
  this: DBComponent 
-	with CompanyDBComponent
+  with CompanyDBComponent
   with ContactProfileDBComponent
   with UserDBComponent =>
 
   import dbConfig.driver.api._
 
-	val tasks = TableQuery[TaskTable]
+  val tasks = TableQuery[TaskTable]
 
   class TaskTable(tag: Tag) extends Table[TaskEntity](tag, "tbl_task") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
@@ -64,52 +64,52 @@ trait TaskDBComponent extends DBComponent {
     tasks join usersWithProfile on (_.createdByUserId === _._1.id) joinLeft  usersWithProfile on (_._1.assignedToUserId === _._1.id)
 
 
-	//TaskEntity CRUD
-	def insertTaskEntity(task: TaskEntity): Future[TaskEntity] = {
-			db.run(((tasks returning tasks.map(_.id) 
-								into ((task,id) => task.copy(id=Some(id)))) += task))
-	}
+  //TaskEntity CRUD
+  def insertTaskEntity(task: TaskEntity): Future[TaskEntity] = {
+      db.run(((tasks returning tasks.map(_.id) 
+                into ((task,id) => task.copy(id=Some(id)))) += task))
+  }
 
-	def getTaskEntityById(id: Int): Future[TaskEntity] = {
-			db.run(tasks.filter(_.id === id).result.head)
-	}
+  def getTaskEntityById(id: Int): Future[TaskEntity] = {
+      db.run(tasks.filter(_.id === id).result.head)
+  }
 
-	def getTaskEntitiesByCompanyId(companyId: Int): Future[List[TaskEntity]] = {
-		db.run(tasks.filter(_.companyId === companyId).result).map(_.toList)
-	}
+  def getTaskEntitiesByCompanyId(companyId: Int): Future[List[TaskEntity]] = {
+    db.run(tasks.filter(_.companyId === companyId).result).map(_.toList)
+  }
 
 
   def getTasksWitUserByCompanyId(companyId: Int):
     Future[List[((TaskEntity, (UserEntity, ContactProfileEntity)) ,Option[(UserEntity, ContactProfileEntity)])]] = {
-		db.run(tasksWithUsersWihtProfile.filter(t =>(t._1._1.companyId === companyId && 
-																								 t._1._1.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
+    db.run(tasksWithUsersWihtProfile.filter(t =>(t._1._1.companyId === companyId && 
+                                                 t._1._1.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
   }
 
   def getTaskWitUserById(taskId: Int):
     Future[((TaskEntity, (UserEntity, ContactProfileEntity)) ,Option[(UserEntity, ContactProfileEntity)])] = {
-		db.run(tasksWithUsersWihtProfile.filter(t => (t._1._1.id === taskId && 
-																									t._1._1.recordStatus === RowStatus.ACTIVE)).result.head)
+    db.run(tasksWithUsersWihtProfile.filter(t => (t._1._1.id === taskId && 
+                                                  t._1._1.recordStatus === RowStatus.ACTIVE)).result.head)
   }
 
-	def updateTaskEntity(task: TaskEntity): Future[TaskEntity] = {
-			db.run(tasks.filter(_.id === task.id).update(task))
+  def updateTaskEntity(task: TaskEntity): Future[TaskEntity] = {
+      db.run(tasks.filter(_.id === task.id).update(task))
         .map( num => task)
-	}
+  }
 
 
-	def softDeleteTaskEntityById(taskId: Int): Future[TaskEntity] = {
-		getTaskEntityById(taskId).flatMap(res =>
-			  updateTaskEntity(res.copy(recordStatus = RowStatus.DELETED, 
-				   	                      updatedAt = new Timestamp(System.currentTimeMillis()))))
+  def softDeleteTaskEntityById(taskId: Int): Future[TaskEntity] = {
+    getTaskEntityById(taskId).flatMap(res =>
+        updateTaskEntity(res.copy(recordStatus = RowStatus.DELETED, 
+                                  updatedAt = new Timestamp(System.currentTimeMillis()))))
 
-	}
+  }
 
-	//TaskEntity Filters
-	def updateTaskWithUserByEntity(task: TaskEntity):
+  //TaskEntity Filters
+  def updateTaskWithUserByEntity(task: TaskEntity):
     Future[((TaskEntity, (UserEntity, ContactProfileEntity)) ,Option[(UserEntity, ContactProfileEntity)])] = {
     updateTaskEntity(task).flatMap( taskEntt =>
         getTaskWitUserById(taskEntt.id.get))
-	}
+  }
 
   def upsertTaskEntity(task: TaskEntity): Future[TaskEntity] = {
     if(task.id.isDefined) {
@@ -118,6 +118,6 @@ trait TaskDBComponent extends DBComponent {
       insertTaskEntity(task)
     }
   }
-	
+  
 }
 

@@ -28,11 +28,11 @@ class DAO extends UserDBComponent
    with PositionDBComponent
    with EmployeeDBComponent
    with MailboxDBComponent
-	 with PasswordTokenDBComponent
-	 with TeamDBComponent
-	 with UnionDBComponent
-	 with ShiftDBComponent
-	 with	FileDBComponent{
+   with PasswordTokenDBComponent
+   with TeamDBComponent
+   with UnionDBComponent
+   with ShiftDBComponent
+   with FileDBComponent{
  import dbConfig.driver.api._
 
   def clearDatabase: Try[String] = {
@@ -63,10 +63,10 @@ class DAO extends UserDBComponent
       Logger.info("Dropping taskAttachedMails  -> "    + tryDrop(taskAttachedMails.schema))
       Logger.info("Dropping mailboxes  -> "    + tryDrop(mailboxes.schema))
       Logger.info("Dropping files  -> "    + tryDrop(files.schema))
-			Logger.info("Dropping shifts  -> "    + tryDrop(shifts.schema))
-			Logger.info("Dropping teams  -> "    + tryDrop(teams.schema))
-			Logger.info("Dropping unions  -> "    + tryDrop(unions.schema))
-			Logger.info("Dropping teams  -> "    + tryDrop(teamGroups.schema))
+      Logger.info("Dropping shifts  -> "    + tryDrop(shifts.schema))
+      Logger.info("Dropping teams  -> "    + tryDrop(teams.schema))
+      Logger.info("Dropping unions  -> "    + tryDrop(unions.schema))
+      Logger.info("Dropping teams  -> "    + tryDrop(teamGroups.schema))
       Logger.info("Dropping positions -> " + tryDrop(positions.schema))
       Success("Tables dropped")
     } catch {
@@ -98,10 +98,10 @@ class DAO extends UserDBComponent
     Logger.info("Creating signupTokens      -> " + tryCreate(signupTokens.schema))
     Logger.info("Creating employees      -> " + tryCreate(employees.schema))
     Logger.info("Creating companies      -> " + tryCreate(companies.schema))
-		Logger.info("Creating passworTokens  -> " + tryCreate(passwordTokens.schema))
-		Logger.info("Creating tasks -> "          + tryCreate(tasks.schema))
-		Logger.info("Creating taskAttachedMails -> " + tryCreate(taskAttachedMails.schema))
-		Logger.info("Creating mailboxes -> " + tryCreate(mailboxes.schema))
+    Logger.info("Creating passworTokens  -> " + tryCreate(passwordTokens.schema))
+    Logger.info("Creating tasks -> "          + tryCreate(tasks.schema))
+    Logger.info("Creating taskAttachedMails -> " + tryCreate(taskAttachedMails.schema))
+    Logger.info("Creating mailboxes -> " + tryCreate(mailboxes.schema))
     Logger.info("Creating files  -> "    + tryCreate(files.schema))
     Logger.info("Creating teams -> "    + tryCreate(teams.schema))
     Logger.info("Creating shifts -> "    + tryCreate(shifts.schema))

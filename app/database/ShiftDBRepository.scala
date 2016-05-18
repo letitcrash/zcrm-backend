@@ -14,27 +14,25 @@ object ShiftDBRepository {
   import database.gen.current.dao._
 
   def createShift(shift: Shift, companyId: Int): Future[Shift] = {
-   	 	insertShift(shift.asShiftEntity(companyId))
-					.map(inserted => inserted.asShift)
+    insertShift(shift.asShiftEntity(companyId))
+          .map(inserted => inserted.asShift)
   }
 
-	def updateShift(shift: Shift, companyId: Int): Future[Shift] = {
-	 		updateShiftEntity(shift.asShiftEntity(companyId))
-					.map(updated => updated.asShift)
-	}
+  def updateShift(shift: Shift, companyId: Int): Future[Shift] = {
+    updateShiftEntity(shift.asShiftEntity(companyId))
+          .map(updated => updated.asShift)
+  }
 
-	def deleteShift(shiftId: Int): Future[Shift] = {
-			softDeleteShiftById(shiftId)
-					.map(deleted => deleted.asShift)
-	}
+  def deleteShift(shiftId: Int): Future[Shift] = {
+    softDeleteShiftById(shiftId)
+          .map(deleted => deleted.asShift)
+  }
 
-	def getShiftById(id: Int): Future[Shift] = {
-			getShiftEntityById(id).map(shift => shift.asShift)
-	}
+  def getShiftById(id: Int): Future[Shift] = {
+    getShiftEntityById(id).map(shift => shift.asShift)
+  }
 
-	def getShiftsByCompanyId(companyId: Int): Future[List[Shift]] = {
-			getShiftEntitiesByCompanyId(companyId).map(list => list.map(_.asShift))
-	}	
-  
-
+  def getShiftsByCompanyId(companyId: Int): Future[List[Shift]] = {
+    getShiftEntitiesByCompanyId(companyId).map(list => list.map(_.asShift))
+  } 
 }

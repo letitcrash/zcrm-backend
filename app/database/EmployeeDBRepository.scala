@@ -44,25 +44,25 @@ object EmployeeDBRepository {
 
 
  def getEmployeeByUser(user: User): Future[Employee] = {
-	 getEmployeeWithUserByUserId(user.id.get).map(empl => empl.asEmployee)
+   getEmployeeWithUserByUserId(user.id.get).map(empl => empl.asEmployee)
  }
 
  def getEmployeesByCompanyId(companyId: Int): Future[List[Employee]] = {
-	 getAllEmployeesWithUsersByCompanyId(companyId).map(list => list.map(_.asEmployee))
+   getAllEmployeesWithUsersByCompanyId(companyId).map(list => list.map(_.asEmployee))
  }
 
  def getEmployeeByEmployeeId(employeeId: Int): Future[Employee] = {
-	 getEmployeeWithUserById(employeeId).map(empl => empl.asEmployee)
+   getEmployeeWithUserById(employeeId).map(empl => empl.asEmployee)
  }
 
-	def updateEmployee(employee: Employee): Future[Employee] = {
-		updateEmployeeWithUser(employee.asEmployeeEntity).map(updatedEmpl => updatedEmpl.asEmployee)
-	}
+  def updateEmployee(employee: Employee): Future[Employee] = {
+    updateEmployeeWithUser(employee.asEmployeeEntity).map(updatedEmpl => updatedEmpl.asEmployee)
+  }
 
-	def softDeleteEmployeeById(employeeId: Int): Future[Employee] = {
-			for{
-					deleted <- softDeleteEmployeeEntityById(employeeId)
-				  userWithProfileEntt <- getUserWithProfileByUserId(deleted.userId.get)
-			} yield(deleted, userWithProfileEntt).asEmployee
-	}
+  def softDeleteEmployeeById(employeeId: Int): Future[Employee] = {
+      for{
+          deleted <- softDeleteEmployeeEntityById(employeeId)
+          userWithProfileEntt <- getUserWithProfileByUserId(deleted.userId.get)
+      } yield(deleted, userWithProfileEntt).asEmployee
+  }
 }

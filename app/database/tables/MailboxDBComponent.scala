@@ -23,7 +23,7 @@ trait MailboxDBComponent extends DBComponent {
 
   import dbConfig.driver.api._
 
-	val mailboxes = TableQuery[MailboxTable]
+  val mailboxes = TableQuery[MailboxTable]
 
   class MailboxTable(tag: Tag) extends Table[MailboxEntity](tag, "tbl_mailbox") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
@@ -40,34 +40,34 @@ trait MailboxDBComponent extends DBComponent {
     def * = (id.?, userId, server, login, password, createdAt, updatedAt, recordStatus) <> (MailboxEntity.tupled, MailboxEntity.unapply)
   }
 
-	//MailboxEntity CRUD
+  //MailboxEntity CRUD
 
-	def insertMailboxEnitity(mailbox: MailboxEntity): Future[MailboxEntity] = {
-			db.run(((mailboxes returning mailboxes.map(_.id) 
-									into ((mailbox,id) => mailbox.copy(id=Some(id)))) += mailbox))
-	}	
+  def insertMailboxEnitity(mailbox: MailboxEntity): Future[MailboxEntity] = {
+      db.run(((mailboxes returning mailboxes.map(_.id) 
+                  into ((mailbox,id) => mailbox.copy(id=Some(id)))) += mailbox))
+  } 
 
-	def getMailboxEntityById(id:Int): Future[MailboxEntity] = {
-			db.run(mailboxes.filter(t => (t.id === id &&
-																		t.recordStatus === RowStatus.ACTIVE)).result.head)
-	}
+  def getMailboxEntityById(id:Int): Future[MailboxEntity] = {
+      db.run(mailboxes.filter(t => (t.id === id &&
+                                    t.recordStatus === RowStatus.ACTIVE)).result.head)
+  }
 
-	def getMailboxEntitiesByUserId(userId: Int): Future[List[MailboxEntity]] = {
-			db.run(mailboxes.filter(t => (t.userId === userId &&
-																		t.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
-	}
+  def getMailboxEntitiesByUserId(userId: Int): Future[List[MailboxEntity]] = {
+      db.run(mailboxes.filter(t => (t.userId === userId &&
+                                    t.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
+  }
 
-	def updateMailboxEntity(mailbox: MailboxEntity): Future[MailboxEntity] = {
-		 db.run(mailboxes.filter(_.id === mailbox.id).update(mailbox))
+  def updateMailboxEntity(mailbox: MailboxEntity): Future[MailboxEntity] = {
+     db.run(mailboxes.filter(_.id === mailbox.id).update(mailbox))
         .map( num => mailbox)
 
-	}
+  }
 
-	def softDeleteMailboxEntityById(id: Int): Future[MailboxEntity] = {
-			getMailboxEntityById(id).flatMap(res =>
-					updateMailboxEntity(res.copy(recordStatus = RowStatus.DELETED, 
-				   	                     updatedAt = new Timestamp(System.currentTimeMillis()))))
-	}
+  def softDeleteMailboxEntityById(id: Int): Future[MailboxEntity] = {
+      getMailboxEntityById(id).flatMap(res =>
+          updateMailboxEntity(res.copy(recordStatus = RowStatus.DELETED, 
+                                 updatedAt = new Timestamp(System.currentTimeMillis()))))
+  }
 
 }
 

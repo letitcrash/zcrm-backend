@@ -44,25 +44,25 @@ class TaskController @Inject() extends CRMController {
     TaskDBRepository.getAllTasks(companyId).map( tasks => Json.toJson(tasks))
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
-	
-	import utils.JSFormat.inboxMailFrmt
-	def attachMailToTask(companyId: Int, taskId: Int) = CRMActionAsync[InboxMail](expectedInboxMailFormat){rq =>	
-		// if(rq.header.belongsToCompany(companyId)){
-			import utils.converters.TaskConverter._
+  
+  import utils.JSFormat.inboxMailFrmt
+  def attachMailToTask(companyId: Int, taskId: Int) = CRMActionAsync[InboxMail](expectedInboxMailFormat){rq =>  
+    // if(rq.header.belongsToCompany(companyId)){
+      import utils.converters.TaskConverter._
       //TODO: move logic to TaskRepo
-			TaskAttachedMailDBRepository.saveInboxMailAsAttachedMail(rq.body, taskId).flatMap{inboxMail =>
-					TaskDBRepository.getTask(taskId).map(task => Json.toJson(task))}
+      TaskAttachedMailDBRepository.saveInboxMailAsAttachedMail(rq.body, taskId).flatMap{inboxMail =>
+          TaskDBRepository.getTask(taskId).map(task => Json.toJson(task))}
     // }else{ Future{Failure(new InsufficientRightsException())} }
-	}
+  }
 
-	def removeAttachedMailFromTask(companyId: Int, taskId:Int) = CRMActionAsync[InboxMail](expectedInboxMailFormat){rq =>
-		// if(rq.header.belongsToCompany(companyId)){
-			   TaskAttachedMailDBRepository.removeInboxMailFromTask(rq.body).map(deletedTask => Json.toJson(deletedTask))
+  def removeAttachedMailFromTask(companyId: Int, taskId:Int) = CRMActionAsync[InboxMail](expectedInboxMailFormat){rq =>
+    // if(rq.header.belongsToCompany(companyId)){
+         TaskAttachedMailDBRepository.removeInboxMailFromTask(rq.body).map(deletedTask => Json.toJson(deletedTask))
     // }else{ Future{Failure(new InsufficientRightsException())} }
-	}
+  }
 
-	def softDeleteTaskByTaskId(companyId: Int, taskId:Int) = CRMActionAsync{rq =>
-			TaskDBRepository.softDeleteTaskById(taskId).map(deletedTask => Json.toJson(deletedTask))
-	}
+  def softDeleteTaskByTaskId(companyId: Int, taskId:Int) = CRMActionAsync{rq =>
+      TaskDBRepository.softDeleteTaskById(taskId).map(deletedTask => Json.toJson(deletedTask))
+  }
  
 }

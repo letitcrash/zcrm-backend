@@ -86,16 +86,16 @@ trait UserDBComponent extends DBComponent {
   }
 
   def softDeleteById(userId: Int): Future[UserEntity] = {
-	  getUserById(userId).flatMap(res =>
-			  updateUser(res.copy(status = RowStatus.DELETED, 
-				   	      updatedAt = new Timestamp(System.currentTimeMillis()))))
+    getUserById(userId).flatMap(res =>
+        updateUser(res.copy(status = RowStatus.DELETED, 
+                  updatedAt = new Timestamp(System.currentTimeMillis()))))
 
   } 
 
   def softDeleteByUserName(userName: String): Future[UserEntity] = {
-	  getUserByUserUsername(userName).flatMap(res =>
-			  updateUser(res.copy(status = RowStatus.DELETED, 
-				   	      updatedAt = new Timestamp(System.currentTimeMillis()))))
+    getUserByUserUsername(userName).flatMap(res =>
+        updateUser(res.copy(status = RowStatus.DELETED, 
+                  updatedAt = new Timestamp(System.currentTimeMillis()))))
 
   }
 

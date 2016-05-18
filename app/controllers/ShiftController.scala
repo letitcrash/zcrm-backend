@@ -28,7 +28,7 @@ class ShiftController @Inject() extends CRMController {
   //TODO: add permissions check
   def updateShift(companyId: Int, shiftId: Int) = CRMActionAsync[Shift](expectedShiftFormat){ rq =>
     // if(rq.header.belongsToCompany(companyId)){
-    	ShiftDBRepository.updateShift(rq.body.copy(id = Some(shiftId)), companyId).map( shift => Json.toJson(shift))
+      ShiftDBRepository.updateShift(rq.body.copy(id = Some(shiftId)), companyId).map( shift => Json.toJson(shift))
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
@@ -36,19 +36,19 @@ class ShiftController @Inject() extends CRMController {
   //TODO: add permissions check
   def getShift(companyId: Int, shiftId: Int) = CRMActionAsync { rq =>
     // if(rq.header.belongsToCompany(companyId)){
-    	ShiftDBRepository.getShiftById(shiftId).map( shift => Json.toJson(shift))
+      ShiftDBRepository.getShiftById(shiftId).map( shift => Json.toJson(shift))
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
   //TODO: add permissions check
   def getAllShifts(companyId: Int) = CRMActionAsync { rq =>
     // if(rq.header.belongsToCompany(companyId)){
-   	 	ShiftDBRepository.getShiftsByCompanyId(companyId).map( shift => Json.toJson(shift))
+      ShiftDBRepository.getShiftsByCompanyId(companyId).map( shift => Json.toJson(shift))
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
-	
-	def deleteShiftById(companyId: Int, shiftId:Int) = CRMActionAsync{rq =>
-			ShiftDBRepository.deleteShift(shiftId).map(deletedShift => Json.toJson(deletedShift))
-	}
+  
+  def deleteShiftById(companyId: Int, shiftId:Int) = CRMActionAsync{rq =>
+      ShiftDBRepository.deleteShift(shiftId).map(deletedShift => Json.toJson(deletedShift))
+  }
  
 }
