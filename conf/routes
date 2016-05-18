@@ -30,18 +30,18 @@ GET     /companies/:companyId                                                   
 # GET     /companies/:companyId/delegates/:delegateId
 
 # Shift 
-POST    /companies/:companyId/shifts                                                       controllers.ShiftController.newShift(companyId: Int)                   
-PUT     /companies/:companyId/shifts/:shiftId                                              controllers.ShiftController.updateShift(companyId: Int, shiftId: Int)
-DELETE  /companies/:companyId/shifts/:shiftId                                              controllers.ShiftController.deleteShiftById(companyId: Int, shiftId: Int)
-GET     /companies/:companyId/shifts                                                       controllers.ShiftController.getAllShifts(companyId: Int)
-GET     /companies/:companyId/shifts/:shiftId                                              controllers.ShiftController.getShift(companyId: Int, shiftId: Int) 
+POST    /companies/:companyId/shifts                                                         controllers.ShiftController.newShift(companyId: Int)                   
+PUT     /companies/:companyId/shifts/:shiftId                                                controllers.ShiftController.updateShift(companyId: Int, shiftId: Int)
+DELETE  /companies/:companyId/shifts/:shiftId                                                controllers.ShiftController.deleteShiftById(companyId: Int, shiftId: Int)
+GET     /companies/:companyId/shifts                                                         controllers.ShiftController.getAllShifts(companyId: Int)
+GET     /companies/:companyId/shifts/:shiftId																								 controllers.ShiftController.getShift(companyId: Int, shiftId: Int) 
 
 #Department 
-#POST    /companies/:companyId/departments  
-#PUT     /companies/:companyId/departments/:departmentId
-#DELETE  /companies/:companyId/departments/:departmentId  
-#GET     /companies/:companyId/departments
-#GET     /companies/:companyId/departments/:departmentId  
+POST    /companies/:companyId/departments																										 controllers.DepartmentController.newDepartment(companyId: Int)                 
+PUT     /companies/:companyId/departments/:departmentId																			 controllers.DepartmentController.updateDepartment(companyId: Int, departmentId: Int)
+DELETE  /companies/:companyId/departments/:departmentId																			 controllers.DepartmentController.deleteDepartmentById(companyId: Int, departmentId: Int)
+GET     /companies/:companyId/departments																										 controllers.DepartmentController.getAllDepartments(companyId: Int)
+GET     /companies/:companyId/departments/:departmentId																			 controllers.DepartmentController.getDepartment(companyId: Int, departmentId: Int) 
 
 #Union 
 POST     /companies/:companyId/unions                                                        controllers.UnionController.newUnion(companyId: Int)                 

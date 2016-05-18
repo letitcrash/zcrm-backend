@@ -32,6 +32,7 @@ class DAO extends UserDBComponent
    with TeamDBComponent
    with UnionDBComponent
    with ShiftDBComponent
+	 with DepartmentDBComponent
    with FileDBComponent{
  import dbConfig.driver.api._
 
@@ -56,18 +57,19 @@ class DAO extends UserDBComponent
       Logger.info("Dropping users             -> " + tryDrop(users.schema))
       Logger.info("Dropping passwords         -> " + tryDrop(passwords.schema))
       Logger.info("Dropping signupTokens      -> " + tryDrop(signupTokens.schema))
-      Logger.info("Dropping employees      -> "    + tryDrop(employees.schema))
-      Logger.info("Dropping companies      -> "    + tryDrop(companies.schema))
-      Logger.info("Dropping passworTokens  -> "    + tryDrop(passwordTokens.schema))
-      Logger.info("Dropping tasks  -> "            + tryDrop(tasks.schema))
-      Logger.info("Dropping taskAttachedMails  -> "    + tryDrop(taskAttachedMails.schema))
-      Logger.info("Dropping mailboxes  -> "    + tryDrop(mailboxes.schema))
-      Logger.info("Dropping files  -> "    + tryDrop(files.schema))
-      Logger.info("Dropping shifts  -> "    + tryDrop(shifts.schema))
-      Logger.info("Dropping teams  -> "    + tryDrop(teams.schema))
-      Logger.info("Dropping unions  -> "    + tryDrop(unions.schema))
-      Logger.info("Dropping teams  -> "    + tryDrop(teamGroups.schema))
-      Logger.info("Dropping positions -> " + tryDrop(positions.schema))
+      Logger.info("Dropping employees         -> " + tryDrop(employees.schema))
+      Logger.info("Dropping companies         -> " + tryDrop(companies.schema))
+      Logger.info("Dropping passworTokens     -> " + tryDrop(passwordTokens.schema))
+      Logger.info("Dropping tasks             -> " + tryDrop(tasks.schema))
+      Logger.info("Dropping taskAttachedMails -> " + tryDrop(taskAttachedMails.schema))
+      Logger.info("Dropping mailboxes         -> " + tryDrop(mailboxes.schema))
+      Logger.info("Dropping files             -> " + tryDrop(files.schema))
+      Logger.info("Dropping shifts            -> " + tryDrop(shifts.schema))
+      Logger.info("Dropping teams             -> " + tryDrop(teams.schema))
+      Logger.info("Dropping groups            -> " + tryDrop(teamGroups.schema))
+      Logger.info("Dropping unions            -> " + tryDrop(unions.schema))
+      Logger.info("Dropping departments  		  -> " + tryDrop(departments.schema))
+      Logger.info("Dropping positions 				-> " + tryDrop(positions.schema))
       Success("Tables dropped")
     } catch {
       case ex: Exception =>
@@ -96,18 +98,19 @@ class DAO extends UserDBComponent
     Logger.info("Creating users             -> " + tryCreate(users.schema))
     Logger.info("Creating passwords         -> " + tryCreate(passwords.schema))
     Logger.info("Creating signupTokens      -> " + tryCreate(signupTokens.schema))
-    Logger.info("Creating employees      -> " + tryCreate(employees.schema))
-    Logger.info("Creating companies      -> " + tryCreate(companies.schema))
-    Logger.info("Creating passworTokens  -> " + tryCreate(passwordTokens.schema))
-    Logger.info("Creating tasks -> "          + tryCreate(tasks.schema))
+    Logger.info("Creating employees         -> " + tryCreate(employees.schema))
+    Logger.info("Creating companies         -> " + tryCreate(companies.schema))
+    Logger.info("Creating passworTokens     -> " + tryCreate(passwordTokens.schema))
+    Logger.info("Creating tasks             -> " + tryCreate(tasks.schema))
     Logger.info("Creating taskAttachedMails -> " + tryCreate(taskAttachedMails.schema))
-    Logger.info("Creating mailboxes -> " + tryCreate(mailboxes.schema))
-    Logger.info("Creating files  -> "    + tryCreate(files.schema))
-    Logger.info("Creating teams -> "    + tryCreate(teams.schema))
-    Logger.info("Creating shifts -> "    + tryCreate(shifts.schema))
-    Logger.info("Creating unions -> "    + tryCreate(unions.schema))
-    Logger.info("Creating teams -> "    + tryCreate(teamGroups.schema))
-    Logger.info("Creating positions -> " + tryCreate(positions.schema))
+    Logger.info("Creating mailboxes         -> " + tryCreate(mailboxes.schema))
+    Logger.info("Creating files             -> " + tryCreate(files.schema))
+    Logger.info("Creating teams             -> " + tryCreate(teams.schema))
+    Logger.info("Creating groups            -> " + tryCreate(teamGroups.schema))
+    Logger.info("Creating shifts            -> " + tryCreate(shifts.schema))
+    Logger.info("Creating unions            -> " + tryCreate(unions.schema))
+    Logger.info("Creating departments				-> " + tryCreate(departments.schema))
+    Logger.info("Creating positions         -> " + tryCreate(positions.schema))
     Success("Created All tables!")
   }
 

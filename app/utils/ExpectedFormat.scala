@@ -92,13 +92,18 @@ object ExpectedFormat {
 
   val expectedUnionFormat = Json.toJson(ListMap(
     "companyId"      -> Json.toJson("[M](int) company ID"),
-    "name"           -> Json.toJson("[M](string) Team name"),
-    "description"    -> Json.toJson("[O](string) Team description")
+    "name"           -> Json.toJson("[M](string) Union name"),
+    "description"    -> Json.toJson("[O](string) Union description")
   ))
 
   val expectedShiftFormat = Json.toJson(ListMap(
     "companyId"      -> Json.toJson("[M](int) company ID"),
-    "name"           -> Json.toJson("[M](string) Team name")
+    "name"           -> Json.toJson("[M](string) Shift name")
+  ))
+
+  val expectedDepartmentFormat = Json.toJson(ListMap(
+    "companyId"      -> Json.toJson("[M](int) company ID"),
+    "name"           -> Json.toJson("[M](string) Department name")
   ))
 
   val expectedTaskFormat =  Json.toJson(ListMap(
