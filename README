@@ -130,3 +130,29 @@ $ curl -i -H "X-User-Id: ${XUSERID}" -H "Content-Type: application/json" -H "X-A
 ```bash
 curl -H "X-User-Id: ${XUSERID}" -H  "Content-Type: multipart/form-data" -H "X-Access-Token: ${XACCESSTOKEN}" -X POST -F "fileUpload=@{path-to-your-local-file}" -F "filename={put-whatever-filename-you-want"  ${CRMAPIADDR}/users/1/files
 ```
+
+## Delegates
+
+**Create a new delegate for a company**
+
+```bash
+curl -H "X-User-Id: ${XUSERID}" -H "Content-Type: application/json" -H "X-Access-Token: ${XACCESSTOKEN}" -X POST -d '{"name": "SuperWork"}' --include ${CRMAPIADDR}/companies/{companyid}/delegates 
+```
+
+**Edit delegate by id**
+
+```bash
+curl -H "X-User-Id: ${XUSERID}" -H "Content-Type: application/json" -H "X-Access-Token: ${XACCESSTOKEN}" -X PUT -d '{"name": "SuperWork"}' --include ${CRMAPIADDR}/companies/{companyid}/delegates/{delegateid}
+```
+
+**Delete delegate by id**
+
+```bash
+curl -H "X-User-Id: ${XUSERID}" -H "Content-Type: application/json" -H "X-Access-Token: ${XACCESSTOKEN}" -X DELETE -d {} --include ${CRMAPIADDR}/companies/{companyid}/delegates/{delegateid}
+```
+
+**Get All Delegates for a company**
+
+```bash
+curl -H "X-User-Id: ${XUSERID}" -H "Content-Type: application/json" -H "X-Access-Token: ${XACCESSTOKEN}" -X GET -d {} --include ${CRMAPIADDR}/companies/{companyid}/delegates
+```

@@ -9,9 +9,9 @@ object current {
   val dao = new DAO()
 
   def initializeDatabase() {
-   // Logger.info("* Attempting to clear")
-   // dao.clearDatabase
-   // Logger.info("* Database cleared")
+    // Logger.info("* Attempting to clear")
+    // dao.clearDatabase
+    // Logger.info("* Database cleared")
     dao.setupTables
     Logger.info("* Database ready")
   }
@@ -20,26 +20,27 @@ object current {
 
 @Singleton
 class DAO extends UserDBComponent
-   with TaskAttachedMailDBComponent
-   with TaskDBComponent
-   with ContactProfileDBComponent
-   with SignupTokenDBComponent
-   with CompanyDBComponent
-   with PositionDBComponent
-   with EmployeeDBComponent
-   with MailboxDBComponent
-   with PasswordTokenDBComponent
-   with TeamDBComponent
-   with UnionDBComponent
-   with ShiftDBComponent
-   with FileDBComponent{
- import dbConfig.driver.api._
+    with TaskAttachedMailDBComponent
+    with TaskDBComponent
+    with ContactProfileDBComponent
+    with SignupTokenDBComponent
+    with CompanyDBComponent
+    with PositionDBComponent
+    with EmployeeDBComponent
+    with MailboxDBComponent
+    with PasswordTokenDBComponent
+    with TeamDBComponent
+    with UnionDBComponent
+    with ShiftDBComponent
+    with FileDBComponent
+    with DelegateDBComponent {
+  import dbConfig.driver.api._
 
   def clearDatabase: Try[String] = {
 
     def tryDrop(ddlToDrop: dbConfig.driver.DDL): Try[String] = {
       try {
-         db.run(DBIO.seq(ddlToDrop.drop))
+        db.run(DBIO.seq(ddlToDrop.drop))
         if(settings.LOG_DDL) {
           ddlToDrop.drop.statements.foreach(println)
         }
@@ -68,18 +69,19 @@ class DAO extends UserDBComponent
       Logger.info("Dropping unions  -> "    + tryDrop(unions.schema))
       Logger.info("Dropping teams  -> "    + tryDrop(teamGroups.schema))
       Logger.info("Dropping positions -> " + tryDrop(positions.schema))
+      Logger.info("Dropping delegates -> " + tryDrop(delegates.schema))
       Success("Tables dropped")
     } catch {
       case ex: Exception =>
         Failure(ex)
     }
   }
- 
+  
 
- def setupTables(): Try[String] = {
+  def setupTables(): Try[String] = {
 
-  def tryCreate(ddlToCreate: dbConfig.driver.DDL ): Try[String] = {
-   try {
+    def tryCreate(ddlToCreate: dbConfig.driver.DDL ): Try[String] = {
+      try {
         db.run(DBIO.seq(ddlToCreate.create))
         if(settings.LOG_DDL) {
           ddlToCreate.create.statements.foreach(println)
@@ -108,6 +110,7 @@ class DAO extends UserDBComponent
     Logger.info("Creating unions -> "    + tryCreate(unions.schema))
     Logger.info("Creating teams -> "    + tryCreate(teamGroups.schema))
     Logger.info("Creating positions -> " + tryCreate(positions.schema))
+    Logger.info("Creating delegates -> " + tryCreate(delegates.schema))
     Success("Created All tables!")
   }
 

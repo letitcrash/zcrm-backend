@@ -14,7 +14,7 @@ import scala.concurrent.Future
 
 @Singleton
 class MailboxController @Inject() (ewsAuth: EwsAuthUtil) extends CRMController {
-  import utils.JSFormat.mailboxFrmt
+  import utils.JSFormat._
 
   def newMailbox(userId: Int) = CRMActionAsync[Mailbox](expectedMailboxFormat){rq =>
     try{
