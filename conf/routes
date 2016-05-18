@@ -23,11 +23,12 @@ POST /login                                                                     
 GET     /companies/:companyId                                                                 controllers.CompanyController.get(companyId: Int)
 
 # Delegate
-# POST    /companies/:companyId/delegates 
-# PUT     /companies/:companyId/delegates/:delegateId 
-# DELETE  /companies/:companyId/delegates/:delegateId
-# GET     /companies/:companyId/delegates
-# GET     /companies/:companyId/delegates/:delegateId
+
+POST	  /companies/:companyId/delegates                                                     controllers.DelegateController.newDelegate(companyId: Int)
+PUT	    /companies/:companyId/delegates/:delegateId                                           controllers.DelegateController.updateDelegate(companyId: Int, delegateId: Int)
+DELETE	/companies/:companyId/delegates/:delegateId                                           controllers.DelegateController.deleteDelegateById(companyId: Int, delegateId: Int)
+GET	    /companies/:companyId/delegates                                                       controllers.DelegateController.getAllDelegates(companyId: Int)
+GET	    /companies/:companyId/delegates/:delegateId                                           controllers.DelegateController.getDelegate(companyId: Int, delegateId: Int)
 
 # Shift 
 POST    /companies/:companyId/shifts                                                         controllers.ShiftController.newShift(companyId: Int)                   
