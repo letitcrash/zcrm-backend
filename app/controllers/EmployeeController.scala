@@ -27,7 +27,7 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
                               def toEmployee(companyId: Int) = {
                                 Employee(
                                   companyId = companyId,
-                                  employeeType = employeeType,
+                                  //employeeType = employeeType,
                                   employeeLevel = employeeLevel.getOrElse(UserLevels.USER)
                                 )
                               }

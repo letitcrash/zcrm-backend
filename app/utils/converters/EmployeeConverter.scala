@@ -15,7 +15,7 @@ object EmployeeConverter {
         id = tup._1.id,
         user = Option(tup._2.asUser),
         companyId = tup._1.companyId,
-        employeeType = tup._1.employeeType,
+        //employeeType = tup._1.employeeType,
         employeeLevel = tup._1.employeeLevel)
     }
   }
@@ -25,8 +25,8 @@ object EmployeeConverter {
       EmployeeEntity(
         id = o.id,
         companyId = o.companyId,
-        userId = Some(o.user.get.id.get),
-        employeeType = o.employeeType,
+        userId = o.user.get.id.get,
+        //employeeType = o.employeeType,
         employeeLevel = o.employeeLevel)
     }
 
@@ -34,8 +34,8 @@ object EmployeeConverter {
       EmployeeEntity(
         id = o.id,
         companyId = companyId,
-        userId = Some(userId),
-        employeeType = o.employeeType,
+        userId = userId,
+        //employeeType = o.employeeType,
         employeeLevel = o.employeeLevel)
     }
   }
@@ -51,7 +51,7 @@ object EmployeeConverter {
         id = emp.id,
         user = Some((o._2, o._3).asUser),
         companyId = o._1.companyId,
-        employeeType = o._1.employeeType,
+        //employeeType = o._1.employeeType,
         employeeLevel = o._1.employeeLevel)
     }
   }
@@ -63,7 +63,7 @@ object EmployeeConverter {
         id = emp.id,
         user = Some(user),
         companyId = comp.id.getOrElse(0),
-        employeeType = emp.employeeType,
+        //employeeType = emp.employeeType,
         employeeLevel = emp.employeeLevel)
   }
 }

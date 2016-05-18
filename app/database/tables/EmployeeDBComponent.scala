@@ -11,8 +11,12 @@ import slick.profile.SqlProfile.ColumnOption.Nullable
 case class EmployeeEntity(
                            id: Option[Int],
                            companyId:  Int,
-                           userId: Option[Int],
-                           employeeType: Option[String],
+                           userId: Int,
+                           positionId: Option[Int] = None,
+                           unionId: Option[Int] = None,
+
+                           //employeeType: Option[String],
+
                            // The level the user has within a company, i.e admin or normal employee
                            // 1000 - 9999  = user level
                            // 100 - 999    = Human resource
@@ -26,6 +30,8 @@ trait EmployeeDBComponent extends DBComponent{
   this: DBComponent 
     with UserDBComponent
     with ContactProfileDBComponent
+    with PositionDBComponent
+    with UnionDBComponent
     with CompanyDBComponent =>
 
 
@@ -37,10 +43,11 @@ trait EmployeeDBComponent extends DBComponent{
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def companyId = column[Int]("company_id")
     def userId = column[Int]("user_id")
-    def employeeType = column[String]("employee_type", Nullable)
+    def positionId = column[Int]("position_id", Nullable)
+    def unionId = column[Int]("union_id", Nullable)
+   // def employeeType = column[String]("employee_type", Nullable)
     def comment = column[String]("comment")
     def employeeLevel = column[Int]("employee_level", O.Default(UserLevels.USER))
-    //TODO: should be deleted ??
     def recordStatus = column[String]("record_status", O.Default(RowStatus.ACTIVE))
 
 
@@ -50,8 +57,14 @@ trait EmployeeDBComponent extends DBComponent{
     def fkEmployeeCompany =
       foreignKey("fk_employee_company", companyId, companies)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
 
+    def fkEmployeePosition = 
+      foreignKey("fk_employee_position", positionId, positions)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
+
+    def fkEmployeeUnion = 
+      foreignKey("fk_employee_union", positionId, unions)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
+
     override def * =
-      ( id.?, companyId, userId.?, employeeType.?, employeeLevel, recordStatus) <> (EmployeeEntity.tupled, EmployeeEntity.unapply)
+      ( id.?, companyId, userId, positionId.?, unionId.?,  employeeLevel, recordStatus) <> (EmployeeEntity.tupled, EmployeeEntity.unapply)
   }
 
   def employeesWithUsersWihtProfile = employees join usersWithProfile on (_.userId === _._1.id)
