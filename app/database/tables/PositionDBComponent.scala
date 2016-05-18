@@ -54,18 +54,21 @@ trait PositionDBComponent extends DBComponent{
                      .map(num => newPosition)
   }
 
-  def getPositionById(id: Int): Future[PositionEntity] = {
+  def getPositionEntityById(id: Int): Future[PositionEntity] = {
     db.run(positions.filter(_.id === id).result.head)
   }
  
 
   def deletePosition(id: Int): Future[PositionEntity] = {
-    val deletedPosition = getPositionById(id)
+    val deletedPosition = getPositionEntityById(id)
     db.run(positions.filter(_.id === id).delete)
     deletedPosition
   }
 
 
   //Position filters
+   def getPositionEntitiesByCompanyId(companyId: Int): Future[List[PositionEntity]] = {
+     db.run(positions.filter(_.companyId === companyId).result).map(_.toList)
+   }
 
 }
