@@ -13,7 +13,7 @@ case class GroupDelegateEntity(
 
 trait GroupDelegateDBComponent extends DBComponent
   with UserDBComponent {
-  this: DBComponent =>
+  this: DBComponent with ContactProfileDBComponent =>
 
   import dbConfig.driver.api._
 
