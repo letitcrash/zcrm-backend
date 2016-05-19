@@ -8,15 +8,15 @@ object DepartmentConverter {
   implicit class EntityToDepartment (d: DepartmentEntity) {
       def asDepartment: Department= {
               Department(id = d.id,
-                   			 name = d.name)
+                         name = d.name)
       }
   }
 
   implicit class DepartmentToEntity(d: Department){
       def asDepartmentEntity(companyId: Int): DepartmentEntity = {
               DepartmentEntity(id = d.id,
-                         			 companyId = companyId,
-                         			 name = d.name)
+                               companyId = companyId,
+                               name = d.name)
       }
   }
 }

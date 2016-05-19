@@ -119,29 +119,34 @@ object ExpectedFormat {
         "fromEmail"  -> "[M](string) Mail sender email"))),
     "dueDate"        -> Json.toJson("[O](string) Task to due date") 
   ))
-  
-  val expectedInboxMailFormat = Json.toJson(ListMap(
-	"id"           -> Json.toJson("[M](string) Exchenge unique ID"),
-	"subject"      -> Json.toJson("[M](string) Mail subject"),
-	"fromEmail"    -> Json.toJson("[M](string) Sender Email"),
-	"fromName"		 -> Json.toJson("[O](string) Sender name"),
-	"toEmail"			 -> Json.toJson("[O](string) Recipient email"),
-	"toName"			 -> Json.toJson("[O](string) Recipient name"),
-	"body"				 -> Json.toJson("[O](string) Mail body"),
-	"isRead"			 -> Json.toJson("[O](boolean) Is mail read")
+
+  val expectedExchangeMailFormat = Json.toJson(ListMap(
+    "extId" -> Json.toJson("[M](string) Exchange UniqueID"),
+    "conversationExtId" -> Json.toJson("[M](string) Exchange Conversation ID"),
+    "mailboxId" -> Json.toJson("[M](int) Mailbox ID"),
+    "sender" -> Json.toJson("[M](string) Sender"),
+    "receivedBy" -> Json.toJson("[M](string) Received by"),
+    "ccRecipients" -> Json.toJson("[O](string) Copies divided by , "),
+    "bccRecipients" -> Json.toJson("[O](string) Blind carbon copies divided by , "),
+    "subject" -> Json.toJson("[M](string) Mail subject"),
+    "body" -> Json.toJson("[M](string) Mail body"),
+    "importance" -> Json.toJson("[O](string) Importance"),
+    "attachments" -> Json.toJson("[O](string) Attachments"),
+    "size" -> Json.toJson("[O](int) Mail size"),
+     "received" -> Json.toJson("[M](timestamp) Mail received at")
   ))
-  
+
   val expectedMailboxFormat = Json.toJson(ListMap(
-	"userId"				 -> Json.toJson("[M](int) User id"),
-	"server"				 -> Json.toJson("[M](string) Exchange server address(full)"),
-	"login"					 -> Json.toJson("[M](string) Exchange mailbox login formatted like username@domain"),
-	"password"			 -> Json.toJson("[M](string) Exchange mailbox password")
+  "userId"         -> Json.toJson("[M](int) User id"),
+  "server"         -> Json.toJson("[M](string) Exchange server address(full)"),
+  "login"          -> Json.toJson("[M](string) Exchange mailbox login formatted like username@domain"),
+  "password"       -> Json.toJson("[M](string) Exchange mailbox password")
   ))
 
   val expectedPositionFormat = Json.toJson(ListMap(
-	"id"											-> Json.toJson("[O] (int) Position Id"),
-	"companyId"								-> Json.toJson("[M] (int) Company Id"),
-	"name"						        -> Json.toJson("[M] (string) name ")
+  "id"                      -> Json.toJson("[O] (int) Position Id"),
+  "companyId"               -> Json.toJson("[M] (int) Company Id"),
+  "name"                    -> Json.toJson("[M] (string) name ")
   ))
 
   val expectedDelegateFormat = Json.toJson(ListMap(

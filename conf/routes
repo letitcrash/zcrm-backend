@@ -82,20 +82,17 @@ GET    /users/:userId/mailboxes                                                 
 
 
 #Mail
-POST   /users/:userId/mailboxes/:mailboxId/send                                              controllers.ExchangeController.sendEmail(userId: Int, mailboxId: Int)
-GET    /users/:userId/mailboxes/:mailboxId/inbox                                             controllers.ExchangeController.getInboxEmails(userId: Int, mailboxId: Int)
-GET    /users/:userId/mailboxes/:mailboxId/sentbox                                           controllers.ExchangeController.getOutboxEmails(userId: Int, mailboxId: Int)
-GET    /users/:userId/mailboxes/:mailboxId/getOne                                            controllers.ExchangeController.getMail(userId: Int, mailboxId: Int)
-
+GET    /users/:userId/mailboxes/:mailboxId/mails                                             controllers.ExchangeController.getMailsForMailbox(userId: Int, mailboxId: Int)
+GET    /users/:userId/mailboxes/:mailboxId/mails/:mailId                                     controllers.ExchangeController.getMail(userId: Int, mailboxId: Int, mailId: Int)
 
 #Tasks
-POST   /companies/:companyId/tasks                                                           controllers.TaskController.newTask(companyId: Int)
-POST   /companies/:companyId/tasks/:taskId/mail                                              controllers.TaskController.attachMailToTask(companyId: Int, taskId: Int)
-PUT    /companies/:companyId/tasks/:taskId                                                   controllers.TaskController.updateTask(companyId: Int, taskId: Int)
-DELETE /companies/:companyId/tasks/:taskId/mail                                              controllers.TaskController.removeAttachedMailFromTask(companyId: Int, taskId: Int)
-DELETE /companies/:companyId/tasks/:taskId                                                   controllers.TaskController.softDeleteTaskByTaskId(companyId: Int, taskId: Int)
-GET    /companies/:companyId/tasks/:taskId                                                   controllers.TaskController.getTask(companyId: Int, taskId: Int)
-GET    /companies/:companyId/tasks                                                           controllers.TaskController.getAllTasks(companyId: Int)
+#POST   /companies/:companyId/tasks                                                           controllers.TaskController.newTask(companyId: Int)
+#POST   /companies/:companyId/tasks/:taskId/mail                                              controllers.TaskController.attachMailToTask(companyId: Int, taskId: Int)
+#PUT    /companies/:companyId/tasks/:taskId                                                   controllers.TaskController.updateTask(companyId: Int, taskId: Int)
+#DELETE /companies/:companyId/tasks/:taskId/mail                                              controllers.TaskController.removeAttachedMailFromTask(companyId: Int, taskId: Int)
+#DELETE /companies/:companyId/tasks/:taskId                                                   controllers.TaskController.softDeleteTaskByTaskId(companyId: Int, taskId: Int)
+#GET    /companies/:companyId/tasks/:taskId                                                   controllers.TaskController.getTask(companyId: Int, taskId: Int)
+#GET    /companies/:companyId/tasks                                                           controllers.TaskController.getAllTasks(companyId: Int)
 
 
 #File
