@@ -54,7 +54,8 @@ class CRMController @Inject() extends Controller with AcceptedReturns  {
       (implicit reads: Reads[T]) =
       Action.async (parse.anyContent) {
         implicit req =>
-        Security.validateHeaders(req.headers) match {
+        Logger.info("CRMActionAsync.apply[T] - START")
+        val a =Security.validateHeaders(req.headers) match {
           case Success(rqHeader) =>
             req.body.asJson match {
               case jsBody: Some[JsValue] =>
@@ -81,7 +82,10 @@ class CRMController @Inject() extends Controller with AcceptedReturns  {
                 "reason" -> ex.getMessage)))
             }
         }
+        Logger.info("CRMActionAsync.apply[T] - END")
+        a
       }
+
 
     // FIXME:
     //   - avoid the need of sending an empty JSON object (it is a GET request, we don't have to send any data).
@@ -89,7 +93,8 @@ class CRMController @Inject() extends Controller with AcceptedReturns  {
     def apply(bodyFn: CRMRequest[None.type] => Future[AcceptedReturn]) = {
       Action.async (parse.anyContent) {
         implicit req =>
-        Security.validateHeaders(req.headers) match {
+        Logger.info("CRMActionAsync.apply - START - " +req.toString)
+        val a = Security.validateHeaders(req.headers) match {
           case Success(rqHeader) =>
             bodyFn(CRMSimpleRequest(rqHeader, None)).map(_.toResp)
               .recover { case e: Exception =>
@@ -106,6 +111,9 @@ class CRMController @Inject() extends Controller with AcceptedReturns  {
                 "reason" -> ex.getMessage)))
             }
         }
+        Logger.info("CRMActionAsync.apply - END")
+        a
+
       }
     }
 
