@@ -36,11 +36,13 @@ object JSFormat {
 
   implicit val contactProfileFrmt           = Json.format[ContactProfile]
   implicit val userFrmt                     = Json.format[User]
-  implicit val employeeFrmt                 = Json.format[Employee]
   implicit val companyFrmt                  = Json.format[Company]
   implicit val teamFrmt                     = Json.format[Team]
   implicit val unionFrmt                    = Json.format[Union]
   implicit val shiftFrmt                    = Json.format[Shift]
+  implicit val positionFrmt                 = Json.format[Position]
+  implicit val delegateFrmt                 = Json.format[Delegate]
+  implicit val employeeFrmt                 = Json.format[Employee]
   implicit val departmentFrmt               = Json.format[Department]
   implicit val employeeWithLevelFrmt        = Json.format[EmployeeWithLevel]
 
@@ -50,8 +52,6 @@ object JSFormat {
   implicit val taskFrmt                     = Json.format[Task]
   implicit val mailboxFrmt                  = Json.format[Mailbox]
   implicit val uploadedFileFrmt             = Json.format[UploadedFile]
-  implicit val positionFrmt                 = Json.format[Position]
-  implicit val delegateFrmt = Json.format[Delegate]
 
 }
 

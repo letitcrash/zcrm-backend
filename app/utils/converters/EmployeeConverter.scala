@@ -1,10 +1,28 @@
 package utils.converters
 
-import database.tables.{CompanyEntity, ContactProfileEntity, EmployeeEntity, UserEntity}
+import database.tables._
 import models.{Employee, User}
 
 object EmployeeConverter {
 
+  implicit class AggregatedEmployeeEnttToEmployee
+  (tup: (((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), PositionEntity) , ShiftEntity),  DepartmentEntity), UnionEntity) ) {
+    def asEmployee(): Employee = {
+      val employeeTup = tup._1._1._1._1._1 
+      val userTup = tup._1._1._1._1._2
+      val positonTup =  tup._1._1._1._2
+      val shiftTup =  tup._1._1._2
+      val departmentTup = tup._1._2
+      val unionTup = tup._2
+      import UserConverter.EntityToUser
+      Employee(
+        id = employeeTup.id,
+        user = Some(userTup.asUser),
+        companyId = employeeTup.companyId,
+        employeeLevel = employeeTup.companyId
+      )
+    }
+  }
 
   implicit class EntityUserWithProfile
   (tup: (EmployeeEntity, (UserEntity, ContactProfileEntity))) {
@@ -13,7 +31,7 @@ object EmployeeConverter {
       import UserConverter.EntityToUser
       Employee(
         id = tup._1.id,
-        user = Option(tup._2.asUser),
+        user = Some(tup._2.asUser),
         companyId = tup._1.companyId,
         //employeeType = tup._1.employeeType,
         employeeLevel = tup._1.employeeLevel)

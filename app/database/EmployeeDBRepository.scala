@@ -51,6 +51,10 @@ object EmployeeDBRepository {
    getAllEmployeesWithUsersByCompanyId(companyId).map(list => list.map(_.asEmployee))
  }
 
+ def getAggragatedEmployeesByCompanyId(companyId: Int): Future[List[Employee]] = {
+   getAllAggregatedEmployeesByCompanyId(companyId).map( list => list.map(_.asEmployee))
+ }
+
  def getEmployeeByEmployeeId(employeeId: Int): Future[Employee] = {
    getEmployeeWithUserById(employeeId).map(empl => empl.asEmployee)
  }

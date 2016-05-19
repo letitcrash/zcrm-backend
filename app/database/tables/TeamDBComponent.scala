@@ -55,6 +55,8 @@ trait TeamDBComponent extends DBComponent {
     def * = (teamId, userId)<>(TeamGroupEntity.tupled, TeamGroupEntity.unapply)
   }
 
+  def groupWithTeams = teamGroups join teams on ( _.teamId === _.id)
+
   //CRUD TeamEntity
   def insertTeam(team: TeamEntity): Future[TeamEntity] = {
       db.run((teams returning teams.map(_.id) into ((team,id) => team.copy(id=Some(id)))) += team)
@@ -83,5 +85,11 @@ trait TeamDBComponent extends DBComponent {
     db.run(teams.filter(t => (t.companyId === companyId && 
                               t.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
   }
+
+  /*
+  def getTeamsByUserId(userId: Int): Future[List[TeamEntity]] = {
+    db.run(groupWithTeams.filter( _._1.userId === userId ).result).map(_._2.toList)
+  }
+  */
 }
 

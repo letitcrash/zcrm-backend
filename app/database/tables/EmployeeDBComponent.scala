@@ -13,6 +13,8 @@ case class EmployeeEntity(
                            companyId:  Int,
                            userId: Int,
                            positionId: Option[Int] = None,
+                           shiftId: Option[Int] = None, 
+                           departmentId: Option[Int] = None, 
                            unionId: Option[Int] = None,
 
                            //employeeType: Option[String],
@@ -30,7 +32,9 @@ trait EmployeeDBComponent extends DBComponent{
   this: DBComponent 
     with UserDBComponent
     with ContactProfileDBComponent
+    with DepartmentDBComponent
     with PositionDBComponent
+    with ShiftDBComponent
     with UnionDBComponent
     with CompanyDBComponent =>
 
@@ -44,6 +48,8 @@ trait EmployeeDBComponent extends DBComponent{
     def companyId = column[Int]("company_id")
     def userId = column[Int]("user_id")
     def positionId = column[Int]("position_id", Nullable)
+    def shiftId = column[Int]("shift_id", Nullable)
+    def departmentId = column[Int]("department_id", Nullable)
     def unionId = column[Int]("union_id", Nullable)
    // def employeeType = column[String]("employee_type", Nullable)
     def comment = column[String]("comment")
@@ -60,14 +66,29 @@ trait EmployeeDBComponent extends DBComponent{
     def fkEmployeePosition = 
       foreignKey("fk_employee_position", positionId, positions)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
 
+    def fkEmployeeShift = 
+      foreignKey("fk_employee_shift", shiftId, shifts)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
+
+    def fkEmployeeDepartment = 
+      foreignKey("fk_employee_department", departmentId, departments)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
+
     def fkEmployeeUnion = 
       foreignKey("fk_employee_union", positionId, unions)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
 
     override def * =
-      ( id.?, companyId, userId, positionId.?, unionId.?,  employeeLevel, recordStatus) <> (EmployeeEntity.tupled, EmployeeEntity.unapply)
+      ( id.?, companyId, userId, positionId.?, shiftId.?, departmentId.?, unionId.?,  employeeLevel, recordStatus) <> (EmployeeEntity.tupled, EmployeeEntity.unapply)
   }
 
+  //(EmployeeEntity,  (UserEntity, ContactProfileEntity))
   def employeesWithUsersWihtProfile = employees join usersWithProfile on (_.userId === _._1.id)
+
+  //((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), PositionEntity) , ShiftEntity),  DepartmentEntity), UnionEntity )
+  def aggregatedEmployee = employeesWithUsersWihtProfile join
+                             positions on (_._1.positionId === _.id) join
+                             shifts on ( _._1._1.shiftId === _.id) join
+                             departments on ( _._1._1._1.departmentId === _.id) join
+                             unions on ( _._1._1._1._1.unionId === _.id) 
+
 
   //CRUD EmployeeEntity
   def insertEmployee(empl: EmployeeEntity): Future[EmployeeEntity] = {
@@ -109,6 +130,12 @@ trait EmployeeDBComponent extends DBComponent{
   def getAllEmployeesWithUsersByCompanyId(companyId: Int): Future[List[(EmployeeEntity,  (UserEntity, ContactProfileEntity))]] = {
     db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.companyId === companyId && 
                                                      t._1.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
+  }
+
+  def getAllAggregatedEmployeesByCompanyId(companyId: Int)
+   : Future[List[(((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), PositionEntity) , ShiftEntity),  DepartmentEntity), UnionEntity)]] = {
+    db.run(aggregatedEmployee.filter(t => (t._1._1._1._1._1.companyId === companyId && 
+                                                     t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
   }
 
   def getEmployeeWithUserById(employeeId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
