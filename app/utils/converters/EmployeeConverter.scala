@@ -55,6 +55,10 @@ object EmployeeConverter {
         id = o.id,
         companyId = o.companyId,
         userId = o.user.get.id.get,
+        positionId = o.position.get.id,
+        shiftId = o.shift.get.id, 
+        departmentId = o.department.get.id, 
+        unionId = o.union.get.id,
         employeeLevel = o.employeeLevel)
     }
 
@@ -63,6 +67,10 @@ object EmployeeConverter {
         id = o.id,
         companyId = companyId,
         userId = userId,
+        positionId = o.position.get.id,
+        shiftId = o.shift.get.id, 
+        departmentId = o.department.get.id, 
+        unionId = o.union.get.id,
         employeeLevel = o.employeeLevel)
     }
   }

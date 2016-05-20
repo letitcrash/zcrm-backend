@@ -16,18 +16,28 @@ import utils.JSFormat.employeeFrmt
 
 @Singleton
 class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController {
-  import utils.JSFormat.contactProfileFrmt
+  import utils.JSFormat._
 
   case class InviteEmployee(username: String,
                             baseUrl: String,
                             contactProfile: ContactProfile,
-                            employeeLevel: Option[Int],
-                            employeeType: Option[String]) {
+                            position: Option[Position] = None, 
+                            shift: Option[Shift] = None,
+                            department: Option[Department] = None, 
+                            union: Option[Union] = None, 
+                            teams: Option[List[Team]] = None,
+                            delegates: Option[List[Delegate]] = None,
+                            employeeLevel: Option[Int]) {
 
                               def toEmployee(companyId: Int) = {
                                 Employee(
                                   companyId = companyId,
-                                  //employeeType = employeeType,
+                                  position = position,
+                                  shift = shift, 
+                                  department = department,
+                                  union = union, 
+                                  teams = teams,
+                                  delegates = delegates, 
                                   employeeLevel = employeeLevel.getOrElse(UserLevels.USER)
                                 )
                               }
