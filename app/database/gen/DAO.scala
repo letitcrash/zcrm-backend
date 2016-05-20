@@ -34,6 +34,7 @@ class DAO extends UserDBComponent
     with ShiftDBComponent
     with DepartmentDBComponent
     with DelegateDBComponent
+    with ActionDBComponent
     with FileDBComponent{
  import dbConfig.driver.api._
 
@@ -73,6 +74,7 @@ class DAO extends UserDBComponent
       Logger.info("Dropping unions            -> " + tryDrop(unions.schema))
       Logger.info("Dropping departments       -> " + tryDrop(departments.schema))
       Logger.info("Dropping positions         -> " + tryDrop(positions.schema))
+      Logger.info("Dropping actions       -> " + tryDrop(actions.schema))
       Success("Tables dropped")
     } catch {
       case ex: Exception =>
@@ -116,6 +118,7 @@ class DAO extends UserDBComponent
     Logger.info("Creating unions            -> " + tryCreate(unions.schema))
     Logger.info("Creating departments       -> " + tryCreate(departments.schema))
     Logger.info("Creating positions         -> " + tryCreate(positions.schema))
+    Logger.info("Creating actions       -> " + tryCreate(actions.schema))
     Success("Created All tables!")
   }
 
