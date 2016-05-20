@@ -22,6 +22,7 @@ POST /login                                                                     
 # Companies
 GET     /companies                                                                            controllers.CompanyController.getAll
 GET     /companies/:companyId                                                                 controllers.CompanyController.get(companyId: Int)
+GET     /companies/:companyId/expand                                                          controllers.CompanyController.getExpanded(companyId: Int)
 
 # Delegate
 

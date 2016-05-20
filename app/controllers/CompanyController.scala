@@ -23,6 +23,10 @@ class CompanyController @Inject() extends CRMController {
     //}else { Future{Failure(new InsufficientRightsException())} }
   }
 
+  def getExpanded(companyId: Int) = CRMActionAsync { rq =>
+       CompanyDBRepository.getAggregatedCompany(companyId).map( aggCompany => Json.toJson(aggCompany)) 
+  }
+
   def getAll = CRMActionAsync { rq => 
     CompanyDBRepository.getAllCompanies.map( company => Json.toJson(company)) 
   }

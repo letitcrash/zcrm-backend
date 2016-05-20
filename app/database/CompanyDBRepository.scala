@@ -23,11 +23,23 @@ object CompanyDBRepository {
   }
 
 
+  def getAggregatedCompany(id: Int): Future[Company] = {
+    import utils.converters.CompanyConverter.EntitiesToCompany
+    for {
+      companyEntt <- getCompanyWithProfileById(id)
+      delegatesEntt <- getDelegateEntitiesByCompanyId(id)
+      shiftsEntt <-  getShiftEntitiesByCompanyId(id)
+      departmetsEntt <- getDepartmentEntitiesByCompanyId(id)
+      unionsEntt <- getUnionEntitiesByCompanyId(id)
+      teamsEntt <-  getTeamEntitiesByCompanyId(id)
+      positionsEntt <- getPositionEntitiesByCompanyId(id)
+    } yield  companyEntt.asAggregatedCompany(delegatesEntt, shiftsEntt, departmetsEntt, unionsEntt, teamsEntt, positionsEntt)
+  }
+
   def getCompany(id: Int): Future[Company] = {
     import utils.converters.CompanyConverter.EntitiesToCompany
     getCompanyWithProfileById(id).map(_.asCompany)
   }
-
 
   def getAllCompanies :Future[List[Company]] = {
     import utils.converters.CompanyConverter._

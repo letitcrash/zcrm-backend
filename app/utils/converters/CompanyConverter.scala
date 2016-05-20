@@ -2,7 +2,8 @@ package utils.converters
 
 import scala.language.postfixOps
 import ContactProfileConverter.EntityToProfile
-import database.tables.{CompanyEntity, ContactProfileEntity}
+//import database.tables.{CompanyEntity, ContactProfileEntity}
+import database.tables._
 import models.Company
 
 
@@ -18,6 +19,32 @@ object CompanyConverter {
         vatId = tuple._1.vatId,
         lastModified = tuple._1.lastModified
       )
+    }
+
+    def asAggregatedCompany(delegateEntts: List[DelegateEntity],
+                            shiftEntts: List[ShiftEntity], 
+                            departmetEntts: List[DepartmentEntity],
+                            unionEntts: List[UnionEntity],
+                            teamEntts: List[TeamEntity],
+                            positionEntts: List[PositionEntity]) = {
+   import  utils.converters.DelegateConverter._
+   import  utils.converters.ShiftConverter._
+   import  utils.converters.DepartmentConverter._
+   import  utils.converters.UnionConverter._
+   import  utils.converters.TeamConverter._
+   import  utils.converters.PositionConverter._
+        Company(
+          id = tuple._1.id,
+          name = tuple._1.name,
+          contactProfile = Some(tuple._2.asProfile),
+          vatId = tuple._1.vatId,
+          delegates  = Some(delegateEntts.map(_.asDelegate)),
+          shifts = Some(shiftEntts.map(_.asShift)),
+          departmets = Some(departmetEntts.map(_.asDepartment)),
+          unions = Some(unionEntts.map(_.asUnion)), 
+          teams = Some(teamEntts.map(_.asTeam)),
+          positions = Some(positionEntts.map(_.asPosition)),
+          lastModified = tuple._1.lastModified)
     }
   }
 
