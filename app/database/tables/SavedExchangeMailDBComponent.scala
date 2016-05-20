@@ -31,7 +31,7 @@ trait SavedExchangeMailDBComponent extends DBComponent {
 
   class ExchangeMailTable(tag: Tag) extends Table[SavedExchangeMailEntity](tag, "tbl_mail") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
-    def extId = column[String]("ext_id")
+    def extId = column[String]("ext_id", O.SqlType("VARCHAR(255)"))
     def conversationExtId = column[String]("conversation_ext_id")
     def sender = column[String]("sender")
     def receivedBy = column[String]("received_by")
@@ -46,6 +46,9 @@ trait SavedExchangeMailDBComponent extends DBComponent {
 
     def * = (id.?, extId, conversationExtId, sender, receivedBy, ccRecipients, bccRecipients,
              subject, body, importance, attachments, size, received) <> (SavedExchangeMailEntity.tupled, SavedExchangeMailEntity.unapply)
+
+    def UqExtId = index("unique_saved_mail_ext_id", extId, unique = true)
+
   }
 
    def insertMailEntity(mail: SavedExchangeMailEntity): Future[SavedExchangeMailEntity] = {

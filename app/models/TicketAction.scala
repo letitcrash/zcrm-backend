@@ -1,6 +1,6 @@
 package models
 
-case class Action(id: Option[Int] = None,
+case class TicketAction(id: Option[Int] = None,
                                  parentActionId: Option[Int] = None,
                                  ticketId: Int,
                                  userId: Int,

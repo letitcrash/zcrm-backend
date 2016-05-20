@@ -34,7 +34,7 @@ trait ExchangeODSMailDBComponent extends DBComponent {
   class ExchangeMailTable(tag: Tag) extends Table[ExchangeODSMailEntity](tag, "tbl_ods_mail") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def mailboxId = column[Int]("mailbox_id")
-    def extId = column[String]("ext_id")
+    def extId = column[String]("ext_id", O.SqlType("VARCHAR(255)"))
     def conversationExtId = column[String]("conversation_ext_id")
     def sender = column[String]("sender")
     def receivedBy = column[String]("received_by")
@@ -51,6 +51,8 @@ trait ExchangeODSMailDBComponent extends DBComponent {
 
     def * = (id.?, mailboxId, extId, conversationExtId, sender, receivedBy, ccRecipients, bccRecipients,
              subject, body, importance, attachments, size, received) <> (ExchangeODSMailEntity.tupled, ExchangeODSMailEntity.unapply)
+
+    def UqExtId = index("unique_ods_ext_id", extId, unique = true)
   }
 
    def insertODSMailEntity(mail: ExchangeODSMailEntity): Future[ExchangeODSMailEntity] = {

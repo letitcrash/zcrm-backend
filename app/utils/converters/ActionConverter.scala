@@ -1,13 +1,13 @@
 package utils.converters
 
-import database.tables.ActionEntity
-import models.Action
+import database.tables.TicketActionEntity
+import models.TicketAction
 
 object ActionConverter {
   
-  implicit class EntityToAction (a: ActionEntity) {
-      def asAction: Action= {
-              Action(id = a.id,
+  implicit class EntityToAction (a: TicketActionEntity) {
+      def asAction: TicketAction= {
+        TicketAction(id = a.id,
                 parentActionId = a.parentActionId,
                 ticketId = a.ticketId,
                 userId = a.userId,
@@ -17,9 +17,9 @@ object ActionConverter {
       }
   }
 
-  implicit class ActionToEntity(a: Action){
-      def asActionEntity(companyId: Int): ActionEntity = {
-              ActionEntity(id = a.id,
+  implicit class ActionToEntity(a: TicketAction){
+      def asActionEntity(companyId: Int): TicketActionEntity = {
+              TicketActionEntity(id = a.id,
                 parentActionId = a.parentActionId,
                 ticketId = a.ticketId,
                 userId = a.userId,
