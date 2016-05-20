@@ -2,7 +2,7 @@ package database
 
 import database.tables.UserEntity
 import exceptions.UsernameAlreadyExistException
-import models.{ContactProfile, Employee, UserLevels,User}
+import models.{ContactProfile, Employee, UserLevels, User, TeamGroup}
 
 import scala.util.{Failure, Success, Try}
 import scala.concurrent.Future
@@ -28,6 +28,7 @@ object EmployeeDBRepository {
  def createEmployee(username: String, contactProfile: ContactProfile, employee: Employee): Future[Employee] = {
     import utils.converters.ContactProfileConverter.ContactProfileToEntity
     import utils.converters.EmployeeConverter._
+    import utils.converters.TeamConverter._
 
     //TODO: should be transactionally
     isUserExists(username).flatMap( flag =>
@@ -38,6 +39,7 @@ object EmployeeDBRepository {
             profEnt <- insertProfile(contactProfile.asEntity())
             userEnt <- insertUser(UserEntity(username = username, userLevel = UserLevels.USER, profileId = profEnt.id.get))
             empEnt <- insertEmployee(employee.asEmployeeEntity(employee.companyId, userEnt.id.get))
+            teamGrpEnt <- insertTeamGroups(employee.teams.get.map(t => TeamGroup(t.id.get, userEnt.id.get)).map(_.asEntity))
           } yield (empEnt, userEnt, profEnt).asEmployee()
     })
   }
