@@ -23,8 +23,7 @@ object TaskConverter {
 
   implicit class TaskToEntity(task: Task){
       def asTaskEntity: TaskEntity = {
-        import play.api.Logger
-            val v = TaskEntity(id = task.id,
+           TaskEntity(id = task.id,
                        companyId = task.companyId,
                        createdByUserId = task.createdByUser.id.get,
                        assignedToUserId = task.assignedToUser match {case Some(user) => user.id
@@ -32,8 +31,6 @@ object TaskConverter {
                        title = task.title,
                        description = task.description,
                        dueDate = task.dueDate)
-            Logger.info(v.toString)
-            v
       }
   }
 

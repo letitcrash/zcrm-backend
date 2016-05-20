@@ -2,7 +2,6 @@ package utils.converters
 
 import scala.language.postfixOps
 import ContactProfileConverter.EntityToProfile
-//import database.tables.{CompanyEntity, ContactProfileEntity}
 import database.tables._
 import models.Company
 
@@ -27,12 +26,12 @@ object CompanyConverter {
                             unionEntts: List[UnionEntity],
                             teamEntts: List[TeamEntity],
                             positionEntts: List[PositionEntity]) = {
-   import  utils.converters.DelegateConverter._
-   import  utils.converters.ShiftConverter._
-   import  utils.converters.DepartmentConverter._
-   import  utils.converters.UnionConverter._
-   import  utils.converters.TeamConverter._
-   import  utils.converters.PositionConverter._
+     import DelegateConverter._
+     import ShiftConverter._
+     import DepartmentConverter._
+     import UnionConverter._
+     import TeamConverter._
+     import PositionConverter._
         Company(
           id = tuple._1.id,
           name = tuple._1.name,

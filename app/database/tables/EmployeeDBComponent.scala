@@ -73,7 +73,7 @@ trait EmployeeDBComponent extends DBComponent{
       foreignKey("fk_employee_department", departmentId, departments)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
 
     def fkEmployeeUnion = 
-      foreignKey("fk_employee_union", positionId, unions)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
+      foreignKey("fk_employee_union", unionId, unions)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
 
     override def * =
       ( id.?, companyId, userId, positionId.?, shiftId.?, departmentId.?, unionId.?,  employeeLevel, recordStatus) <> (EmployeeEntity.tupled, EmployeeEntity.unapply)
@@ -83,10 +83,10 @@ trait EmployeeDBComponent extends DBComponent{
   def employeesWithUsersWihtProfile = employees join usersWithProfile on (_.userId === _._1.id)
 
   //((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), PositionEntity) , ShiftEntity),  DepartmentEntity), UnionEntity )
-  def aggregatedEmployee = employeesWithUsersWihtProfile join
-                             positions on (_._1.positionId === _.id) join
-                             shifts on ( _._1._1.shiftId === _.id) join
-                             departments on ( _._1._1._1.departmentId === _.id) join
+  def aggregatedEmployee = employeesWithUsersWihtProfile joinLeft
+                             positions on (_._1.positionId === _.id) joinLeft
+                             shifts on ( _._1._1.shiftId === _.id) joinLeft
+                             departments on ( _._1._1._1.departmentId === _.id) joinLeft
                              unions on ( _._1._1._1._1.unionId === _.id) 
 
 
@@ -133,9 +133,9 @@ trait EmployeeDBComponent extends DBComponent{
   }
 
   def getAllAggregatedEmployeesByCompanyId(companyId: Int)
-   : Future[List[(((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), PositionEntity) , ShiftEntity),  DepartmentEntity), UnionEntity)]] = {
-    db.run(aggregatedEmployee.filter(t => (t._1._1._1._1._1.companyId === companyId && 
-                                                     t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
+   : Future[List[(((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), Option[PositionEntity]) , Option[ShiftEntity]),  Option[DepartmentEntity]), Option[UnionEntity])]] = {
+    db.run(aggregatedEmployee.filter(t => (t._1._1._1._1._1.companyId === 1  &&
+                                           t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
   }
 
   def getEmployeeWithUserById(employeeId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {

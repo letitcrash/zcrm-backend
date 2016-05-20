@@ -6,7 +6,7 @@ case class Employee(
   companyId: Int,
   position: Option[Position] = None, 
   shift: Option[Shift] = None,
-  department: Option[Shift] = None, 
+  department: Option[Department] = None, 
   union: Option[Union] = None, 
   teams: Option[List[Team]] = None,
   delegates: Option[List[Delegate]] = None, 
