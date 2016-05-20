@@ -86,10 +86,9 @@ trait TeamDBComponent extends DBComponent {
                               t.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
   }
 
-  /*
-  def getTeamsByUserId(userId: Int): Future[List[TeamEntity]] = {
-    db.run(groupWithTeams.filter( _._1.userId === userId ).result).map(_._2.toList)
+  def getTeamEntitiesByUserId(userId: Int): Future[List[(TeamGroupEntity, TeamEntity)]] = {
+    db.run(groupWithTeams.filter( _._1.userId === userId ).result).map(_.toList)
   }
-  */
+
 }
 

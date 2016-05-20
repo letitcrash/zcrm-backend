@@ -52,12 +52,14 @@ object EmployeeDBRepository {
  }
 
  def getAggragatedEmployeesByCompanyId(companyId: Int): Future[List[Employee]] = {
-    for {
-      //FIXME: for each empl get delegts and tms
-      aggEmployees <- getAllAggregatedEmployeesByCompanyId(companyId)
-      delegatesEntt <- getDelegateEntitiesByCompanyId(companyId)
-      teamsEntt <-  getTeamEntitiesByCompanyId(companyId)
-    } yield aggEmployees.map(_.asEmployee(teamsEntt, delegatesEntt))
+   getAllAggregatedEmployeesByCompanyId(companyId).flatMap( listAggEmployees =>
+     Future.sequence(
+       listAggEmployees.map( aggEmployee =>
+           getDelegateEntitiesByUserId(aggEmployee._1._1._1._1._2._1.id.get).flatMap(
+             delegatesTup =>
+               getTeamEntitiesByUserId(aggEmployee._1._1._1._1._2._1.id.get).map(
+                 teamsTup => 
+                   aggEmployee.asEmployee(teamsTup, delegatesTup))))))
  }
 
  def getEmployeeByEmployeeId(employeeId: Int): Future[Employee] = {

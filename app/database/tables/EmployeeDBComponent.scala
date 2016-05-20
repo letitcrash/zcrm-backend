@@ -17,8 +17,6 @@ case class EmployeeEntity(
                            departmentId: Option[Int] = None, 
                            unionId: Option[Int] = None,
 
-                           //employeeType: Option[String],
-
                            // The level the user has within a company, i.e admin or normal employee
                            // 1000 - 9999  = user level
                            // 100 - 999    = Human resource
