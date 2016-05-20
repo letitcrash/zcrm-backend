@@ -4,7 +4,7 @@ import models.Employee
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
-import models.Team
+import models.{Team, TeamGroup}
 import play.api.Logger
 import utils.converters.TeamConverter._
 
@@ -35,6 +35,11 @@ object TeamDBRepository {
   def getTeamsByCompanyId(companyId: Int): Future[List[Team]] = {
     getTeamEntitiesByCompanyId(companyId).map(list => list.map(_.asTeam))
   } 
+
+
+  def addUserToTeamGroup(teamGroup: TeamGroup): Future[TeamGroup] = {
+    insertTeamGroup(teamGroup.asEntity).map( tg => tg.asTeamGroup)
+  }
   
 
 }

@@ -1,7 +1,7 @@
 package utils.converters
 
 import database.tables.{TeamEntity, TeamGroupEntity}
-import models.Team
+import models.{Team, TeamGroup}
 
 object TeamConverter {
   
@@ -28,6 +28,21 @@ object TeamConverter {
                          description = t.description)
       }
   }
+
+  implicit class TeamGroupToTeamGroupEntity(t: TeamGroup) {
+      def asEntity: TeamGroupEntity = {
+        TeamGroupEntity( teamId = t.teamId,
+                         userId = t.userId)
+      }
+  }
+
+  implicit class EnitityToTeamGroup(t: TeamGroupEntity) {
+      def asTeamGroup: TeamGroup = {
+        TeamGroup( teamId = t.teamId,
+                   userId = t.userId)
+      }
+  }
+
 }
 
 

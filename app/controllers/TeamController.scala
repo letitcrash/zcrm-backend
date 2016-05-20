@@ -16,6 +16,7 @@ import scala.concurrent.Future
 @Singleton
 class TeamController @Inject() extends CRMController {
   import utils.JSFormat.teamFrmt
+  import utils.JSFormat.teamGroupFrmt
 
   //TODO: add permissions check
   def newTeam(companyId: Int) = CRMActionAsync[Team](expectedTeamFormat) { rq => 
@@ -49,6 +50,11 @@ class TeamController @Inject() extends CRMController {
   
   def deleteTeamById(companyId: Int, teamId:Int) = CRMActionAsync{rq =>
       TeamDBRepository.deleteTeam(teamId).map(deletedTeam => Json.toJson(deletedTeam))
+  }
+
+
+  def addUserToTeam(companyId: Int, teamId: Int, userId: Int) = CRMActionAsync{ rq => 
+    TeamDBRepository.addUserToTeamGroup(TeamGroup(teamId, userId)).map( tg => Json.toJson(tg))
   }
  
 }

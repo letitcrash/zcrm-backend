@@ -80,7 +80,16 @@ trait TeamDBComponent extends DBComponent {
                             updatedAt = new Timestamp(System.currentTimeMillis()))))
   } 
 
+  //CRUD TeamGroup 
+  def insertTeamGroup(teamGroup: TeamGroupEntity): Future[TeamGroupEntity] = {
+      db.run((teamGroups returning teamGroups.map(_.teamId) into ((teamGroup,id) => teamGroup.copy(teamId=id))) += teamGroup)
+  }
+
   //FILTERS
+  def insertTeamGroups(teamGroups: List[TeamGroupEntity]): Future[List[TeamGroupEntity]] = {
+    Future.sequence(teamGroups.map( t =>  insertTeamGroup(t)))
+  }
+
   def getTeamEntitiesByCompanyId(companyId: Int): Future[List[TeamEntity]] = {
     db.run(teams.filter(t => (t.companyId === companyId && 
                               t.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
