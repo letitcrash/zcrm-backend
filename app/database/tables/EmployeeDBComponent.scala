@@ -132,7 +132,7 @@ trait EmployeeDBComponent extends DBComponent{
 
   def getAllAggregatedEmployeesByCompanyId(companyId: Int)
    : Future[List[(((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), Option[PositionEntity]) , Option[ShiftEntity]),  Option[DepartmentEntity]), Option[UnionEntity])]] = {
-    db.run(aggregatedEmployee.filter(t => (t._1._1._1._1._1.companyId === 1  &&
+    db.run(aggregatedEmployee.filter(t => (t._1._1._1._1._1.companyId === companyId  &&
                                            t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
   }
 
