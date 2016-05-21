@@ -21,7 +21,7 @@ trait TicketActionAttachedMailDBComponent extends DBComponent {
 
   val attachedMails = TableQuery[AttachedMailTable]
 
-  class AttachedMailTable(tag: Tag) extends Table[TicketActionAttachedMailEntity](tag, "tbl_attched_mail") {
+  class AttachedMailTable(tag: Tag) extends Table[TicketActionAttachedMailEntity](tag, "tbl_attached_mail") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def actionId = column[Int]("action_id")
     def mailId = column[Int]("mail_id")
