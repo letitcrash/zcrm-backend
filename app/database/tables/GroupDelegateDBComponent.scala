@@ -7,8 +7,8 @@ import scala.concurrent.Future
 import slick.profile.SqlProfile.ColumnOption.Nullable
 
 case class GroupDelegateEntity(
-  id: Option[Int],
-  userId: Int,
+  delegateId: Option[Int],
+  userId: Option[Int],
   delegateStartDate: Option[Timestamp],
   delegateEndDate: Option[Timestamp])
 
@@ -30,7 +30,7 @@ trait GroupDelegateDBComponent extends DBComponent
     def fkUser = foreignKey("fk_group_delegate_user", userId, users)(_.id)
     def fkDelegate = foreignKey("fk_group_delegate_delegate", delegateId, delegates)(_.id)
 
-    override def * = (delegateId.?, userId, delegateStartDate.?, delegateEndDate.?) <> (GroupDelegateEntity.tupled, GroupDelegateEntity.unapply)
+    override def * = (delegateId.?, userId.?, delegateStartDate.?, delegateEndDate.?) <> (GroupDelegateEntity.tupled, GroupDelegateEntity.unapply)
 
   }
 
@@ -39,30 +39,32 @@ trait GroupDelegateDBComponent extends DBComponent
 
   //CRUD
   def insertGroupDelegate(entity: GroupDelegateEntity): Future[GroupDelegateEntity] = {
-    val delegateStartDate = Some(new Timestamp(System.currentTimeMillis()))
-
-    db.run((groupDelegates returning groupDelegates.map(_.delegateId) into ((gd, id) => gd.copy(id = Some(id))))
-      += entity.copy(delegateStartDate = delegateStartDate))
+    db.run((groupDelegates returning groupDelegates.map(_.delegateId) into ((gd, id) => gd.copy(delegateId = Some(id))))
+      += entity)
   }
 
-  def getGroupDelegateEntityById(id: Int): Future[GroupDelegateEntity] = {
-    db.run(groupDelegates.filter(_.delegateId === id).result.head)
+  def getGroupDelegateEntityByDelegateId(delegateId: Int): Future[GroupDelegateEntity] = {
+    db.run(groupDelegates.filter(_.delegateId === delegateId).result.head)
   }
 
   def updateGroupDelegateEntity(entity: GroupDelegateEntity): Future[GroupDelegateEntity] = {
-    db.run(groupDelegates.filter(_.delegateId === entity.id).update(entity).map { num =>
+    db.run(groupDelegates.filter(_.delegateId === entity.delegateId).update(entity).map { num =>
       if(num != 0) entity
       else throw new Exception("Can't update group delegate, is it deleted?")
     })
   }
 
-  def deleteGroupDelegateById(id: Int): Future[GroupDelegateEntity] = {
-    val deleted = getGroupDelegateEntityById(id)
-    db.run(groupDelegates.filter(_.delegateId === id).delete)
+  def deleteGroupDelegateByDelegateId(delegateId: Int): Future[GroupDelegateEntity] = {
+    val deleted = getGroupDelegateEntityByDelegateId(delegateId)
+    db.run(groupDelegates.filter(_.delegateId === delegateId).delete)
     deleted
   }
 
   //FILTERS 
+  def insertDelegateGroups(delegateGroups: List[GroupDelegateEntity]): Future[List[GroupDelegateEntity]] = {
+    Future.sequence(delegateGroups.map( d =>  insertGroupDelegate(d)))
+  }
+
   def getDelegateEntitiesByUserId(userId: Int): Future[List[(GroupDelegateEntity, DelegateEntity)]] = {
     db.run(userWithDelegates.filter( _._1.userId === userId).result).map(_.toList)
   }

@@ -1,7 +1,7 @@
 package utils.converters
 
 import database.tables.{DelegateEntity, GroupDelegateEntity}
-import models.Delegate
+import models.{Delegate, DelegateGroup}
 
 object DelegateConverter {
 
@@ -20,6 +20,26 @@ object DelegateConverter {
   implicit class DelegateToEntity(d: Delegate) {
     def asDelegateEntity(companyId: Int): DelegateEntity = {
       DelegateEntity(d.id, companyId, d.name)
+    }
+  }
+
+  implicit class DelegateGroupToEntity(dg: DelegateGroup) {
+    def asGroupEntity: GroupDelegateEntity = {
+      GroupDelegateEntity(
+        delegateId = dg.delegateId,
+        userId = dg.userId,
+        delegateStartDate = dg.startDate,
+        delegateEndDate = dg.endDate)
+    }
+  }
+
+  implicit class GroupEntityToDelegate(dg: GroupDelegateEntity) {
+    def asDelegateGroup: DelegateGroup = {
+      DelegateGroup(
+        delegateId = dg.delegateId,
+        userId = dg.userId,
+        startDate = dg.delegateStartDate,
+        endDate = dg.delegateEndDate)
     }
   }
 

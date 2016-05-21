@@ -85,6 +85,7 @@ trait TeamDBComponent extends DBComponent {
       db.run((teamGroups returning teamGroups.map(_.teamId) into ((teamGroup,id) => teamGroup.copy(teamId=id))) += teamGroup)
   }
 
+
   //FILTERS
   def insertTeamGroups(teamGroups: List[TeamGroupEntity]): Future[List[TeamGroupEntity]] = {
     Future.sequence(teamGroups.map( t =>  insertTeamGroup(t)))

@@ -7,10 +7,12 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 import utils.ExpectedFormat._
 import database.DelegateDBRepository
-import models.Delegate
+import models.{Delegate, DelegateGroup}
 
 class DelegateController @Inject() extends CRMController {
   import utils.JSFormat.delegateFrmt
+  import utils.JSFormat.delegateGroupFrmt
+
 
   def getDelegate(companyId: Int, delegateId: Int) = CRMActionAsync { rq =>
     DelegateDBRepository.getDelegateById(delegateId).map(Json.toJson(_))
@@ -30,6 +32,10 @@ class DelegateController @Inject() extends CRMController {
 
   def getAllDelegates(companyId: Int) = CRMActionAsync { rq =>
     DelegateDBRepository.getDelegatesByCompanyId(companyId).map(Json.toJson(_))
+  }
+
+  def addDelegateToUser(companyId: Int, delegateId: Int, userId: Int) = CRMActionAsync[DelegateGroup](expectedDelegateGroupFormat)  { rq =>
+    DelegateDBRepository.addDelegateGroup(rq.body).map(dg => Json.toJson(dg))
   }
 
 

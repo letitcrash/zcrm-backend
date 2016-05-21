@@ -26,7 +26,8 @@ GET     /companies/:companyId/expand                                            
 
 # Delegate
 
-POST	  /companies/:companyId/delegates                                                     controllers.DelegateController.newDelegate(companyId: Int)
+POST	  /companies/:companyId/delegates                                                       controllers.DelegateController.newDelegate(companyId: Int)
+POST	  /companies/:companyId/delegates/:delegateId/users/:userId                             controllers.DelegateController.addDelegateToUser(companyId: Int, delegateId: Int, userId: Int)
 PUT	    /companies/:companyId/delegates/:delegateId                                           controllers.DelegateController.updateDelegate(companyId: Int, delegateId: Int)
 DELETE	/companies/:companyId/delegates/:delegateId                                           controllers.DelegateController.deleteDelegateById(companyId: Int, delegateId: Int)
 GET	    /companies/:companyId/delegates                                                       controllers.DelegateController.getAllDelegates(companyId: Int)

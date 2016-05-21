@@ -4,7 +4,7 @@ import models.Delegate
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
-import models.Delegate
+import models.{Delegate, DelegateGroup}
 import utils.converters.DelegateConverter._
 
 
@@ -31,6 +31,11 @@ object DelegateDBRepository {
 
   def getDelegateById(id: Int): Future[Delegate] = {
     getDelegateEntityById(id).map(_.asDelegate)
+  }
+
+
+  def addDelegateGroup(group: DelegateGroup): Future[DelegateGroup] = {
+    insertGroupDelegate(group.asGroupEntity).map( group => group.asDelegateGroup)
   }
 
 }

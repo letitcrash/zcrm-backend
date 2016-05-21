@@ -53,6 +53,7 @@ object JSFormat {
   implicit val mailboxFrmt                  = Json.format[Mailbox]
   implicit val uploadedFileFrmt             = Json.format[UploadedFile]
   implicit val teamGroupFrmt                = Json.format[TeamGroup]
+  implicit val delegateGroupFrmt            = Json.format[DelegateGroup]
 
 }
 

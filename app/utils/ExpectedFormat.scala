@@ -148,5 +148,13 @@ object ExpectedFormat {
     "companyId" -> Json.toJson("[M] (int) Company Id"),
     "name"      -> Json.toJson("[M] (string) Delegate name")
   ))
+
+  val expectedDelegateGroupFormat = Json.toJson(ListMap(
+    "delegateId"    -> Json.toJson("[M] (int) Delegate Id"),
+    "userId"    -> Json.toJson("[M] (int) User Id"),
+    "startDate" -> Json.toJson("[O] (TS) start date"),
+    "endDate"   -> Json.toJson("[O] (TS) end date ")
+  ))
+
 }
 
