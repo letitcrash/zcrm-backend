@@ -29,6 +29,7 @@ object EmployeeDBRepository {
     import utils.converters.ContactProfileConverter.ContactProfileToEntity
     import utils.converters.EmployeeConverter._
     import utils.converters.TeamConverter._
+    import utils.converters.DelegateConverter._
 
     //TODO: should be transactionally
     isUserExists(username).flatMap( flag =>
@@ -40,6 +41,7 @@ object EmployeeDBRepository {
             userEnt <- insertUser(UserEntity(username = username, userLevel = UserLevels.USER, profileId = profEnt.id.get))
             empEnt <- insertEmployee(employee.asEmployeeEntity(employee.companyId, userEnt.id.get))
             teamGrpEnt <- insertTeamGroups(employee.teams.get.map(t => TeamGroup(t.id.get, userEnt.id.get)).map(_.asEntity))
+            //delegateGrpEnt <- insertDelegateGroups(employee.delegates.get.map(_.asGroupEntity))
           } yield (empEnt, userEnt, profEnt).asEmployee()
     })
   }
