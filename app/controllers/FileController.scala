@@ -8,7 +8,7 @@ import scala.util.{Failure, Success, Try}
 import scala.concurrent.Future
 import java.io.File
 
-import database.{FileRepository, TaskAttachedMailDBRepository}
+import database.FileRepository
 import models._
 import controllers.session.{InsufficientRightsException, CRMResponse, CRMResponseHeader}
 import security.Security

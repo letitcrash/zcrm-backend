@@ -20,14 +20,14 @@ object current {
 
 @Singleton
 class DAO extends UserDBComponent
-    with TaskAttachedMailDBComponent
-    with TaskDBComponent
     with ContactProfileDBComponent
     with SignupTokenDBComponent
     with CompanyDBComponent
     with PositionDBComponent
     with EmployeeDBComponent
     with MailboxDBComponent
+    with SavedExchangeMailDBComponent
+    with ExchangeODSMailDBComponent
     with PasswordTokenDBComponent
     with TeamDBComponent
     with UnionDBComponent
@@ -35,6 +35,9 @@ class DAO extends UserDBComponent
 	  with DepartmentDBComponent
     with GroupDelegateDBComponent
     with DelegateDBComponent
+    with TicketDBComponent
+    with TicketActionDBComponent
+    with TicketActionAttachedMailDBComponent
     with FileDBComponent{
  import dbConfig.driver.api._
 
@@ -63,17 +66,21 @@ class DAO extends UserDBComponent
       Logger.info("Dropping group delegates   -> " + tryDrop(groupDelegates.schema))
       Logger.info("Dropping employees         -> " + tryDrop(employees.schema))
       Logger.info("Dropping companies         -> " + tryDrop(companies.schema))
-      Logger.info("Dropping passworTokens     -> " + tryDrop(passwordTokens.schema))
-      Logger.info("Dropping tasks             -> " + tryDrop(tasks.schema))
-      Logger.info("Dropping taskAttachedMails -> " + tryDrop(taskAttachedMails.schema))
+      Logger.info("Dropping passwordTokens    -> " + tryDrop(passwordTokens.schema))
+      Logger.info("Dropping attached_mails    -> " + tryDrop(saved_mails.schema))
       Logger.info("Dropping mailboxes         -> " + tryDrop(mailboxes.schema))
+      Logger.info("Dropping ods_mails         -> " + tryDrop(ods_mails.schema))
+      Logger.info("Dropping saved_mails       -> " + tryDrop(saved_mails.schema))
       Logger.info("Dropping files             -> " + tryDrop(files.schema))
       Logger.info("Dropping shifts            -> " + tryDrop(shifts.schema))
       Logger.info("Dropping teams             -> " + tryDrop(teams.schema))
       Logger.info("Dropping groups            -> " + tryDrop(teamGroups.schema))
       Logger.info("Dropping unions            -> " + tryDrop(unions.schema))
-      Logger.info("Dropping departments  		  -> " + tryDrop(departments.schema))
-      Logger.info("Dropping positions 				-> " + tryDrop(positions.schema))
+      Logger.info("Dropping departments       -> " + tryDrop(departments.schema))
+      Logger.info("Dropping positions         -> " + tryDrop(positions.schema))
+      Logger.info("Dropping tickets       -> " + tryDrop(tickets.schema))
+      Logger.info("Dropping actions       -> " + tryDrop(actions.schema))
+      Logger.info("Dropping attchedMails       -> " + tryDrop(attachedMails.schema))
       Success("Tables dropped")
     } catch {
       case ex: Exception =>
@@ -104,19 +111,23 @@ class DAO extends UserDBComponent
     Logger.info("Creating signupTokens      -> " + tryCreate(signupTokens.schema))
     Logger.info("Creating employees         -> " + tryCreate(employees.schema))
     Logger.info("Creating companies         -> " + tryCreate(companies.schema))
-    Logger.info("Creating passworTokens     -> " + tryCreate(passwordTokens.schema))
-    Logger.info("Creating tasks             -> " + tryCreate(tasks.schema))
-    Logger.info("Creating taskAttachedMails -> " + tryCreate(taskAttachedMails.schema))
+    Logger.info("Creating passwordTokens    -> " + tryCreate(passwordTokens.schema))
+    Logger.info("Creating attached_mails    -> " + tryCreate(saved_mails.schema))
     Logger.info("Creating delegates         -> " + tryCreate(delegates.schema))
     Logger.info("Creating delegate groups   -> " + tryCreate(groupDelegates.schema))
     Logger.info("Creating mailboxes         -> " + tryCreate(mailboxes.schema))
+    Logger.info("Creating ods_mails         -> " + tryCreate(ods_mails.schema))
+    Logger.info("Creating saved_mails       -> " + tryCreate(saved_mails.schema))
     Logger.info("Creating files             -> " + tryCreate(files.schema))
     Logger.info("Creating teams             -> " + tryCreate(teams.schema))
     Logger.info("Creating team groups       -> " + tryCreate(teamGroups.schema))
     Logger.info("Creating shifts            -> " + tryCreate(shifts.schema))
     Logger.info("Creating unions            -> " + tryCreate(unions.schema))
-    Logger.info("Creating departments	    -> " + tryCreate(departments.schema))
+    Logger.info("Creating departments       -> " + tryCreate(departments.schema))
     Logger.info("Creating positions         -> " + tryCreate(positions.schema))
+    Logger.info("Creating actions       -> " + tryCreate(actions.schema))
+    Logger.info("Creating attachedMails       -> " + tryCreate(attachedMails.schema))
+    Logger.info("Creating tickets       -> " + tryCreate(tickets.schema))
     Success("Created All tables!")
   }
 
