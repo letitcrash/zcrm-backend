@@ -15,7 +15,6 @@ case class TicketEntity(
   assignedToUserId: Int,
   assignedToTeamId: Option[Int] = None,
   commentId: Option[Int] = None,
-  ticketId: Option[String] = None,
   status: Int,
   subject: String,
   description: Option[String] = None,
@@ -42,7 +41,6 @@ trait TicketDBComponent extends DBComponent {
     def assignedToUserId = column[Int]("assigned_to_user_id")
     def assignedToTeamId = column[Int]("assigned_to_team_id", Nullable)
     def commentId = column[Int]("comment_id", Nullable)
-    def ticketId = column[String]("ticket_id", Nullable, O.SqlType("VARCHAR(255)"))
     def status = column[Int]("status")
     def subject = column[String]("subject")
     def description = column[String]("description", Nullable)
@@ -59,10 +57,8 @@ trait TicketDBComponent extends DBComponent {
     def fkCommentId = foreignKey("fk_ticket_comment_id", commentId, actions)(_.id, onUpdate = Restrict, onDelete = Cascade)
 
 
-    def * = (id.?, companyId, createdByUserId, requestedByUserId, assignedToUserId, assignedToTeamId.?, commentId.?, ticketId.?, status, subject, 
+    def * = (id.?, companyId, createdByUserId, requestedByUserId, assignedToUserId, assignedToTeamId.?, commentId.?, status, subject,
              description.?, recordStatus, createdAt, updatedAt)<>(TicketEntity.tupled, TicketEntity.unapply)
-
-    def UqTicketId = index("unique_ticket_id", ticketId, unique = true)
 
   }
 
