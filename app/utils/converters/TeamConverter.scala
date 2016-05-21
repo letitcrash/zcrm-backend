@@ -43,6 +43,13 @@ object TeamConverter {
       }
   }
 
+  implicit class TeamToTeamGroup(t: Team) {
+    def asTeamGroup(userId: Int): TeamGroup = {
+      TeamGroup( teamId = t.id.get,
+                 userId = userId)
+    }
+  }
+
 }
 
 

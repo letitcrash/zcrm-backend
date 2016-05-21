@@ -43,4 +43,16 @@ object DelegateConverter {
     }
   }
 
+
+  implicit class DelegateToDelegateGroup(dg: Delegate){
+    def asDelegateGroup(userId: Option[Int]): DelegateGroup = {
+      DelegateGroup(
+        delegateId = dg.id,
+        userId = userId,
+        startDate = dg.startDate,
+        endDate = dg.endDate)
+    }
+  }
+
+
 }
