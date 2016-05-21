@@ -24,8 +24,8 @@ trait DelegateDBComponent extends DBComponent
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def companyId = column[Int]("company_id")
     def name = column[String]("name")
-    def createdAt = column[Timestamp]("created_at")
-    def updatedAt = column[Timestamp]("updated_at")
+    def createdAt = column[Timestamp]("created_at", O.Default(new Timestamp(System.currentTimeMillis())))
+    def updatedAt = column[Timestamp]("updated_at", O.Default(new Timestamp(System.currentTimeMillis())))
 
     def fkCompany = foreignKey("fk_delegate_company", companyId, companies)(_.id)
 
@@ -33,11 +33,9 @@ trait DelegateDBComponent extends DBComponent
   }
 
   def insertDelegate(delegate: DelegateEntity): Future[DelegateEntity] = {
-    val createdAt = new Timestamp(System.currentTimeMillis())
-
     db.run(
       (delegates returning delegates.map(_.id) into ((delegate, id) => delegate.copy(id = Some(id))))
-        += delegate.copy(createdAt = createdAt))
+        += delegate)
   }
 
   def updateDelegateEntity(delegate: DelegateEntity): Future[DelegateEntity] = {
