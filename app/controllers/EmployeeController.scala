@@ -74,5 +74,6 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
 
   def getAllEmployeesByCompanyId(companyId: Int) = CRMActionAsync{rq =>
     EmployeeDBRepository.getAggragatedEmployeesByCompanyId(companyId).map(list => Json.toJson(list))
+    //EmployeeDBRepository.getEmployeesByCompanyId(companyId).map(list => Json.toJson(list))
   }
 }

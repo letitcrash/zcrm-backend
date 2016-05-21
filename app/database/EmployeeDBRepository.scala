@@ -41,7 +41,6 @@ object EmployeeDBRepository {
             userEnt <- insertUser(UserEntity(username = username, userLevel = UserLevels.USER, profileId = profEnt.id.get))
             empEnt <- insertEmployee(employee.asEmployeeEntity(employee.companyId, userEnt.id.get))
             //FIXME: move TeamGroup to converter
-            /*
             teamGrpEnt <- employee.teams match { case Some(teams) => insertTeamGroups(teams.map(t => 
                                                                       TeamGroup(t.id.get, userEnt.id.get)).map(_.asEntity))
                                                  case _ => Future(List())}
@@ -49,7 +48,6 @@ object EmployeeDBRepository {
             delegateGrpEnt <- employee.delegates match { case Some(delegates) => insertDelegateGroups(delegates.map(t => 
                                                                   DelegateGroup(t.id, userEnt.id, t.startDate, t.endDate)).map(_.asGroupEntity))
                                                         case _ => Future(List())}
-                                                        */
           } yield (empEnt, userEnt, profEnt).asEmployee()
     })
   }
