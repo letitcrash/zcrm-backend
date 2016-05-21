@@ -41,9 +41,15 @@ object EmployeeDBRepository {
             userEnt <- insertUser(UserEntity(username = username, userLevel = UserLevels.USER, profileId = profEnt.id.get))
             empEnt <- insertEmployee(employee.asEmployeeEntity(employee.companyId, userEnt.id.get))
             //FIXME: move TeamGroup to converter
-            teamGrpEnt <- insertTeamGroups(employee.teams.get.map(t => TeamGroup(t.id.get, userEnt.id.get)).map(_.asEntity))
+            /*
+            teamGrpEnt <- employee.teams match { case Some(teams) => insertTeamGroups(teams.map(t => 
+                                                                      TeamGroup(t.id.get, userEnt.id.get)).map(_.asEntity))
+                                                 case _ => Future(List())}
             //FIXME: move DelegateGroup to converter
-            delegateGrpEnt <- insertDelegateGroups(employee.delegates.get.map(t => DelegateGroup(t.id, userEnt.id, t.startDate, t.endDate)).map(_.asGroupEntity))
+            delegateGrpEnt <- employee.delegates match { case Some(delegates) => insertDelegateGroups(delegates.map(t => 
+                                                                  DelegateGroup(t.id, userEnt.id, t.startDate, t.endDate)).map(_.asGroupEntity))
+                                                        case _ => Future(List())}
+                                                        */
           } yield (empEnt, userEnt, profEnt).asEmployee()
     })
   }
@@ -80,9 +86,13 @@ object EmployeeDBRepository {
       delegateGrpsDel <- deleteGroupDelegateByUserId(employee.user.get.id.get)
       employeeUpd <- updateEmployeeWithUser(employee.asEmployeeEntity)
       //FIXME: move TeamGroup to converter
-      teamGrpEnt <- insertTeamGroups(employee.teams.get.map(t => TeamGroup(t.id.get, employeeUpd._2._1.id.get)).map(_.asEntity))
+      teamGrpEnt <- employee.teams match { case Some(teams) => insertTeamGroups(teams.map(t => 
+                                                               TeamGroup(t.id.get, employeeUpd._2._1.id.get)).map(_.asEntity))
+                                           case _ => Future(List())}
       //FIXME: move DelegateGroup to converter
-      delegateGrpEnt <- insertDelegateGroups(employee.delegates.get.map(t => DelegateGroup(t.id, employeeUpd._2._1.id, t.startDate, t.endDate)).map(_.asGroupEntity))
+      delegateGrpEnt <- employee.delegates match { case Some(delegates) => insertDelegateGroups(delegates.map(t => 
+                                                            DelegateGroup(t.id, employeeUpd._2._1.id, t.startDate, t.endDate)).map(_.asGroupEntity))
+                                                   case _ => Future(List())}
     } yield employeeUpd.asEmployee()
 
   }
