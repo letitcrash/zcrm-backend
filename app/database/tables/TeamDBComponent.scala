@@ -85,6 +85,21 @@ trait TeamDBComponent extends DBComponent {
       db.run((teamGroups returning teamGroups.map(_.teamId) into ((teamGroup,id) => teamGroup.copy(teamId=id))) += teamGroup)
   }
 
+  def deleteTeamGroup(teamGroup: TeamGroupEntity): Future[TeamGroupEntity] = {
+    db.run(teamGroups.filter( t => ( t.teamId === teamGroup.teamId &&
+                                t.userId === teamGroup.userId)).delete)
+    Future(teamGroup)
+  }
+  
+  def getTeamGroupEntityByUserId(userId: Int): Future[TeamGroupEntity] = {
+    db.run(teamGroups.filter(_.userId === userId).result.head) 
+  }
+
+  def deleteTeamGroupByUserId(userId: Int): Future[TeamGroupEntity] = {
+    val lastDeleted = getTeamGroupEntityByUserId(userId)
+    db.run(teamGroups.filter(_.userId === userId).delete)
+    lastDeleted
+  }
 
   //FILTERS
   def insertTeamGroups(teamGroups: List[TeamGroupEntity]): Future[List[TeamGroupEntity]] = {
@@ -98,6 +113,11 @@ trait TeamDBComponent extends DBComponent {
 
   def getTeamEntitiesByUserId(userId: Int): Future[List[(TeamGroupEntity, TeamEntity)]] = {
     db.run(groupWithTeams.filter( _._1.userId === userId ).result).map(_.toList)
+  }
+
+  def deleteTeamGroups(teamGroups: List[TeamGroupEntity]): Future[List[TeamGroupEntity]] = {
+    Future.sequence(teamGroups.map( t =>  deleteTeamGroup(t)))
+    Future(teamGroups)
   }
 
 }

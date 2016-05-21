@@ -43,10 +43,17 @@ trait GroupDelegateDBComponent extends DBComponent
       += entity)
   }
 
+  //TODO: pointless 
   def getGroupDelegateEntityByDelegateId(delegateId: Int): Future[GroupDelegateEntity] = {
     db.run(groupDelegates.filter(_.delegateId === delegateId).result.head)
   }
 
+  //TODO: pointless 
+  def getGroupDelegateEntityByUserId(userId: Int): Future[GroupDelegateEntity] = {
+    db.run(groupDelegates.filter(_.userId === userId).result.head)
+  }
+
+  //TODO: pointless 
   def updateGroupDelegateEntity(entity: GroupDelegateEntity): Future[GroupDelegateEntity] = {
     db.run(groupDelegates.filter(_.delegateId === entity.delegateId).update(entity).map { num =>
       if(num != 0) entity
@@ -54,10 +61,23 @@ trait GroupDelegateDBComponent extends DBComponent
     })
   }
 
+  //TODO: pointless 
   def deleteGroupDelegateByDelegateId(delegateId: Int): Future[GroupDelegateEntity] = {
     val deleted = getGroupDelegateEntityByDelegateId(delegateId)
     db.run(groupDelegates.filter(_.delegateId === delegateId).delete)
     deleted
+  }
+
+  def deleteGroupDelegateByUserId(userId: Int): Future[GroupDelegateEntity] = {
+    val lastDeleted = getGroupDelegateEntityByUserId(userId)
+    db.run(groupDelegates.filter(_.userId === userId).delete)
+    lastDeleted
+  }
+
+  def deleteGroupDelegate(groupDelegate : GroupDelegateEntity): Future[GroupDelegateEntity] = {
+    db.run(groupDelegates.filter( t => ( t.delegateId === groupDelegate.delegateId &&
+                                  t.userId === groupDelegate.userId)).delete)
+    Future(groupDelegate)
   }
 
   //FILTERS 
@@ -67,6 +87,11 @@ trait GroupDelegateDBComponent extends DBComponent
 
   def getDelegateEntitiesByUserId(userId: Int): Future[List[(GroupDelegateEntity, DelegateEntity)]] = {
     db.run(userWithDelegates.filter( _._1.userId === userId).result).map(_.toList)
+  }
+
+  def deleteGroupDelegates(groupDelegates : List[GroupDelegateEntity]): Future[List[GroupDelegateEntity]] = {
+    Future.sequence(groupDelegates.map( t =>  deleteGroupDelegate(t)))
+    Future(groupDelegates)
   }
 
 }
