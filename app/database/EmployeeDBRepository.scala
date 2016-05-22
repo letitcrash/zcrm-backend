@@ -82,7 +82,7 @@ object EmployeeDBRepository {
   def updateEmployee(employee: Employee): Future[Employee] = {
     import utils.converters.TeamConverter._
     import utils.converters.DelegateConverter._
-    for {
+    (for {
       teamGrpsDel <-  deleteTeamGroupByUserId(employee.user.get.id.get)
       delegateGrpsDel <- deleteGroupDelegateByUserId(employee.user.get.id.get)
       employeeUpd <- updateEmployeeWithUser(employee.asEmployeeEntity)
@@ -90,8 +90,13 @@ object EmployeeDBRepository {
                                            case _ => Future(List())}
       delegateGrpEnt <- employee.delegates match { case Some(delegates) => insertDelegateGroups(delegates.map(d => d.asDelegateGroup(employeeUpd._2._1.id)).map(_.asGroupEntity))
                                                    case _ => Future(List())}
-    } yield employeeUpd.asEmployee()
-
+    } yield employeeUpd.asEmployee()).map( e =>
+            e.copy( position = employee.position,
+                    shift = employee.shift,
+                    department = employee.department,
+                    union = employee.union,
+                    teams = employee.teams,
+                    delegates = employee.delegates))
   }
 
   def softDeleteEmployeeById(employeeId: Int): Future[Employee] = {
