@@ -36,17 +36,23 @@ object EmployeeDBRepository {
         if(flag){
           throw new UsernameAlreadyExistException
         } else {
-          for {
+         (for {
             profEnt <- insertProfile(contactProfile.asEntity())
             userEnt <- insertUser(UserEntity(username = username, userLevel = UserLevels.USER, profileId = profEnt.id.get))
             empEnt <- insertEmployee(employee.asEmployeeEntity(employee.companyId, userEnt.id.get))
-            teamGrpEnt <- employee.teams match { case Some(teams) => insertTeamGroups(teams.map(t =>t.asTeamGroup(userEnt.id.get)).map(_.asEntity))
+            teamGrpEnts <- employee.teams match { case Some(teams) => insertTeamGroups(teams.map(t =>t.asTeamGroup(userEnt.id.get)).map(_.asEntity))
                                                  case _ => Future(List())}
-            delegateGrpEnt <- employee.delegates match { case Some(delegates) => insertDelegateGroups(delegates.map(d => d.asDelegateGroup(userEnt.id)).map(_.asGroupEntity))
+            delegateGrpEnts <- employee.delegates match { case Some(delegates) => insertDelegateGroups(delegates.map(d => d.asDelegateGroup(userEnt.id)).map(_.asGroupEntity))
                                                          case _ => Future(List())}
-          } yield (empEnt, userEnt, profEnt).asEmployee()
+         } yield (empEnt, userEnt, profEnt).asEmployee()).map( e =>
+            e.copy( position = employee.position,
+                    shift = employee.shift,
+                    department = employee.department,
+                    union = employee.union,
+                    teams = employee.teams,
+                    delegates = employee.delegates))
     })
-  }
+ }
 
 
  def getEmployeeByUser(user: User): Future[Employee] = {
