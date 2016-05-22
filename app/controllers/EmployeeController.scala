@@ -74,6 +74,20 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
 
   def getAllEmployeesByCompanyId(companyId: Int) = CRMActionAsync{rq =>
     EmployeeDBRepository.getAggragatedEmployeesByCompanyId(companyId).map(list => Json.toJson(list))
-    //EmployeeDBRepository.getEmployeesByCompanyId(companyId).map(list => Json.toJson(list))
+  }
+
+  def searchAllEmployeesByCompanyId(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String]) = CRMActionAsync{rq =>
+    import utils.JSFormat._
+    if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
+      val psize = pageSize.getOrElse(10)
+      val pnr = pageNr.getOrElse(1)
+      EmployeeDBRepository.searchAggragatedEmployeesByCompanyId(companyId, psize, pnr, searchTerm).map(page => Json.toJson(page))
+    } else {
+      EmployeeDBRepository.getAggragatedEmployeesByCompanyId(companyId).map(list => 
+        Json.toJson( PagedResult[Employee]( pageSize = list.length,
+                                           pageNr = 1,
+                                           totalCount = list.length,
+                                           data = list)))
+    }
   }
 }

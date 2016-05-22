@@ -53,6 +53,12 @@ object JSFormat {
   implicit val teamGroupFrmt                = Json.format[TeamGroup]
   implicit val delegateGroupFrmt            = Json.format[DelegateGroup]
 
+  implicit def pagedResultFrmt[T: Format]: Format[PagedResult[T]] =
+        ((__ \ "pageSize").format[Int] ~
+          (__ \ "pageNr").format[Int] ~
+          (__ \ "totalCount").format[Int] ~
+          (__ \ "data").format[Seq[T]])(PagedResult.apply, unlift(PagedResult.unapply))
+
 }
 
 

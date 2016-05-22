@@ -5,6 +5,7 @@ import slick.model.ForeignKeyAction._
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.profile.SqlProfile.ColumnOption.Nullable
+import database.PagedDBResult
 
 
 
@@ -77,6 +78,8 @@ trait EmployeeDBComponent extends DBComponent{
       ( id.?, companyId, userId, positionId.?, shiftId.?, departmentId.?, unionId.?,  employeeLevel, recordStatus) <> (EmployeeEntity.tupled, EmployeeEntity.unapply)
   }
 
+  //JOINS 
+
   //(EmployeeEntity,  (UserEntity, ContactProfileEntity))
   def employeesWithUsersWihtProfile = employees join usersWithProfile on (_.userId === _._1.id)
 
@@ -87,6 +90,12 @@ trait EmployeeDBComponent extends DBComponent{
                              departments on ( _._1._1._1.departmentId === _.id) joinLeft
                              unions on ( _._1._1._1._1.unionId === _.id) 
 
+                            
+  //Queries 
+  def employeeQry(companyId: Int) = {
+    aggregatedEmployee.filter(t => (t._1._1._1._1._1.companyId === companyId  &&
+                                    t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE))
+  }
 
   //CRUD EmployeeEntity
   def insertEmployee(empl: EmployeeEntity): Future[EmployeeEntity] = {
@@ -134,6 +143,34 @@ trait EmployeeDBComponent extends DBComponent{
    : Future[List[(((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), Option[PositionEntity]) , Option[ShiftEntity]),  Option[DepartmentEntity]), Option[UnionEntity])]] = {
     db.run(aggregatedEmployee.filter(t => (t._1._1._1._1._1.companyId === companyId  &&
                                            t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
+  }
+
+
+  def searchAllAggregatedEmployeesByCompanyId(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String] = None)
+   : Future[PagedDBResult[(((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), Option[PositionEntity]) , Option[ShiftEntity]),  Option[DepartmentEntity]), Option[UnionEntity])]] = {
+    val baseQry = searchTerm.map { st =>
+        val s = "%" + st + "%"
+        employeeQry(companyId).filter { tup =>
+          tup._1._1._1._1._2._1.username.like(s) ||
+          tup._1._1._1._1._2._2.firstname.like(s) ||
+          tup._1._1._1._1._2._2.lastname.like(s)
+        }
+      }.getOrElse(employeeQry(companyId)) // if search term is empty, do not filter
+     
+    val pageRes = baseQry
+      .sortBy(_._1._1._1._1._2._2.lastname.asc)
+      .drop(pageSize * (pageNr - 1))
+      .take(pageSize)
+
+    db.run(pageRes.result).flatMap( empList => 
+        db.run(baseQry.length.result).map( totalCount => 
+         PagedDBResult(
+            pageSize = pageSize,
+            pageNr = pageNr,
+            totalCount = totalCount,
+            data = empList)
+          )
+        )
   }
 
   def getEmployeeWithUserById(employeeId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {

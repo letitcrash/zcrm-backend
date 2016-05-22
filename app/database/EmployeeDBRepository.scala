@@ -2,7 +2,7 @@ package database
 
 import database.tables.UserEntity
 import exceptions.UsernameAlreadyExistException
-import models.{ContactProfile, Employee, UserLevels, User, TeamGroup, DelegateGroup}
+import models.{ContactProfile, Employee, UserLevels, User, TeamGroup, DelegateGroup, PagedResult}
 
 import scala.util.{Failure, Success, Try}
 import scala.concurrent.Future
@@ -55,24 +55,41 @@ object EmployeeDBRepository {
  }
 
 
- def getEmployeeByUser(user: User): Future[Employee] = {
-   getEmployeeWithUserByUserId(user.id.get).map(empl => empl.asEmployee)
- }
+  def getEmployeeByUser(user: User): Future[Employee] = {
+    getEmployeeWithUserByUserId(user.id.get).map(empl => empl.asEmployee)
+  }
 
- def getEmployeesByCompanyId(companyId: Int): Future[List[Employee]] = {
-   getAllEmployeesWithUsersByCompanyId(companyId).map(list => list.map(_.asEmployee))
- }
+  def getEmployeesByCompanyId(companyId: Int): Future[List[Employee]] = {
+    getAllEmployeesWithUsersByCompanyId(companyId).map(list => list.map(_.asEmployee))
+  }
 
- def getAggragatedEmployeesByCompanyId(companyId: Int): Future[List[Employee]] = {
-   getAllAggregatedEmployeesByCompanyId(companyId).flatMap( listAggEmployees =>
-     Future.sequence(
-       listAggEmployees.map( aggEmployee =>
-           getDelegateEntitiesByUserId(aggEmployee._1._1._1._1._2._1.id.get).flatMap(
-             delegatesTup =>
-               getTeamEntitiesByUserId(aggEmployee._1._1._1._1._2._1.id.get).map(
-                 teamsTup => 
-                   aggEmployee.asEmployee(teamsTup, delegatesTup))))))
- }
+  def getAggragatedEmployeesByCompanyId(companyId: Int): Future[List[Employee]] = {
+    getAllAggregatedEmployeesByCompanyId(companyId).flatMap( listAggEmployees =>
+      Future.sequence(
+        listAggEmployees.map( aggEmployee =>
+            getDelegateEntitiesByUserId(aggEmployee._1._1._1._1._2._1.id.get).flatMap(
+              delegatesTup =>
+                getTeamEntitiesByUserId(aggEmployee._1._1._1._1._2._1.id.get).map(
+                  teamsTup => 
+                    aggEmployee.asEmployee(teamsTup, delegatesTup))))))
+  }
+
+  def searchAggragatedEmployeesByCompanyId (companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String]): Future[PagedResult[Employee]] = {
+    searchAllAggregatedEmployeesByCompanyId(companyId, pageSize, pageNr, searchTerm).flatMap( dbPage =>
+      Future.sequence(
+        dbPage.data.map( aggEmployee =>
+            getDelegateEntitiesByUserId(aggEmployee._1._1._1._1._2._1.id.get).flatMap(
+              delegatesTup =>
+                getTeamEntitiesByUserId(aggEmployee._1._1._1._1._2._1.id.get).map(
+                  teamsTup => 
+                    aggEmployee.asEmployee(teamsTup, delegatesTup))))).map( empList => 
+                      PagedResult[Employee](
+                        pageSize = dbPage.pageSize,
+                        pageNr = dbPage.pageNr,
+                        totalCount = dbPage.totalCount,
+                        data = empList)))
+
+  }
 
   def getEmployeeByEmployeeId(employeeId: Int): Future[Employee] = {
     getEmployeeWithUserById(employeeId).map(empl => empl.asEmployee)
