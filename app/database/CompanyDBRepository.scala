@@ -4,7 +4,7 @@ import models.Employee
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
-import models.Company
+import models.{Company,PagedResult}
 
 object CompanyDBRepository {
   import database.gen.current.dao.dbConfig.driver.api._
@@ -44,6 +44,15 @@ object CompanyDBRepository {
   def getAllCompanies :Future[List[Company]] = {
     import utils.converters.CompanyConverter._
     getCompanyEntities.map(list => list.map(_.asCompany))
+  }
+
+  def searchCompanyByName(pageSize: Int, pageNr: Int, searchTerm: Option[String]): Future[PagedResult[Company]] = {
+    import utils.converters.CompanyConverter.EntitiesToCompany
+    searchCompanyEntitiesByName(pageSize, pageNr, searchTerm).map{dbPage =>
+        PagedResult[Company](pageSize = dbPage.pageSize,
+                             pageNr = dbPage.pageNr,
+                             totalCount = dbPage.totalCount,
+                             data = dbPage.data.map(_.asCompany))}
   }
 
 }

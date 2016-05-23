@@ -31,4 +31,13 @@ class CompanyController @Inject() extends CRMController {
     CompanyDBRepository.getAllCompanies.map( company => Json.toJson(company)) 
   }
 
+  def searchAllCompaniesByName(pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String]) = CRMActionAsync{rq =>
+    import utils.JSFormat._
+    if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
+      val psize = pageSize.getOrElse(10)
+      val pnr = pageNr.getOrElse(1)
+      CompanyDBRepository.searchCompanyByName(psize, pnr, searchTerm).map(page => Json.toJson(page))
+    } else { CompanyDBRepository.getAllCompanies.map( company => Json.toJson(company)) }
+  }
+
 }

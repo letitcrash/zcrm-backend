@@ -20,7 +20,10 @@ POST    /users/:userId/password/recover                                         
 POST /login                                                                                   controllers.LoginController.login
 
 # Companies
-GET     /companies                                                                            controllers.CompanyController.getAll
+#GET     /companies                                                                            controllers.CompanyController.getAll
+GET     /companies                                                                           controllers.CompanyController.searchAllCompaniesByName(pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
+
+
 GET     /companies/:companyId                                                                 controllers.CompanyController.get(companyId: Int)
 GET     /companies/:companyId/expand                                                          controllers.CompanyController.getExpanded(companyId: Int)
 

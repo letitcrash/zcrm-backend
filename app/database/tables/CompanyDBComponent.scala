@@ -4,14 +4,14 @@ import java.sql.Timestamp
 import System.currentTimeMillis
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import database.PagedDBResult
 
 
-case class CompanyEntity(
-                          id: Option[Int] = None,
-                          name: String,
-                          contactProfileId: Int,
-                          vatId: String,
-                          lastModified: Option[Timestamp] = Some(new Timestamp(System.currentTimeMillis())))
+case class CompanyEntity(id: Option[Int] = None,
+                         name: String,
+                         contactProfileId: Int,
+                         vatId: String,
+                         lastModified: Option[Timestamp] = Some(new Timestamp(System.currentTimeMillis())))
 
 trait CompanyDBComponent extends DBComponent
   with ContactProfileDBComponent {
@@ -65,6 +65,27 @@ trait CompanyDBComponent extends DBComponent
   def getCompanyEntities: Future[List[(CompanyEntity, ContactProfileEntity)]] = {
     db.run(companyWithProfile.result).map(_.toList)
   }
+   
+  def searchCompanyEntitiesByName(pageSize: Int, pageNr: Int, searchTerm: Option[String] = None): Future[PagedDBResult[(CompanyEntity, ContactProfileEntity)]] = {
+    val baseQry = searchTerm.map { st =>
+        val s = "%" + st + "%"
+        companyWithProfile.filter{ tup => tup._1.name.like(s)}
+      }.getOrElse(companyWithProfile)  
 
+    val pageRes = baseQry
+      .sortBy(_._1.name.asc)
+      .drop(pageSize * (pageNr - 1))
+      .take(pageSize)
+
+    db.run(pageRes.result).flatMap( compList => 
+        db.run(baseQry.length.result).map( totalCount => 
+         PagedDBResult(
+            pageSize = pageSize,
+            pageNr = pageNr,
+            totalCount = totalCount,
+            data = compList)
+          )
+        )
+  }
 }
 
