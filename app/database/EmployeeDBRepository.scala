@@ -63,8 +63,8 @@ object EmployeeDBRepository {
     getAllEmployeesWithUsersByCompanyId(companyId).map(list => list.map(_.asEmployee))
   }
 
-  def getAggragatedEmployeesByCompanyId(companyId: Int): Future[List[Employee]] = {
-    getAllAggregatedEmployeesByCompanyId(companyId).flatMap( listAggEmployees =>
+  def getAggragatedEmployeesByCompanyId(companyId: Int, positionIds: Option[List[Int]]): Future[List[Employee]] = {
+    getAllAggregatedEmployeesByCompanyId(companyId, positionIds).flatMap( listAggEmployees =>
       Future.sequence(
         listAggEmployees.map( aggEmployee =>
             getDelegateEntitiesByUserId(aggEmployee._1._1._1._1._2._1.id.get).flatMap(
@@ -74,8 +74,12 @@ object EmployeeDBRepository {
                     aggEmployee.asEmployee(teamsTup, delegatesTup))))))
   }
 
-  def searchAggragatedEmployeesByCompanyId (companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String]): Future[PagedResult[Employee]] = {
-    searchAllAggregatedEmployeesByCompanyId(companyId, pageSize, pageNr, searchTerm).flatMap( dbPage =>
+  def searchAggragatedEmployeesByCompanyId (companyId: Int,
+                                            positionIds: Option[List[Int]],
+                                            pageSize: Int,
+                                            pageNr: Int,
+                                            searchTerm: Option[String]): Future[PagedResult[Employee]] = {
+    searchAllAggregatedEmployeesByCompanyId(companyId, positionIds, pageSize, pageNr, searchTerm).flatMap( dbPage =>
       Future.sequence(
         dbPage.data.map( aggEmployee =>
             getDelegateEntitiesByUserId(aggEmployee._1._1._1._1._2._1.id.get).flatMap(

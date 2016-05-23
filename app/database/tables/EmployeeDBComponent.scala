@@ -92,9 +92,12 @@ trait EmployeeDBComponent extends DBComponent{
 
                             
   //Queries 
-  def employeeQry(companyId: Int) = {
+  def employeeQry(companyId: Int, positionIds: Option[List[Int]]) = {
     aggregatedEmployee.filter(t => (t._1._1._1._1._1.companyId === companyId  &&
                                     t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE))
+                      .filter( e => positionIds match {case Some(ids) => e._1._1._1._1._1.positionId inSet ids
+                                                       //FIXME: fix below !
+                                                       case _ => e._1._1._1._1._1.companyId === companyId})
   }
 
   //CRUD EmployeeEntity
@@ -139,23 +142,26 @@ trait EmployeeDBComponent extends DBComponent{
                                                      t._1.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
   }
 
-  def getAllAggregatedEmployeesByCompanyId(companyId: Int)
+  def getAllAggregatedEmployeesByCompanyId(companyId: Int, positionIds: Option[List[Int]])
    : Future[List[(((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), Option[PositionEntity]) , Option[ShiftEntity]),  Option[DepartmentEntity]), Option[UnionEntity])]] = {
-    db.run(aggregatedEmployee.filter(t => (t._1._1._1._1._1.companyId === companyId  &&
-                                           t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
+    val baseQry = employeeQry(companyId, positionIds)
+    db.run(baseQry.sortBy(_._1._1._1._1._2._2.lastname.asc).result).map(_.toList)
   }
 
-
-  def searchAllAggregatedEmployeesByCompanyId(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String] = None)
+  def searchAllAggregatedEmployeesByCompanyId(companyId: Int,
+                                              positionIds: Option[List[Int]],
+                                              pageSize: Int, 
+                                              pageNr: Int, 
+                                              searchTerm: Option[String] = None)
    : Future[PagedDBResult[(((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), Option[PositionEntity]) , Option[ShiftEntity]),  Option[DepartmentEntity]), Option[UnionEntity])]] = {
     val baseQry = searchTerm.map { st =>
         val s = "%" + st + "%"
-        employeeQry(companyId).filter { tup =>
+        employeeQry(companyId, positionIds).filter { tup =>
           tup._1._1._1._1._2._1.username.like(s) ||
           tup._1._1._1._1._2._2.firstname.like(s) ||
           tup._1._1._1._1._2._2.lastname.like(s)
         }
-      }.getOrElse(employeeQry(companyId)) // if search term is empty, do not filter
+      }.getOrElse(employeeQry(companyId, positionIds)) // if search term is empty, do not filter
      
     val pageRes = baseQry
       .sortBy(_._1._1._1._1._2._2.lastname.asc)
