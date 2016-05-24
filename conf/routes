@@ -55,7 +55,8 @@ GET     /companies/:companyId/departments/:departmentId																			 contr
 POST     /companies/:companyId/unions                                                        controllers.UnionController.newUnion(companyId: Int)                 
 PUT      /companies/:companyId/unions/:unionId                                               controllers.UnionController.updateUnion(companyId: Int, unionId: Int)
 DELETE   /companies/:companyId/unions/:unionId                                               controllers.UnionController.deleteUnionById(companyId: Int, unionId: Int) 
-GET      /companies/:companyId/unions                                                        controllers.UnionController.getAllUnions(companyId: Int)
+#GET      /companies/:companyId/unions                                                        controllers.UnionController.getAllUnions(companyId: Int)
+GET     /companies/:companyId/unions                                                         controllers.UnionController.searchAllUnionsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 GET      /companies/:companyId/unions/:unionId                                               controllers.UnionController.getUnion(companyId: Int, unionId: Int) 
 
 #Team 

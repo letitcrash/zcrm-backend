@@ -6,6 +6,7 @@ import slick.model.ForeignKeyAction._
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.profile.SqlProfile.ColumnOption.Nullable
+import database.PagedDBResult
 
 case class UnionEntity(
   id: Option[Int] = None,
@@ -38,6 +39,11 @@ trait UnionDBComponent extends DBComponent {
     def * = (id.?, companyId, name, description.?, recordStatus, createdAt, updatedAt)<>(UnionEntity.tupled, UnionEntity.unapply)
   }
 
+
+  def unionQry(companyId: Int) = {
+    unions.filter(u =>(u.companyId === companyId && 
+                       u.recordStatus === RowStatus.ACTIVE))
+  }
   //CRUD UnionEntity
   def insertUnion(union: UnionEntity): Future[UnionEntity] = {
       db.run((unions returning unions.map(_.id) into ((union,id) => union.copy(id=Some(id)))) += union)
@@ -66,6 +72,28 @@ trait UnionDBComponent extends DBComponent {
   def getUnionEntitiesByCompanyId(companyId: Int): Future[List[UnionEntity]] = {
     db.run(unions.filter(u => (u.companyId === companyId && 
                                u.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
+  }
+
+  def searchUnionEntitiesByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String] = None): Future[PagedDBResult[UnionEntity]] = {
+    val baseQry = searchTerm.map { st =>
+        val s = "%" + st + "%"
+        unionQry(companyId).filter{_.name.like(s)}
+      }.getOrElse(unionQry(companyId))  
+
+    val pageRes = baseQry
+      .sortBy(_.name.asc)
+      .drop(pageSize * (pageNr - 1))
+      .take(pageSize)
+
+    db.run(pageRes.result).flatMap( unionList => 
+        db.run(baseQry.length.result).map( totalCount => 
+         PagedDBResult(
+            pageSize = pageSize,
+            pageNr = pageNr,
+            totalCount = totalCount,
+            data = unionList)
+          )
+        )
   }
 }
 

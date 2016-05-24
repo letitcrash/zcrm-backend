@@ -50,5 +50,14 @@ class UnionController @Inject() extends CRMController {
   def deleteUnionById(companyId: Int, unionId:Int) = CRMActionAsync{rq =>
       UnionDBRepository.deleteUnion(unionId).map(deletedUnion => Json.toJson(deletedUnion))
   }
+
+  def searchAllUnionsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String]) = CRMActionAsync{rq =>
+    import utils.JSFormat._
+    if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
+      val psize = pageSize.getOrElse(10)
+      val pnr = pageNr.getOrElse(1)
+      UnionDBRepository.searchUnionByName(companyId, psize, pnr, searchTerm).map(page => Json.toJson(page))
+    } else { UnionDBRepository.getUnionsByCompanyId(companyId).map( unions => Json.toJson(unions)) }
+  }
  
 }

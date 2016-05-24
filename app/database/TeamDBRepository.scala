@@ -4,7 +4,7 @@ import models.Employee
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
-import models.{Team, TeamGroup,PagedResult}
+import models.{Team, TeamGroup, PagedResult}
 import play.api.Logger
 import utils.converters.TeamConverter._
 

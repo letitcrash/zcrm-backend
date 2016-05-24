@@ -4,7 +4,7 @@ import models.Employee
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
-import models.Union
+import models.{Union, PagedResult}
 import play.api.Logger
 import utils.converters.UnionConverter._
 
@@ -35,4 +35,12 @@ object UnionDBRepository {
   def getUnionsByCompanyId(companyId: Int): Future[List[Union]] = {
     getUnionEntitiesByCompanyId(companyId).map(list => list.map(_.asUnion))
   } 
+
+  def searchUnionByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String]): Future[PagedResult[Union]] = {
+    searchUnionEntitiesByName(companyId, pageSize, pageNr, searchTerm).map{dbPage =>
+        PagedResult[Union](pageSize = dbPage.pageSize,
+                             pageNr = dbPage.pageNr,
+                             totalCount = dbPage.totalCount,
+                             data = dbPage.data.map(_.asUnion))}
+  }
 }
