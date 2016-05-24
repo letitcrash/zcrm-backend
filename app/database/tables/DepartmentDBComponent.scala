@@ -6,6 +6,7 @@ import slick.model.ForeignKeyAction._
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.profile.SqlProfile.ColumnOption.Nullable
+import database.PagedDBResult
 
 case class DepartmentEntity(
   id: Option[Int] = None,
@@ -41,6 +42,11 @@ trait DepartmentDBComponent extends DBComponent {
     def * = (id.?, companyId, name, recordStatus, createdAt, updatedAt)<>(DepartmentEntity.tupled, DepartmentEntity.unapply)
   }
 
+
+  def departmentQry(companyId: Int) = {
+    departments.filter(d =>(d.companyId === companyId && 
+                            d.recordStatus === RowStatus.ACTIVE))
+  }
   //CRUD DepartmentEntity
   def insertDepartment(department: DepartmentEntity): Future[DepartmentEntity] = {
       db.run((departments returning departments.map(_.id) into ((department,id) => department.copy(id=Some(id)))) += department)
@@ -68,6 +74,28 @@ trait DepartmentDBComponent extends DBComponent {
   def getDepartmentEntitiesByCompanyId(companyId: Int): Future[List[DepartmentEntity]] = {
     db.run(departments.filter(d => (d.companyId === companyId && 
                               d.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
+  }
+
+  def searchDepartmentEntitiesByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String] = None): Future[PagedDBResult[DepartmentEntity]] = {
+    val baseQry = searchTerm.map { st =>
+        val s = "%" + st + "%"
+        departmentQry(companyId).filter{_.name.like(s)}
+      }.getOrElse(departmentQry(companyId))  
+
+    val pageRes = baseQry
+      .sortBy(_.name.asc)
+      .drop(pageSize * (pageNr - 1))
+      .take(pageSize)
+
+    db.run(pageRes.result).flatMap( departmentList => 
+        db.run(baseQry.length.result).map( totalCount => 
+         PagedDBResult(
+            pageSize = pageSize,
+            pageNr = pageNr,
+            totalCount = totalCount,
+            data = departmentList)
+          )
+        )
   }
 }
 

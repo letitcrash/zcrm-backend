@@ -48,7 +48,8 @@ GET     /companies/:companyId/shifts/:shiftId																								 controller
 POST    /companies/:companyId/departments																										 controllers.DepartmentController.newDepartment(companyId: Int)                 
 PUT     /companies/:companyId/departments/:departmentId																			 controllers.DepartmentController.updateDepartment(companyId: Int, departmentId: Int)
 DELETE  /companies/:companyId/departments/:departmentId																			 controllers.DepartmentController.deleteDepartmentById(companyId: Int, departmentId: Int)
-GET     /companies/:companyId/departments																										 controllers.DepartmentController.getAllDepartments(companyId: Int)
+#GET     /companies/:companyId/departments																										 controllers.DepartmentController.getAllDepartments(companyId: Int)
+GET     /companies/:companyId/departments                                                    controllers.DepartmentController.searchAllDepartmentsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 GET     /companies/:companyId/departments/:departmentId																			 controllers.DepartmentController.getDepartment(companyId: Int, departmentId: Int) 
 
 #Union 

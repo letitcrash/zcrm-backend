@@ -50,5 +50,14 @@ class DepartmentController @Inject() extends CRMController {
   def deleteDepartmentById(companyId: Int, departmentId:Int) = CRMActionAsync{rq =>
       DepartmentDBRepository.deleteDepartment(departmentId).map(deletedDepartment => Json.toJson(deletedDepartment))
   }
+
+  def searchAllDepartmentsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String]) = CRMActionAsync{rq =>
+    import utils.JSFormat._
+    if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
+      val psize = pageSize.getOrElse(10)
+      val pnr = pageNr.getOrElse(1)
+      DepartmentDBRepository.searchDepartmentByName(companyId, psize, pnr, searchTerm).map(page => Json.toJson(page))
+    } else { DepartmentDBRepository.getDepartmentsByCompanyId(companyId).map( departments => Json.toJson(departments)) }
+  }
  
 }
