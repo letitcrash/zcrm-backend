@@ -6,6 +6,7 @@ import slick.model.ForeignKeyAction._
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.profile.SqlProfile.ColumnOption.Nullable
+import database.PagedDBResult
 
 case class TeamEntity(
   id: Option[Int] = None,
@@ -57,6 +58,11 @@ trait TeamDBComponent extends DBComponent {
 
   def groupWithTeams = teamGroups join teams on ( _.teamId === _.id)
 
+
+  def teamQry(companyId: Int) = {
+    teams.filter(t =>(t.companyId === companyId && 
+                      t.recordStatus === RowStatus.ACTIVE))
+  }
   //CRUD TeamEntity
   def insertTeam(team: TeamEntity): Future[TeamEntity] = {
       db.run((teams returning teams.map(_.id) into ((team,id) => team.copy(id=Some(id)))) += team)
@@ -119,6 +125,29 @@ trait TeamDBComponent extends DBComponent {
     Future.sequence(teamGroups.map( t =>  deleteTeamGroup(t)))
     Future(teamGroups)
   }
+
+  def searchTeamEntitiesByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String] = None): Future[PagedDBResult[TeamEntity]] = {
+    val baseQry = searchTerm.map { st =>
+        val s = "%" + st + "%"
+        teamQry(companyId).filter{_.name.like(s)}
+      }.getOrElse(teamQry(companyId))  
+
+    val pageRes = baseQry
+      .sortBy(_.name.asc)
+      .drop(pageSize * (pageNr - 1))
+      .take(pageSize)
+
+    db.run(pageRes.result).flatMap( teamList => 
+        db.run(baseQry.length.result).map( totalCount => 
+         PagedDBResult(
+            pageSize = pageSize,
+            pageNr = pageNr,
+            totalCount = totalCount,
+            data = teamList)
+          )
+        )
+  }
+
 
 }
 

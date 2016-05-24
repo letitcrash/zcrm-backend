@@ -56,5 +56,14 @@ class TeamController @Inject() extends CRMController {
   def addUserToTeam(companyId: Int, teamId: Int, userId: Int) = CRMActionAsync{ rq => 
     TeamDBRepository.addUserToTeamGroup(TeamGroup(teamId, userId)).map( tg => Json.toJson(tg))
   }
+
+  def searchAllTeamsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String]) = CRMActionAsync{rq =>
+    import utils.JSFormat._
+    if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
+      val psize = pageSize.getOrElse(10)
+      val pnr = pageNr.getOrElse(1)
+      TeamDBRepository.searchTeamByName(companyId, psize, pnr, searchTerm).map(page => Json.toJson(page))
+    } else { TeamDBRepository.getTeamsByCompanyId(companyId).map( teams => Json.toJson(teams)) }
+  }
  
 }
