@@ -4,7 +4,7 @@ import models.Employee
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
-import models.Shift
+import models.{Shift, PagedResult}
 import play.api.Logger
 import utils.converters.ShiftConverter._
 
@@ -35,4 +35,12 @@ object ShiftDBRepository {
   def getShiftsByCompanyId(companyId: Int): Future[List[Shift]] = {
     getShiftEntitiesByCompanyId(companyId).map(list => list.map(_.asShift))
   } 
+
+  def searchShiftByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String]): Future[PagedResult[Shift]] = {
+    searchShiftEntitiesByName(companyId, pageSize, pageNr, searchTerm).map{dbPage =>
+        PagedResult[Shift](pageSize = dbPage.pageSize,
+                             pageNr = dbPage.pageNr,
+                             totalCount = dbPage.totalCount,
+                             data = dbPage.data.map(_.asShift))}
+  }
 }

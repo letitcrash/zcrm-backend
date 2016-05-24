@@ -40,7 +40,8 @@ GET	    /companies/:companyId/delegates/:delegateId                             
 POST    /companies/:companyId/shifts                                                         controllers.ShiftController.newShift(companyId: Int)                   
 PUT     /companies/:companyId/shifts/:shiftId                                                controllers.ShiftController.updateShift(companyId: Int, shiftId: Int)
 DELETE  /companies/:companyId/shifts/:shiftId                                                controllers.ShiftController.deleteShiftById(companyId: Int, shiftId: Int)
-GET     /companies/:companyId/shifts                                                         controllers.ShiftController.getAllShifts(companyId: Int)
+#GET     /companies/:companyId/shifts                                                         controllers.ShiftController.getAllShifts(companyId: Int)
+GET     /companies/:companyId/shifts                                                         controllers.ShiftController.searchAllShiftsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 GET     /companies/:companyId/shifts/:shiftId																								 controllers.ShiftController.getShift(companyId: Int, shiftId: Int) 
 
 #Department 

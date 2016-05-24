@@ -50,5 +50,14 @@ class ShiftController @Inject() extends CRMController {
   def deleteShiftById(companyId: Int, shiftId:Int) = CRMActionAsync{rq =>
       ShiftDBRepository.deleteShift(shiftId).map(deletedShift => Json.toJson(deletedShift))
   }
+
+  def searchAllShiftsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String]) = CRMActionAsync{rq =>
+    import utils.JSFormat._
+    if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
+      val psize = pageSize.getOrElse(10)
+      val pnr = pageNr.getOrElse(1)
+      ShiftDBRepository.searchShiftByName(companyId, psize, pnr, searchTerm).map(page => Json.toJson(page))
+    } else { ShiftDBRepository.getShiftsByCompanyId(companyId).map( shifts => Json.toJson(shifts)) }
+  }
  
 }

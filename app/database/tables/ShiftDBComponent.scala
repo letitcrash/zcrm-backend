@@ -6,6 +6,7 @@ import slick.model.ForeignKeyAction._
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.profile.SqlProfile.ColumnOption.Nullable
+import database.PagedDBResult
 
 case class ShiftEntity(
   id: Option[Int] = None,
@@ -36,6 +37,12 @@ trait ShiftDBComponent extends DBComponent {
     def * = (id.?, companyId, name, recordStatus, createdAt, updatedAt)<>(ShiftEntity.tupled, ShiftEntity.unapply)
   }
 
+
+  def shiftQry(companyId: Int) = {
+    shifts.filter(s =>(s.companyId === companyId && 
+                       s.recordStatus === RowStatus.ACTIVE))
+  }
+
   //CRUD ShiftEntity
   def insertShift(shift: ShiftEntity): Future[ShiftEntity] = {
       db.run((shifts returning shifts.map(_.id) into ((shift,id) => shift.copy(id=Some(id)))) += shift)
@@ -63,6 +70,28 @@ trait ShiftDBComponent extends DBComponent {
   def getShiftEntitiesByCompanyId(companyId: Int): Future[List[ShiftEntity]] = {
     db.run(shifts.filter(s => (s.companyId === companyId && 
                                s.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
+  }
+
+  def searchShiftEntitiesByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String] = None): Future[PagedDBResult[ShiftEntity]] = {
+    val baseQry = searchTerm.map { st =>
+        val s = "%" + st + "%"
+        shiftQry(companyId).filter{_.name.like(s)}
+      }.getOrElse(shiftQry(companyId))  
+
+    val pageRes = baseQry
+      .sortBy(_.name.asc)
+      .drop(pageSize * (pageNr - 1))
+      .take(pageSize)
+
+    db.run(pageRes.result).flatMap( shiftList => 
+        db.run(baseQry.length.result).map( totalCount => 
+         PagedDBResult(
+            pageSize = pageSize,
+            pageNr = pageNr,
+            totalCount = totalCount,
+            data = shiftList)
+          )
+        )
   }
 }
 
