@@ -4,6 +4,7 @@ import java.sql.Timestamp
 import scala.concurrent.Future
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import database.PagedDBResult
 
 case class DelegateEntity(
   id: Option[Int],
@@ -32,6 +33,11 @@ trait DelegateDBComponent extends DBComponent
     override def * = (id.?, companyId, name, createdAt, updatedAt) <> (DelegateEntity.tupled, DelegateEntity.unapply)
   }
 
+  def delegateQry(companyId: Int) = {
+    delegates.filter(_.companyId === companyId) 
+  }
+
+  //CRUD
   def insertDelegate(delegate: DelegateEntity): Future[DelegateEntity] = {
     db.run(
       (delegates returning delegates.map(_.id) into ((delegate, id) => delegate.copy(id = Some(id))))
@@ -62,5 +68,26 @@ trait DelegateDBComponent extends DBComponent
     deletedDelegate
   }
 
+  //FILTERS
+  def searchDelegateEntitiesByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String] = None): Future[PagedDBResult[DelegateEntity]] = {
+    val baseQry = searchTerm.map { st =>
+        val s = "%" + st + "%"
+        delegateQry(companyId).filter{_.name.like(s)}
+      }.getOrElse(delegateQry(companyId))  
 
+    val pageRes = baseQry
+      .sortBy(_.name.asc)
+      .drop(pageSize * (pageNr - 1))
+      .take(pageSize)
+
+    db.run(pageRes.result).flatMap( delegateList => 
+        db.run(baseQry.length.result).map( totalCount => 
+         PagedDBResult(
+            pageSize = pageSize,
+            pageNr = pageNr,
+            totalCount = totalCount,
+            data = delegateList)
+          )
+        )
+  }
 }

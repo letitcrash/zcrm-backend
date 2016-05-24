@@ -4,7 +4,7 @@ import models.Delegate
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
-import models.{Delegate, DelegateGroup}
+import models.{Delegate, DelegateGroup, PagedResult}
 import utils.converters.DelegateConverter._
 
 
@@ -36,6 +36,14 @@ object DelegateDBRepository {
 
   def addDelegateGroup(group: DelegateGroup): Future[DelegateGroup] = {
     insertGroupDelegate(group.asGroupEntity).map( group => group.asDelegateGroup)
+  }
+
+  def searchDelegateByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String]): Future[PagedResult[Delegate]] = {
+    searchDelegateEntitiesByName(companyId, pageSize, pageNr, searchTerm).map{dbPage =>
+        PagedResult[Delegate](pageSize = dbPage.pageSize,
+                             pageNr = dbPage.pageNr,
+                             totalCount = dbPage.totalCount,
+                             data = dbPage.data.map(_.asDelegate))}
   }
 
 }
