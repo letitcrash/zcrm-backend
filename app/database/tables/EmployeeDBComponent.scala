@@ -188,4 +188,29 @@ trait EmployeeDBComponent extends DBComponent{
         getEmployeeWithUserById(updatedEmpl.id.get))
   }
 
+  //FIXME: Return something better
+  def updateEmployeeEntityPosition(employeeId: Int, positionId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
+    getEmployeeById(employeeId).flatMap(empl =>
+          updateEmployeeWithUser(empl.copy(positionId = Some(positionId))))
+
+  }
+
+  //FIXME: Return something better
+  def updateEmployeeEntityShift(employeeId: Int, shiftId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
+    getEmployeeById(employeeId).flatMap(empl =>
+          updateEmployeeWithUser(empl.copy(shiftId = Some(shiftId))))
+  }
+
+  //FIXME: Return something better
+  def updateEmployeeEntityDepartment(employeeId: Int, departmentId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
+    getEmployeeById(employeeId).flatMap(empl =>
+          updateEmployeeWithUser(empl.copy(departmentId = Some(departmentId))))
+  }
+
+  //FIXME: Return something better
+  def updateEmployeeEntityUnion(employeeId: Int, unionId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
+    getEmployeeById(employeeId).flatMap(empl =>
+          updateEmployeeWithUser(empl.copy(unionId = Some(unionId))))
+
+  }
 }

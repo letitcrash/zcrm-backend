@@ -122,4 +122,20 @@ object EmployeeDBRepository {
           userWithProfileEntt <- getUserWithProfileByUserId(deleted.userId)
       } yield(deleted, userWithProfileEntt).asEmployee
   }
+
+  def updateEmployeePosition(employeeId: Int, positionId: Int): Future[Employee] = {
+    updateEmployeeEntityPosition(employeeId, positionId).map(_.asEmployee)
+  }
+
+  def updateEmployeeShift(employeeId: Int, shiftId: Int): Future[Employee] = {
+    updateEmployeeEntityShift(employeeId, shiftId).map(_.asEmployee)
+  }
+
+  def updateEmployeeDepartment(employeeId: Int, departmentId: Int): Future[Employee] = {
+    updateEmployeeEntityDepartment(employeeId, departmentId).map(_.asEmployee)
+  }
+
+  def updateEmployeeUnion(employeeId: Int, unionId: Int): Future[Employee] = {
+    updateEmployeeEntityUnion(employeeId, unionId).map(_.asEmployee)
+  }
 }

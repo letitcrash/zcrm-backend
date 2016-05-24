@@ -40,6 +40,7 @@ GET	    /companies/:companyId/delegates/:delegateId                             
 # Shift 
 POST    /companies/:companyId/shifts                                                         controllers.ShiftController.newShift(companyId: Int)                   
 PUT     /companies/:companyId/shifts/:shiftId                                                controllers.ShiftController.updateShift(companyId: Int, shiftId: Int)
+PUT      /companies/:companyId/shifts/:shiftId/employees/:employeeId                         controllers.EmployeeController.updateEmployeeShiftById(companyId: Int, shiftId: Int, employeeId: Int)
 DELETE  /companies/:companyId/shifts/:shiftId                                                controllers.ShiftController.deleteShiftById(companyId: Int, shiftId: Int)
 #GET     /companies/:companyId/shifts                                                         controllers.ShiftController.getAllShifts(companyId: Int)
 GET     /companies/:companyId/shifts                                                         controllers.ShiftController.searchAllShiftsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
@@ -48,6 +49,7 @@ GET     /companies/:companyId/shifts/:shiftId																								 controller
 #Department 
 POST    /companies/:companyId/departments																										 controllers.DepartmentController.newDepartment(companyId: Int)                 
 PUT     /companies/:companyId/departments/:departmentId																			 controllers.DepartmentController.updateDepartment(companyId: Int, departmentId: Int)
+PUT      /companies/:companyId/departments/:departmentId/employees/:employeeId               controllers.EmployeeController.updateEmployeeDepartmentById(companyId: Int, departmentId: Int, employeeId: Int)
 DELETE  /companies/:companyId/departments/:departmentId																			 controllers.DepartmentController.deleteDepartmentById(companyId: Int, departmentId: Int)
 #GET     /companies/:companyId/departments																										 controllers.DepartmentController.getAllDepartments(companyId: Int)
 GET     /companies/:companyId/departments                                                    controllers.DepartmentController.searchAllDepartmentsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
@@ -56,6 +58,7 @@ GET     /companies/:companyId/departments/:departmentId																			 contr
 #Union 
 POST     /companies/:companyId/unions                                                        controllers.UnionController.newUnion(companyId: Int)                 
 PUT      /companies/:companyId/unions/:unionId                                               controllers.UnionController.updateUnion(companyId: Int, unionId: Int)
+PUT      /companies/:companyId/unions/:unionId/employees/:employeeId                         controllers.EmployeeController.updateEmployeeUnionById(companyId: Int, unionId: Int, employeeId: Int)
 DELETE   /companies/:companyId/unions/:unionId                                               controllers.UnionController.deleteUnionById(companyId: Int, unionId: Int) 
 #GET      /companies/:companyId/unions                                                        controllers.UnionController.getAllUnions(companyId: Int)
 GET     /companies/:companyId/unions                                                         controllers.UnionController.searchAllUnionsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
@@ -73,6 +76,7 @@ GET      /companies/:companyId/teams/:teamId                                    
 #Position
 POST     /companies/:companyId/positions                                                     controllers.PositionController.postPosition(companyId: Int)
 PUT      /companies/:companyId/positions/:positionId                                         controllers.PositionController.putPosition(companyId: Int, positionId: Int)
+PUT      /companies/:companyId/positions/:positionId/employees/:employeeId                   controllers.EmployeeController.updateEmployeePositionById(companyId: Int, positionId: Int, employeeId: Int)
 DELETE   /companies/:companyId/positions/:positionId                                         controllers.PositionController.deletePosition(companyId: Int, positionId: Int)
 GET      /companies/:companyId/positions                                                     controllers.PositionController.getAllPositions(companyId: Int)
 GET      /companies/:companyId/positions/:positionId                                         controllers.PositionController.getPosition(companyId: Int, positionId: Int) 
