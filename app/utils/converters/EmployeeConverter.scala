@@ -25,10 +25,10 @@ object EmployeeConverter {
         id = employeeTup.id,
         user = Some(userTup.asUser),
         companyId = employeeTup.companyId,
-        position = positionTup match {case Some(p) => Some(p.asPosition); case _ => None},
-        shift = shiftTup match {case Some(s) => Some(s.asShift); case _ => None},
-        department = departmentTup match {case Some(d) => Some(d.asDepartment); case _ => None},
-        union = unionTup match {case Some(u) => Some(u.asUnion); case _ => None},
+        position = positionTup.map(_.asPosition),
+        shift = shiftTup.map(_.asShift),
+        department = departmentTup.map(_.asDepartment),
+        union = unionTup.map(_.asUnion),
         teams = Some(teamEntts.map(_.asTeam)),
         delegates = Some(delegateEnnts.map(_.asDelegate)),
         employeeLevel = employeeTup.employeeLevel
@@ -55,10 +55,10 @@ object EmployeeConverter {
         id = o.id,
         companyId = o.companyId,
         userId = o.user.get.id.get,
-        positionId = o.position match { case Some(p) => p.id; case _ => None },
-        shiftId = o.shift match { case Some(s) => s.id; case _ => None}, 
-        departmentId = o.department match { case Some(d) => d.id; case _ => None},
-        unionId = o.union match { case Some(u) => u.id; case _ => None},
+        positionId = o.position.map(_.id).get,
+        shiftId = o.shift.map(_.id).get,
+        departmentId = o.department.map(_.id).get,
+        unionId = o.union.map(_.id).get,
         employeeLevel = o.employeeLevel)
     }
 
