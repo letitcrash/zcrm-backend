@@ -133,25 +133,49 @@ object EmployeeDBRepository {
 
   def updateEmployeePosition(employeeId: Int, positionId: Int): Future[Position] = {
     import utils.converters.PositionConverter._
-    updateEmployeeEntityPosition(employeeId, positionId).map(_.asEmployee)
+    updateEmployeeEntityPosition(employeeId, Some(positionId)).map(_.asEmployee)
+    getPositionEntityById(positionId).map(_.asPosition)
+  }
+
+  def clearEmployeePosition(employeeId: Int, positionId: Int): Future[Position] = {
+    import utils.converters.PositionConverter._
+    updateEmployeeEntityPosition(employeeId, None).map(_.asEmployee)
     getPositionEntityById(positionId).map(_.asPosition)
   }
 
   def updateEmployeeShift(employeeId: Int, shiftId: Int): Future[Shift] = {
     import utils.converters.ShiftConverter._
-    updateEmployeeEntityShift(employeeId, shiftId).map(_.asEmployee)
+    updateEmployeeEntityShift(employeeId, Some(shiftId)).map(_.asEmployee)
+    getShiftEntityById(shiftId).map(_.asShift)
+  }
+
+  def clearEmployeeShift(employeeId: Int, shiftId: Int): Future[Shift] = {
+    import utils.converters.ShiftConverter._
+    updateEmployeeEntityShift(employeeId, None).map(_.asEmployee)
     getShiftEntityById(shiftId).map(_.asShift)
   }
 
   def updateEmployeeDepartment(employeeId: Int, departmentId: Int): Future[Department] = {
     import utils.converters.DepartmentConverter._
-    updateEmployeeEntityDepartment(employeeId, departmentId).map(_.asEmployee)
+    updateEmployeeEntityDepartment(employeeId, Some(departmentId)).map(_.asEmployee)
+    getDepartmentEntityById(departmentId).map(_.asDepartment)
+  }
+
+  def clearEmployeeDepartment(employeeId: Int, departmentId: Int): Future[Department] = {
+    import utils.converters.DepartmentConverter._
+    updateEmployeeEntityDepartment(employeeId, None).map(_.asEmployee)
     getDepartmentEntityById(departmentId).map(_.asDepartment)
   }
 
   def updateEmployeeUnion(employeeId: Int, unionId: Int): Future[Union] = {
     import utils.converters.UnionConverter._
-    updateEmployeeEntityUnion(employeeId, unionId).map(_.asEmployee)
+    updateEmployeeEntityUnion(employeeId, Some(unionId)).map(_.asEmployee)
+    getUnionEntityById(unionId).map(_.asUnion)
+  }
+
+  def clearEmployeeUnion(employeeId: Int, unionId: Int): Future[Union] = {
+    import utils.converters.UnionConverter._
+    updateEmployeeEntityUnion(employeeId, None).map(_.asEmployee)
     getUnionEntityById(unionId).map(_.asUnion)
   }
 }

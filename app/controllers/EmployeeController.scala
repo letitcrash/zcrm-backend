@@ -110,15 +110,31 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
     EmployeeDBRepository.updateEmployeePosition(employeeId, positionId).map(empl => Json.toJson(empl))
   }
 
+  def clearEmployeePositionById(companyId: Int,  employeeId: Int, positionId: Int) = CRMActionAsync{rq =>
+    EmployeeDBRepository.clearEmployeePosition(employeeId, positionId).map(empl => Json.toJson(empl))
+  }
+
   def updateEmployeeShiftById(companyId: Int, employeeId: Int, shiftId: Int) = CRMActionAsync{rq =>
     EmployeeDBRepository.updateEmployeeShift(employeeId, shiftId).map(empl => Json.toJson(empl))
+  }
+
+  def clearEmployeeShiftById(companyId: Int, employeeId: Int, shiftId: Int) = CRMActionAsync{rq =>
+    EmployeeDBRepository.clearEmployeeShift(employeeId, shiftId).map(empl => Json.toJson(empl))
   }
 
   def updateEmployeeDepartmentById(companyId: Int, employeeId: Int, departmentId: Int) = CRMActionAsync{rq =>
     EmployeeDBRepository.updateEmployeeDepartment(employeeId, departmentId).map(empl => Json.toJson(empl))
   }
 
+  def clearEmployeeDepartmentById(companyId: Int, employeeId: Int, departmentId: Int) = CRMActionAsync{rq =>
+    EmployeeDBRepository.clearEmployeeDepartment(employeeId, departmentId).map(empl => Json.toJson(empl))
+  }
+
   def updateEmployeeUnionById(companyId: Int, employeeId: Int, unionId: Int) = CRMActionAsync{rq =>
     EmployeeDBRepository.updateEmployeeUnion(employeeId, unionId).map(empl => Json.toJson(empl))
+  }
+
+  def clearEmployeeUnionById(companyId: Int, employeeId: Int, unionId: Int) = CRMActionAsync{rq =>
+    EmployeeDBRepository.clearEmployeeUnion(employeeId, unionId).map(empl => Json.toJson(empl))
   }
 }

@@ -192,25 +192,25 @@ trait EmployeeDBComponent extends DBComponent{
         getEmployeeWithUserById(updatedEmpl.id.get))
   }
 
-  def updateEmployeeEntityPosition(employeeId: Int, positionId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
+  def updateEmployeeEntityPosition(employeeId: Int, positionId: Option[Int]): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
     getEmployeeById(employeeId).flatMap(empl =>
-          updateEmployeeWithUser(empl.copy(positionId = Some(positionId))))
+          updateEmployeeWithUser(empl.copy(positionId = positionId)))
 
   }
 
-  def updateEmployeeEntityShift(employeeId: Int, shiftId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
+  def updateEmployeeEntityShift(employeeId: Int, shiftId: Option[Int]): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
     getEmployeeById(employeeId).flatMap(empl =>
-          updateEmployeeWithUser(empl.copy(shiftId = Some(shiftId))))
+          updateEmployeeWithUser(empl.copy(shiftId = shiftId)))
   }
 
-  def updateEmployeeEntityDepartment(employeeId: Int, departmentId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
+  def updateEmployeeEntityDepartment(employeeId: Int, departmentId: Option[Int]): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
     getEmployeeById(employeeId).flatMap(empl =>
-          updateEmployeeWithUser(empl.copy(departmentId = Some(departmentId))))
+          updateEmployeeWithUser(empl.copy(departmentId = departmentId)))
   }
 
-  def updateEmployeeEntityUnion(employeeId: Int, unionId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
+  def updateEmployeeEntityUnion(employeeId: Int, unionId: Option[Int]): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
     getEmployeeById(employeeId).flatMap(empl =>
-          updateEmployeeWithUser(empl.copy(unionId = Some(unionId))))
+          updateEmployeeWithUser(empl.copy(unionId = unionId)))
   }
 
 }
