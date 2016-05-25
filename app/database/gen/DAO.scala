@@ -32,7 +32,7 @@ class DAO extends UserDBComponent
     with TeamDBComponent
     with UnionDBComponent
     with ShiftDBComponent
-	  with DepartmentDBComponent
+    with DepartmentDBComponent
     with GroupDelegateDBComponent
     with DelegateDBComponent
     with TicketDBComponent
