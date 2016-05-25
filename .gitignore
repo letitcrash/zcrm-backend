@@ -6,5 +6,4 @@ target
 /.project
 /.settings
 /RUNNING_PID
-*.swp
-*.swo
+*.sw*

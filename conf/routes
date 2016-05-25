@@ -69,7 +69,8 @@ GET      /companies/:companyId/teams/:teamId                                    
 POST     /companies/:companyId/positions                                                     controllers.PositionController.postPosition(companyId: Int)
 PUT      /companies/:companyId/positions/:positionId                                         controllers.PositionController.putPosition(companyId: Int, positionId: Int)
 DELETE   /companies/:companyId/positions/:positionId                                         controllers.PositionController.deletePosition(companyId: Int, positionId: Int)
-GET      /companies/:companyId/positions                                                     controllers.PositionController.getAllPositions(companyId: Int)
+#GET      /companies/:companyId/positions                                                     controllers.PositionController.getAllPositions(companyId: Int)
+GET      /companies/:companyId/positions                                                     controllers.PositionController.searchAllPositionsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 GET      /companies/:companyId/positions/:positionId                                         controllers.PositionController.getPosition(companyId: Int, positionId: Int) 
  
 # Employees

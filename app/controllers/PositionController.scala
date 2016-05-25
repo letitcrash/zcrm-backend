@@ -8,7 +8,7 @@ import scala.util.{Failure, Success, Try}
 import scala.concurrent.Future
 import java.io.File
 
-import database.PositionRepository
+import database.PositionDBRepository
 import models._
 import controllers.session.{InsufficientRightsException, CRMResponse, CRMResponseHeader}
 import security.Security
@@ -20,24 +20,33 @@ class PositionController @Inject() extends CRMController {
   
   
   def postPosition(companyId: Int) = CRMActionAsync[Position](expectedPositionFormat){ rq =>
-    PositionRepository.savePosition(rq.body, companyId)
+    PositionDBRepository.savePosition(rq.body, companyId)
       .map( position => Json.toJson(position))
   }
 
   def putPosition(companyId: Int, positionId: Int) = CRMActionAsync[Position](expectedPositionFormat){ rq =>
-    PositionRepository.changePosition(rq.body, companyId).map( position => Json.toJson(position))
+    PositionDBRepository.changePosition(rq.body, companyId).map( position => Json.toJson(position))
   }
 
   def deletePosition(companyId: Int, positionId: Int) = CRMActionAsync{rq =>
-    PositionRepository.removePosition(positionId).map( deletedPosition => Json.toJson(deletedPosition))
+    PositionDBRepository.removePosition(positionId).map( deletedPosition => Json.toJson(deletedPosition))
   }
 
   def getPosition(companyId: Int, positionId: Int) = CRMActionAsync { rq => 
-    PositionRepository.getPositionById(positionId).map( position => Json.toJson(position))
+    PositionDBRepository.getPositionById(positionId).map( position => Json.toJson(position))
   }
 
   def getAllPositions(companyId: Int) = CRMActionAsync { rq => 
-    PositionRepository.getPositionsByCompanyId(companyId).map( positions => Json.toJson(positions))
+    PositionDBRepository.getPositionsByCompanyId(companyId).map( positions => Json.toJson(positions))
+  }
+
+  def searchAllPositionsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String]) = CRMActionAsync{rq =>
+    import utils.JSFormat._
+    if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
+      val psize = pageSize.getOrElse(10)
+      val pnr = pageNr.getOrElse(1)
+      PositionDBRepository.searchPositionByName(companyId, psize, pnr, searchTerm).map(page => Json.toJson(page))
+    } else { PositionDBRepository.getPositionsByCompanyId(companyId).map( positions => Json.toJson(positions)) }
   }
 
 }

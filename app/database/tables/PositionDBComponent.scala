@@ -6,6 +6,7 @@ import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.profile.SqlProfile.ColumnOption.Nullable
 import java.sql.Timestamp
+import database.PagedDBResult
 
 
 case class PositionEntity(id: Option[Int] = None,
@@ -39,6 +40,10 @@ trait PositionDBComponent extends DBComponent{
       ( id.?, companyId, name, createdAt.?, updatedAt.?, recordStatus) <> (PositionEntity.tupled, PositionEntity.unapply)
   }
 
+  def positionQry(companyId: Int) = {
+    positions.filter(u =>(u.companyId === companyId && 
+                       u.recordStatus === RowStatus.ACTIVE))
+  }
 
   //CRUD Position
   def insertPosition(position: PositionEntity): Future[PositionEntity] = {
@@ -70,5 +75,27 @@ trait PositionDBComponent extends DBComponent{
    def getPositionEntitiesByCompanyId(companyId: Int): Future[List[PositionEntity]] = {
      db.run(positions.filter(_.companyId === companyId).result).map(_.toList)
    }
+
+  def searchPositionEntitiesByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String] = None): Future[PagedDBResult[PositionEntity]] = {
+    val baseQry = searchTerm.map { st =>
+        val s = "%" + st + "%"
+        positionQry(companyId).filter{_.name.like(s)}
+      }.getOrElse(positionQry(companyId))  
+
+    val pageRes = baseQry
+      .sortBy(_.name.asc)
+      .drop(pageSize * (pageNr - 1))
+      .take(pageSize)
+
+    db.run(pageRes.result).flatMap( positionList => 
+        db.run(baseQry.length.result).map( totalCount => 
+         PagedDBResult(
+            pageSize = pageSize,
+            pageNr = pageNr,
+            totalCount = totalCount,
+            data = positionList)
+          )
+        )
+  }
 
 }
