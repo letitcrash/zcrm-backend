@@ -178,4 +178,23 @@ object EmployeeDBRepository {
     updateEmployeeEntityUnion(employeeId, None).map(_.asEmployee)
     getUnionEntityById(unionId).map(_.asUnion)
   }
+
+  def updateEmployeeDelegate(employeeId: Int, delegates: List[Delegate]): Future[List[Delegate]] = {
+    import utils.converters.DelegateConverter._
+    for {
+     userId <- getUserIdByEmloyeeId(employeeId)
+     delegateGrpsDel <- deleteGroupDelegateByUserId(userId)
+     delegateGrpEnt <-  insertDelegateGroups(delegates.map(d => d.asDelegateGroup(Some(userId))).map(_.asGroupEntity))
+    } yield delegates 
+  }
+
+  def clearEmployeeDelegate(employeeId: Int): Future[List[DelegateGroup]] = {
+    import utils.converters.DelegateConverter._
+    for {
+     userId <- getUserIdByEmloyeeId(employeeId)
+     delegates <- getDelegateEntitiesByUserId(userId)
+     delegateGrpsDel <- deleteGroupDelegateByUserId(userId)
+    } yield delegates.map(_._1.asDelegateGroup) 
+  }
+
 }
