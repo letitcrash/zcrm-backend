@@ -42,5 +42,14 @@ class MailboxController @Inject() (ewsAuth: EwsAuthUtil) extends CRMController {
   def softDeleteMailbox(userId: Int, mailboxId: Int) = CRMActionAsync{rq =>
     MailboxDBRepository.softDeleteMailboxById(mailboxId).map(res => Json.toJson(res))
   }
+
+  def searchAllMailboxesByName(userId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String]) = CRMActionAsync{rq =>
+    import utils.JSFormat._
+    if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
+      val psize = pageSize.getOrElse(10)
+      val pnr = pageNr.getOrElse(1)
+      MailboxDBRepository.searchMailboxByName(userId, psize, pnr, searchTerm).map(page => Json.toJson(page))
+    } else { MailboxDBRepository.getAllMailboxesByUserId(userId).map( mailboxes => Json.toJson(mailboxes)) }
+  }
  
 }

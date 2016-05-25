@@ -69,7 +69,6 @@ GET      /companies/:companyId/teams/:teamId                                    
 POST     /companies/:companyId/positions                                                     controllers.PositionController.postPosition(companyId: Int)
 PUT      /companies/:companyId/positions/:positionId                                         controllers.PositionController.putPosition(companyId: Int, positionId: Int)
 DELETE   /companies/:companyId/positions/:positionId                                         controllers.PositionController.deletePosition(companyId: Int, positionId: Int)
-#GET      /companies/:companyId/positions                                                     controllers.PositionController.getAllPositions(companyId: Int)
 GET      /companies/:companyId/positions                                                     controllers.PositionController.searchAllPositionsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 GET      /companies/:companyId/positions/:positionId                                         controllers.PositionController.getPosition(companyId: Int, positionId: Int) 
  
@@ -102,8 +101,8 @@ POST   /users/:userId/mailboxes                                                 
 PUT    /users/:userId/mailboxes/:mailboxId                                                   controllers.MailboxController.updateMailBox(userId: Int, mailboxId: Int)
 DELETE /users/:userId/mailboxes/:mailboxId                                                   controllers.MailboxController.softDeleteMailbox(userId: Int, mailboxId: Int)
 GET    /users/:userId/mailboxes/:mailboxId                                                   controllers.MailboxController.getMailboxById(userId: Int, mailboxId: Int)
-GET    /users/:userId/mailboxes                                                              controllers.MailboxController.getAllMailboxesByUserId(userId: Int)
-
+#GET    /users/:userId/mailboxes                                                              controllers.MailboxController.getAllMailboxesByUserId(userId: Int)
+GET     /users/:userId/mailboxes                                                             controllers.MailboxController.searchAllMailboxesByName(userId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 
 #Mail
 GET    /users/:userId/mailboxes/:mailboxId/mails                                             controllers.ExchangeController.getMailsForMailbox(userId: Int, mailboxId: Int)

@@ -41,8 +41,8 @@ trait PositionDBComponent extends DBComponent{
   }
 
   def positionQry(companyId: Int) = {
-    positions.filter(u =>(u.companyId === companyId && 
-                       u.recordStatus === RowStatus.ACTIVE))
+    positions.filter(p =>(p.companyId === companyId && 
+                          p.recordStatus === RowStatus.ACTIVE))
   }
 
   //CRUD Position

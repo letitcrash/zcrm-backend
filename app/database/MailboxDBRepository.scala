@@ -3,7 +3,7 @@ package database
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
-import models.Mailbox
+import models.{Mailbox, PagedResult}
 import play.api.Logger
 import utils.converters.MailboxConverter._
 
@@ -30,6 +30,14 @@ object MailboxDBRepository {
 
   def softDeleteMailboxById(id: Int): Future[Mailbox] = {
     softDeleteMailboxEntityById(id).map(res => res.asMailbox)
+  }
+
+  def searchMailboxByName(userId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String]): Future[PagedResult[Mailbox]] = {
+    searchMailboxEntitiesByName(userId, pageSize, pageNr, searchTerm).map{dbPage =>
+        PagedResult[Mailbox](pageSize = dbPage.pageSize,
+                             pageNr = dbPage.pageNr,
+                             totalCount = dbPage.totalCount,
+                             data = dbPage.data.map(_.asMailbox))}
   }
 
 }
