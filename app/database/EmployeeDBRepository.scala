@@ -2,7 +2,7 @@ package database
 
 import database.tables.UserEntity
 import exceptions.UsernameAlreadyExistException
-import models.{ContactProfile, Employee, UserLevels, User, TeamGroup, DelegateGroup, PagedResult}
+import models._
 
 import scala.util.{Failure, Success, Try}
 import scala.concurrent.Future
@@ -131,19 +131,27 @@ object EmployeeDBRepository {
       } yield(deleted, userWithProfileEntt).asEmployee
   }
 
-  def updateEmployeePosition(employeeId: Int, positionId: Int): Future[Employee] = {
+  def updateEmployeePosition(employeeId: Int, positionId: Int): Future[Position] = {
+    import utils.converters.PositionConverter._
     updateEmployeeEntityPosition(employeeId, positionId).map(_.asEmployee)
+    getPositionEntityById(positionId).map(_.asPosition)
   }
 
-  def updateEmployeeShift(employeeId: Int, shiftId: Int): Future[Employee] = {
+  def updateEmployeeShift(employeeId: Int, shiftId: Int): Future[Shift] = {
+    import utils.converters.ShiftConverter._
     updateEmployeeEntityShift(employeeId, shiftId).map(_.asEmployee)
+    getShiftEntityById(shiftId).map(_.asShift)
   }
 
-  def updateEmployeeDepartment(employeeId: Int, departmentId: Int): Future[Employee] = {
+  def updateEmployeeDepartment(employeeId: Int, departmentId: Int): Future[Department] = {
+    import utils.converters.DepartmentConverter._
     updateEmployeeEntityDepartment(employeeId, departmentId).map(_.asEmployee)
+    getDepartmentEntityById(departmentId).map(_.asDepartment)
   }
 
-  def updateEmployeeUnion(employeeId: Int, unionId: Int): Future[Employee] = {
+  def updateEmployeeUnion(employeeId: Int, unionId: Int): Future[Union] = {
+    import utils.converters.UnionConverter._
     updateEmployeeEntityUnion(employeeId, unionId).map(_.asEmployee)
+    getUnionEntityById(unionId).map(_.asUnion)
   }
 }
