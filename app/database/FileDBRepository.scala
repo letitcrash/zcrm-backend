@@ -3,7 +3,7 @@ package database
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
-import models.UploadedFile
+import models.{UploadedFile, PagedResult}
 import play.api.Logger
 import java.io.File
 import database.tables.FileEntity
@@ -11,7 +11,7 @@ import play.api.mvc.MultipartFormData._
 import utils.converters.FileConverter._
 
 
-object FileRepository {
+object FileDBRepository {
   import database.gen.current.dao.dbConfig.driver.api._
   import database.gen.current.dao._
 
@@ -29,6 +29,14 @@ object FileRepository {
 
   def deleteFileById(id: Int): Future[UploadedFile] = {
     deleteFileEntity(id).map(deleted => deleted.asUploadedFile)
+  }
+
+  def searchFileByName(userId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String]): Future[PagedResult[UploadedFile]] = {
+    searchFileEntitiesByName(userId, pageSize, pageNr, searchTerm).map{dbPage =>
+        PagedResult[UploadedFile](pageSize = dbPage.pageSize,
+                          pageNr = dbPage.pageNr,
+                          totalCount = dbPage.totalCount,
+                          data = dbPage.data.map(_.asUploadedFile))}
   }
 
 }

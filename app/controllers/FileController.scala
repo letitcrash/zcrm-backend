@@ -8,7 +8,7 @@ import scala.util.{Failure, Success, Try}
 import scala.concurrent.Future
 import java.io.File
 
-import database.FileRepository
+import database.FileDBRepository
 import models._
 import controllers.session.{InsufficientRightsException, CRMResponse, CRMResponseHeader}
 import security.Security
@@ -37,7 +37,7 @@ class FileController @Inject() extends CRMController {
           userId = userId,
           hash = uuid,
           fileName = filePart.get.filename)
-        FileRepository.saveFile(uploadedFile).map { file =>
+        FileDBRepository.saveFile(uploadedFile).map { file =>
           Ok(Json.toJson(CRMResponse(CRMResponseHeader(), Some(Json.toJson(file)))))
         }
       case Failure(ex) =>
@@ -55,18 +55,27 @@ class FileController @Inject() extends CRMController {
   //   - This method works but it also raises an exception:
   //     java.util.NoSuchElementException: http-handler-body-subscriber
   def getFile(userId : Int, id: Int) = CRMActionAsync { req =>
-    FileRepository.getFileById(id).map(uploadedFile => new File(s"/tmp/crm/${uploadedFile.hash}"))
+    FileDBRepository.getFileById(id).map(uploadedFile => new File(s"/tmp/crm/${uploadedFile.hash}"))
   }
 
 
   def getFilesListForUser(userId: Int) = CRMActionAsync { req =>
-    FileRepository.getFilesForUserByUserId(userId).map(list => Json.toJson(list))
+    FileDBRepository.getFilesForUserByUserId(userId).map(list => Json.toJson(list))
   }
   
   def deleteFile(userId: Int, fileId: Int) = CRMActionAsync { req =>
     // FIXME:
     //   - Should we also delete a file from the filesystem?
-    FileRepository.deleteFileById(fileId).map(deleted => Json.toJson(deleted))
+    FileDBRepository.deleteFileById(fileId).map(deleted => Json.toJson(deleted))
+  }
+
+  def searchAllFileesByName(userId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String]) = CRMActionAsync{rq =>
+    import utils.JSFormat._
+    if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
+      val psize = pageSize.getOrElse(10)
+      val pnr = pageNr.getOrElse(1)
+      FileDBRepository.searchFileByName(userId, psize, pnr, searchTerm).map(page => Json.toJson(page))
+    } else { FileDBRepository.getFilesForUserByUserId(userId).map( files => Json.toJson(files)) }
   }
 
 }

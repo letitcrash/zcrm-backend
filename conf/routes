@@ -101,7 +101,6 @@ POST   /users/:userId/mailboxes                                                 
 PUT    /users/:userId/mailboxes/:mailboxId                                                   controllers.MailboxController.updateMailBox(userId: Int, mailboxId: Int)
 DELETE /users/:userId/mailboxes/:mailboxId                                                   controllers.MailboxController.softDeleteMailbox(userId: Int, mailboxId: Int)
 GET    /users/:userId/mailboxes/:mailboxId                                                   controllers.MailboxController.getMailboxById(userId: Int, mailboxId: Int)
-#GET    /users/:userId/mailboxes                                                              controllers.MailboxController.getAllMailboxesByUserId(userId: Int)
 GET     /users/:userId/mailboxes                                                             controllers.MailboxController.searchAllMailboxesByName(userId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 
 #Mail
@@ -121,7 +120,7 @@ GET    /users/:userId/mailboxes/:mailboxId/mails/:mailId                        
 #File
 POST   /users/:userId/files                                                                  controllers.FileController.uploadFile(userId: Int)
 DELETE /users/:userId/files/:fileId                                                          controllers.FileController.deleteFile(userId: Int, fileId: Int)
-GET    /users/:userId/files                                                                  controllers.FileController.getFilesListForUser(userId: Int)
+GET    /users/:userId/files                                                                  controllers.FileController.searchAllFileesByName(userId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 GET    /users/:userId/files/:fileId                                                          controllers.FileController.getFile(userId: Int, fileId: Int)
 
 

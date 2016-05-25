@@ -8,6 +8,7 @@ import exceptions.UsernameAlreadyExistException
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import org.mindrot.jbcrypt.BCrypt
+import database.PagedDBResult
 
 case class FileEntity(
   id: Option[Int] = None,
@@ -41,6 +42,10 @@ trait FileDBComponent extends DBComponent {
 
   def filesWithUsersWihtProfile = files join usersWithProfile on (_.userId === _._1.id)
 
+  def fileQry(userId: Int) = {
+    files.filter(_.userId === userId) 
+  }
+
   //FileEntity CRUD
   def insertFileEntity(file: FileEntity): Future[FileEntity] = {
     db.run((files returning files.map(_.id)
@@ -59,6 +64,30 @@ trait FileDBComponent extends DBComponent {
     val deletedFile = getFileEntityById(id)
     db.run(files.filter(_.id === id).delete)
     deletedFile
+  }
+
+
+  //FILTERS
+  def searchFileEntitiesByName(userId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String] = None): Future[PagedDBResult[FileEntity]] = {
+    val baseQry = searchTerm.map { st =>
+        val s = "%" + st + "%"
+        fileQry(userId).filter{_.fileName.like(s)}
+      }.getOrElse(fileQry(userId))  
+
+    val pageRes = baseQry
+      .sortBy(_.fileName.asc)
+      .drop(pageSize * (pageNr - 1))
+      .take(pageSize)
+
+    db.run(pageRes.result).flatMap( fileList => 
+        db.run(baseQry.length.result).map( totalCount => 
+         PagedDBResult(
+            pageSize = pageSize,
+            pageNr = pageNr,
+            totalCount = totalCount,
+            data = fileList)
+          )
+        )
   }
 }
 
