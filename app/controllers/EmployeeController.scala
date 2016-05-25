@@ -138,8 +138,6 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
     EmployeeDBRepository.clearEmployeeUnion(employeeId, unionId).map(empl => Json.toJson(empl))
   }
 
-  case class Delegates(delegates: List[Delegate])
-  implicit val delegatesFrmt   = Json.format[Delegates]
   
   def updateEmployeeDelegatesById(companyId: Int, employeeId: Int) = CRMActionAsync[Delegates](expectedDelegateFormat){rq =>
     EmployeeDBRepository.updateEmployeeDelegate(employeeId, rq.body.delegates).map(empl => Json.toJson(empl))
@@ -147,6 +145,15 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
 
   def clearEmployeeDelegatesById(companyId: Int, employeeId: Int) = CRMActionAsync{ rq => 
     EmployeeDBRepository.clearEmployeeDelegate(employeeId).map(empl => Json.toJson(empl))
+  }
+
+
+  def updateEmployeeTeamsById(companyId: Int, employeeId: Int) = CRMActionAsync[Teams](expectedTeamFormat){rq =>
+    EmployeeDBRepository.updateEmployeeTeam(employeeId, rq.body.teams).map(empl => Json.toJson(empl))
+  }
+
+  def clearEmployeeTeamsById(companyId: Int, employeeId: Int) = CRMActionAsync{ rq => 
+    EmployeeDBRepository.clearEmployeeTeam(employeeId).map(empl => Json.toJson(empl))
   }
 
 }

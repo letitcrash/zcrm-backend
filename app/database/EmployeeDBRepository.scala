@@ -197,4 +197,22 @@ object EmployeeDBRepository {
     } yield delegates.map(_._1.asDelegateGroup) 
   }
 
+  def updateEmployeeTeam(employeeId: Int, teams: List[Team]): Future[List[Team]] = {
+    import utils.converters.TeamConverter._
+    for {
+     userId <- getUserIdByEmloyeeId(employeeId)
+     teamGrpsDel <-  deleteTeamGroupByUserId(userId)
+     teamGrpEnt <- insertTeamGroups(teams.map(t => t.asTeamGroup(userId)).map(_.asEntity))
+    } yield teams 
+  }
+
+  def clearEmployeeTeam(employeeId: Int): Future[List[TeamGroup]] = {
+    import utils.converters.TeamConverter._
+    for {
+     userId <- getUserIdByEmloyeeId(employeeId)
+     teams <- getTeamEntitiesByUserId(userId)
+     teamGrpsDel <- deleteTeamGroupByUserId(userId)
+    } yield teams.map(_._1.asTeamGroup) 
+  }
+
 }

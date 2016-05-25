@@ -52,6 +52,8 @@ object JSFormat {
   implicit val uploadedFileFrmt             = Json.format[UploadedFile]
   implicit val teamGroupFrmt                = Json.format[TeamGroup]
   implicit val delegateGroupFrmt            = Json.format[DelegateGroup]
+  implicit val delegatesFrmt                = Json.format[Delegates]
+  implicit val teamsFrmt                    = Json.format[Teams]
 
   implicit def pagedResultFrmt[T: Format]: Format[PagedResult[T]] =
         ((__ \ "pageSize").format[Int] ~
