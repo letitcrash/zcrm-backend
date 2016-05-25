@@ -95,9 +95,7 @@ trait EmployeeDBComponent extends DBComponent{
   def employeeQry(companyId: Int, positionIds: Option[List[Int]]) = {
     aggregatedEmployee.filter(t => (t._1._1._1._1._1.companyId === companyId  &&
                                     t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE))
-                      .filter( e => positionIds match {case Some(ids) => e._1._1._1._1._1.positionId inSet ids
-                                                       //FIXME: fix below !
-                                                       case _ => e._1._1._1._1._1.companyId === companyId})
+                      //.filter( e => positionIds match {case Some(ids) => e._1._1._1._1._1.positionId inSet ids //FIXME: fix below !  case _ => e._1._1._1._1._1.companyId === companyId})
   }
 
   //CRUD EmployeeEntity

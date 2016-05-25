@@ -84,6 +84,7 @@ GET      /companies/:companyId/positions/:positionId                            
 # Employees
 POST    /companies/:companyId/employees                                                      controllers.EmployeeController.inviteEmployee(companyId: Int)
 PUT     /companies/:companyId/employees/:employeeId                                          controllers.EmployeeController.updateEmployee(companyId: Int, employeeId: Int)
+PUT     /companies/:companyId/employees/:employeeId/profile                                  controllers.EmployeeController.updateEmployeeContactProfile(companyId: Int, employeeId: Int)
 DELETE  /companies/:companyId/employees/:employeeId                                          controllers.EmployeeController.softDeleteEmployee(companyId: Int, employeeId: Int)
 GET     /companies/:companyId/employees/:employeeId                                          controllers.EmployeeController.getEmployee(companyId: Int, employeeId: Int)
 #GET     /companies/:companyId/employees                                                      controllers.EmployeeController.getAllEmployeesByCompanyId(companyId: Int)

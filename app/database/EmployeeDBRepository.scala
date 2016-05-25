@@ -99,18 +99,22 @@ object EmployeeDBRepository {
     getEmployeeWithUserById(employeeId).map(empl => empl.asEmployee)
   }
 
+
+  def updateEmployeeContactProfile(profile: ContactProfile): Future[ContactProfile] = {
+    import utils.converters.ContactProfileConverter._
+    updateProfile(profile.asEntity()).map(cp => cp.asProfile)
+  }
+
   //TODO: should be transactionally
   def updateEmployee(employee: Employee): Future[Employee] = {
     import utils.converters.TeamConverter._
     import utils.converters.DelegateConverter._
     (for {
-      teamGrpsDel <-  deleteTeamGroupByUserId(employee.user.get.id.get)
-      delegateGrpsDel <- deleteGroupDelegateByUserId(employee.user.get.id.get)
+      //teamGrpsDel <-  deleteTeamGroupByUserId(employee.user.get.id.get)
+      //delegateGrpsDel <- deleteGroupDelegateByUserId(employee.user.get.id.get)
       employeeUpd <- updateEmployeeWithUser(employee.asEmployeeEntity)
-      teamGrpEnt <- employee.teams match { case Some(teams) => insertTeamGroups(teams.map(t => t.asTeamGroup(employeeUpd._2._1.id.get)).map(_.asEntity))
-                                           case _ => Future(List())}
-      delegateGrpEnt <- employee.delegates match { case Some(delegates) => insertDelegateGroups(delegates.map(d => d.asDelegateGroup(employeeUpd._2._1.id)).map(_.asGroupEntity))
-                                                   case _ => Future(List())}
+      //teamGrpEnt <- employee.teams match { case Some(teams) => insertTeamGroups(teams.map(t => t.asTeamGroup(employeeUpd._2._1.id.get)).map(_.asEntity)) case _ => Future(List())}
+      //delegateGrpEnt <- employee.delegates match { case Some(delegates) => insertDelegateGroups(delegates.map(d => d.asDelegateGroup(employeeUpd._2._1.id)).map(_.asGroupEntity)) case _ => Future(List())}
     } yield employeeUpd.asEmployee()).map( e =>
             e.copy( position = employee.position,
                     shift = employee.shift,

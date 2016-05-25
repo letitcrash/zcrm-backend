@@ -68,6 +68,10 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
     EmployeeDBRepository.updateEmployee(rq.body).map(updated => Json.toJson(updated))     
   }
 
+  def updateEmployeeContactProfile(companyId: Int, employeeId: Int) = CRMActionAsync[ContactProfile](expectedContactProfileFormat){rq =>
+    EmployeeDBRepository.updateEmployeeContactProfile(rq.body).map(updated => Json.toJson(updated))     
+  }
+
   def softDeleteEmployee(companyId: Int, employeeId: Int) = CRMActionAsync{rq =>
     EmployeeDBRepository.softDeleteEmployeeById(employeeId).map(deletedEmpl => Json.toJson(deletedEmpl))
   }
