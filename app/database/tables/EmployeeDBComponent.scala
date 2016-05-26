@@ -7,8 +7,6 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.profile.SqlProfile.ColumnOption.Nullable
 import database.PagedDBResult
 
-
-
 case class EmployeeEntity(
                            id: Option[Int],
                            companyId:  Int,
@@ -27,7 +25,7 @@ case class EmployeeEntity(
 
 
 
-trait EmployeeDBComponent extends DBComponent{
+trait EmployeeDBComponent extends DBComponent {
   this: DBComponent 
     with UserDBComponent
     with ContactProfileDBComponent
@@ -35,8 +33,8 @@ trait EmployeeDBComponent extends DBComponent{
     with PositionDBComponent
     with ShiftDBComponent
     with UnionDBComponent
-    with CompanyDBComponent =>
-
+    with CompanyDBComponent
+    =>
 
   import dbConfig.driver.api._
 
@@ -90,12 +88,10 @@ trait EmployeeDBComponent extends DBComponent{
                              departments on ( _._1._1._1.departmentId === _.id) joinLeft
                              unions on ( _._1._1._1._1.unionId === _.id) 
 
-                            
+
   //Queries 
   def employeeQry(companyId: Int, positionIds: Option[List[Int]]) = {
-    aggregatedEmployee.filter(t => (t._1._1._1._1._1.companyId === companyId  &&
-                                    t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE))
-                      //.filter( e => positionIds match {case Some(ids) => e._1._1._1._1._1.positionId inSet ids //FIXME: fix below !  case _ => e._1._1._1._1._1.companyId === companyId})
+    aggregatedEmployee.filter(t => (t._1._1._1._1._1.companyId === companyId  && t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE) )
   }
 
   //CRUD EmployeeEntity
