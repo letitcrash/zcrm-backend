@@ -55,10 +55,10 @@ object EmployeeConverter {
         id = o.id,
         companyId = o.companyId,
         userId = o.user.get.id.get,
-        positionId = o.position.map(_.id).get,
-        shiftId = o.shift.map(_.id).get,
-        departmentId = o.department.map(_.id).get,
-        unionId = o.union.map(_.id).get,
+        positionId = o.position match { case Some(p) => p.id; case _ => None },
+        shiftId = o.shift match { case Some(s) => s.id; case _ => None}, 
+        departmentId = o.department match { case Some(d) => d.id; case _ => None},
+        unionId = o.union match { case Some(u) => u.id; case _ => None},
         employeeLevel = o.employeeLevel)
     }
 
