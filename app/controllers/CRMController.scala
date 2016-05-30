@@ -93,7 +93,7 @@ class CRMController @Inject() extends Controller with AcceptedReturns  {
     def apply(bodyFn: CRMRequest[None.type] => Future[AcceptedReturn]) = {
       Action.async (parse.anyContent) {
         implicit req =>
-        Logger.info("CRMActionAsync.apply - START - " +req.toString)
+        Logger.info("CRMActionAsync.apply - START - " +req.toString+req.headers)
         val a = Security.validateHeaders(req.headers) match {
           case Success(rqHeader) =>
             bodyFn(CRMSimpleRequest(rqHeader, None)).map(_.toResp)
