@@ -94,9 +94,16 @@ trait EmployeeDBComponent extends DBComponentWithSlickQueryOps{
 
 
   //Queries 
-  def employeeQry(companyId: Int, positionIds: List[Int]) = {
+  def employeeQry(companyId: Int, 
+                  positionIds: List[Int],
+                  shiftIds: List[Int],
+                  departmentIds: List[Int],
+                  unionIds:List[Int]) = {
     aggregatedEmployee.filter(t => (t._1._1._1._1._1.companyId === companyId  && t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE) )
-      .filteredBy( positionIds match { case List() => None; case l => Some(l) } )( _._1._1._1._1._1.positionId inSet _)
+      .filteredBy( positionIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.positionId inSet _)
+      .filteredBy( shiftIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.shiftId inSet _)
+      .filteredBy( departmentIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.departmentId inSet _)
+      .filteredBy( unionIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.unionId inSet _)
   }
 
   //CRUD EmployeeEntity
@@ -147,26 +154,49 @@ trait EmployeeDBComponent extends DBComponentWithSlickQueryOps{
                                                      t._1.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
   }
 
-  def getAllAggregatedEmployeesByCompanyId(companyId: Int, positionIds: List[Int])
+  def getAllAggregatedEmployeesByCompanyId(companyId: Int, 
+                                           positionIds: List[Int],
+                                           shiftIds: List[Int],
+                                           departmentIds: List[Int],
+                                           unionIds:List[Int],
+                                           delegateIds: List[Int],
+                                           teamIds: List[Int])
    : Future[List[(((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), Option[PositionEntity]) , Option[ShiftEntity]),  Option[DepartmentEntity]), Option[UnionEntity])]] = {
-    val baseQry = employeeQry(companyId, positionIds)
+    val baseQry = employeeQry(companyId,
+                              positionIds,
+                              shiftIds,
+                              departmentIds,
+                              unionIds)
     db.run(baseQry.sortBy(_._1._1._1._1._2._2.lastname.asc).result).map(_.toList)
   }
 
   def searchAllAggregatedEmployeesByCompanyId(companyId: Int,
                                               positionIds: List[Int],
+                                              shiftIds: List[Int],
+                                              departmentIds: List[Int],
+                                              unionIds:List[Int],
+                                              delegateIds: List[Int],
+                                              teamIds: List[Int],
                                               pageSize: Int, 
                                               pageNr: Int, 
                                               searchTerm: Option[String] = None)
    : Future[PagedDBResult[(((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), Option[PositionEntity]) , Option[ShiftEntity]),  Option[DepartmentEntity]), Option[UnionEntity])]] = {
     val baseQry = searchTerm.map { st =>
         val s = "%" + st + "%"
-        employeeQry(companyId, positionIds).filter { tup =>
+        employeeQry(companyId,
+                    positionIds,
+                    shiftIds,
+                    departmentIds,
+                    unionIds).filter { tup =>
           tup._1._1._1._1._2._1.username.like(s) ||
           tup._1._1._1._1._2._2.firstname.like(s) ||
           tup._1._1._1._1._2._2.lastname.like(s)
         }
-      }.getOrElse(employeeQry(companyId, positionIds)) // if search term is empty, do not filter
+      }.getOrElse(employeeQry(companyId,
+                               positionIds,
+                               shiftIds,
+                               departmentIds,
+                               unionIds)) // if search term is empty, do not filter
      
     val pageRes = baseQry
       .sortBy(_._1._1._1._1._2._2.lastname.asc)

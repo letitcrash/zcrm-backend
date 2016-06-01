@@ -63,8 +63,20 @@ object EmployeeDBRepository {
     getAllEmployeesWithUsersByCompanyId(companyId).map(list => list.map(_.asEmployee))
   }
 
-  def getAggragatedEmployeesByCompanyId(companyId: Int, positionIds: List[Int]): Future[List[Employee]] = {
-    getAllAggregatedEmployeesByCompanyId(companyId, positionIds).flatMap( listAggEmployees =>
+  def getAggragatedEmployeesByCompanyId(companyId: Int,
+                                        positionIds: List[Int],
+                                        shiftIds: List[Int],
+                                        departmentIds: List[Int],
+                                        unionIds:List[Int],
+                                        delegateIds: List[Int],
+                                        teamIds: List[Int]): Future[List[Employee]] = {
+    getAllAggregatedEmployeesByCompanyId(companyId,
+                                         positionIds,
+                                         shiftIds,
+                                         departmentIds,
+                                         unionIds,
+                                         delegateIds,
+                                         teamIds).flatMap( listAggEmployees =>
       Future.sequence(
         listAggEmployees.map( aggEmployee =>
             getDelegateEntitiesByUserId(aggEmployee._1._1._1._1._2._1.id.get).flatMap(
@@ -76,10 +88,24 @@ object EmployeeDBRepository {
 
   def searchAggragatedEmployeesByCompanyId (companyId: Int,
                                             positionIds: List[Int],
+                                            shiftIds: List[Int],
+                                            departmentIds: List[Int],
+                                            unionIds:List[Int],
+                                            delegateIds: List[Int],
+                                            teamIds: List[Int],
                                             pageSize: Int,
                                             pageNr: Int,
                                             searchTerm: Option[String]): Future[PagedResult[Employee]] = {
-    searchAllAggregatedEmployeesByCompanyId(companyId, positionIds, pageSize, pageNr, searchTerm).flatMap( dbPage =>
+    searchAllAggregatedEmployeesByCompanyId(companyId, 
+                                            shiftIds,
+                                            departmentIds,
+                                            unionIds,
+                                            delegateIds,
+                                            teamIds,
+                                            positionIds, 
+                                            pageSize, 
+                                            pageNr, 
+                                            searchTerm).flatMap( dbPage =>
       Future.sequence(
         dbPage.data.map( aggEmployee =>
             getDelegateEntitiesByUserId(aggEmployee._1._1._1._1._2._1.id.get).flatMap(

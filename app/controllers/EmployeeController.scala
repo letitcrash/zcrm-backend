@@ -85,6 +85,11 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
 
   def searchAllEmployeesByCompanyId(companyId: Int,
                                     positionIds: List[Int],
+                                    shiftIds: List[Int],
+                                    departmentIds: List[Int],
+                                    unionIds:List[Int],
+                                    delegateIds: List[Int],
+                                    teamIds: List[Int],
                                     pageSize: Option[Int], 
                                     pageNr: Option[Int],
                                     searchTerm: Option[String]) = CRMActionAsync{rq =>
@@ -95,11 +100,22 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
       val pnr = pageNr.getOrElse(1)
       EmployeeDBRepository.searchAggragatedEmployeesByCompanyId(companyId,
                                                                 positionIds,
+                                                                shiftIds,
+                                                                departmentIds,
+                                                                unionIds,
+                                                                delegateIds,
+                                                                teamIds,
                                                                 psize,
                                                                 pnr,
                                                                 searchTerm).map(page => Json.toJson(page))
     } else {
-      EmployeeDBRepository.getAggragatedEmployeesByCompanyId(companyId, positionIds).map(list => 
+      EmployeeDBRepository.getAggragatedEmployeesByCompanyId(companyId,
+                                                             positionIds,
+                                                             shiftIds,
+                                                             departmentIds,
+                                                             unionIds,
+                                                             delegateIds,
+                                                             teamIds).map(list => 
         Json.toJson( PagedResult[Employee]( pageSize = list.length,
                                            pageNr = 1,
                                            totalCount = list.length,
