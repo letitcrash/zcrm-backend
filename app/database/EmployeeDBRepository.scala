@@ -63,7 +63,7 @@ object EmployeeDBRepository {
     getAllEmployeesWithUsersByCompanyId(companyId).map(list => list.map(_.asEmployee))
   }
 
-  def getAggragatedEmployeesByCompanyId(companyId: Int, positionIds: Option[List[Int]]): Future[List[Employee]] = {
+  def getAggragatedEmployeesByCompanyId(companyId: Int, positionIds: List[Int]): Future[List[Employee]] = {
     getAllAggregatedEmployeesByCompanyId(companyId, positionIds).flatMap( listAggEmployees =>
       Future.sequence(
         listAggEmployees.map( aggEmployee =>
@@ -75,7 +75,7 @@ object EmployeeDBRepository {
   }
 
   def searchAggragatedEmployeesByCompanyId (companyId: Int,
-                                            positionIds: Option[List[Int]],
+                                            positionIds: List[Int],
                                             pageSize: Int,
                                             pageNr: Int,
                                             searchTerm: Option[String]): Future[PagedResult[Employee]] = {

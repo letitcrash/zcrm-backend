@@ -84,10 +84,11 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
   */
 
   def searchAllEmployeesByCompanyId(companyId: Int,
-                                    positionIds: Option[List[Int]],
+                                    positionIds: List[Int],
                                     pageSize: Option[Int], 
                                     pageNr: Option[Int],
                                     searchTerm: Option[String]) = CRMActionAsync{rq =>
+
     import utils.JSFormat._
     if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
       val psize = pageSize.getOrElse(10)

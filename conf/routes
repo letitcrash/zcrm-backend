@@ -93,7 +93,7 @@ DELETE  /companies/:companyId/employees/:employeeId/delegates                   
 DELETE  /companies/:companyId/employees/:employeeId/teams                                   controllers.EmployeeController.clearEmployeeTeamsById(companyId: Int, employeeId: Int)
 
 GET     /companies/:companyId/employees/:employeeId                                          controllers.EmployeeController.getEmployee(companyId: Int, employeeId: Int)
-GET     /companies/:companyId/employees                                                      controllers.EmployeeController.searchAllEmployeesByCompanyId(companyId: Int, positionIds: Option[List[Int]] , pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
+GET     /companies/:companyId/employees                                                      controllers.EmployeeController.searchAllEmployeesByCompanyId(companyId: Int, positionIds: List[Int] , pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 
 
 #Mailbox

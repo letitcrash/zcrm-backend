@@ -6,6 +6,10 @@ import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.profile.SqlProfile.ColumnOption.Nullable
 import database.PagedDBResult
+import utils.DBComponentWithSlickQueryOps
+
+import play.api.Logger
+
 
 case class EmployeeEntity(
                            id: Option[Int],
@@ -25,7 +29,7 @@ case class EmployeeEntity(
 
 
 
-trait EmployeeDBComponent extends DBComponent {
+trait EmployeeDBComponent extends DBComponentWithSlickQueryOps{
   this: DBComponent 
     with UserDBComponent
     with ContactProfileDBComponent
@@ -90,8 +94,9 @@ trait EmployeeDBComponent extends DBComponent {
 
 
   //Queries 
-  def employeeQry(companyId: Int, positionIds: Option[List[Int]]) = {
+  def employeeQry(companyId: Int, positionIds: List[Int]) = {
     aggregatedEmployee.filter(t => (t._1._1._1._1._1.companyId === companyId  && t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE) )
+      .filteredBy( positionIds match { case List() => None; case l => Some(l) } )( _._1._1._1._1._1.positionId inSet _)
   }
 
   //CRUD EmployeeEntity
@@ -142,14 +147,14 @@ trait EmployeeDBComponent extends DBComponent {
                                                      t._1.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
   }
 
-  def getAllAggregatedEmployeesByCompanyId(companyId: Int, positionIds: Option[List[Int]])
+  def getAllAggregatedEmployeesByCompanyId(companyId: Int, positionIds: List[Int])
    : Future[List[(((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), Option[PositionEntity]) , Option[ShiftEntity]),  Option[DepartmentEntity]), Option[UnionEntity])]] = {
     val baseQry = employeeQry(companyId, positionIds)
     db.run(baseQry.sortBy(_._1._1._1._1._2._2.lastname.asc).result).map(_.toList)
   }
 
   def searchAllAggregatedEmployeesByCompanyId(companyId: Int,
-                                              positionIds: Option[List[Int]],
+                                              positionIds: List[Int],
                                               pageSize: Int, 
                                               pageNr: Int, 
                                               searchTerm: Option[String] = None)
