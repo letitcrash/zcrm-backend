@@ -14,26 +14,26 @@ object TicketConverter {
                      createdByUserId = t.createdByUserId,
                      requestedByUserId = t.requestedByUserId,
                      assignedToUserId = t.assignedToUserId,
-                     assignedToTeamId = t.assignedToTeamId,
-                     commentId = t.commentId,
+                     assignedToTeamId = t.assignedToTeamId match { case Some(x) => t.assignedToTeamId; case _ => None},
+                     commentId = t.commentId match { case Some(x) => t.commentId; case _ => None} ,
                      status = t.status,
                      subject = t.subject,
-                     description = t.description)    
+                     description = t.description match { case Some(x) => t.description; case _ => None})    
       }
   }
 
   implicit class TicketToEntity(t: Ticket){
       def asTicketEntity(companyId: Int): TicketEntity = {
-              TicketEntity(id = Some(Integer.parseInt(t.id.get)),
+              TicketEntity(id = t.id match { case Some(x) => Some(Integer.parseInt(t.id.get)); case _ => None},
                            companyId = t.companyId,
                            createdByUserId = t.createdByUserId,
                            requestedByUserId = t.requestedByUserId,
                            assignedToUserId = t.assignedToUserId,
-                           assignedToTeamId = t.assignedToTeamId,
-                           commentId = t.commentId,
+                           assignedToTeamId = t.assignedToTeamId match { case Some(x) => t.assignedToTeamId; case _ => None},
+                           commentId = t.commentId match { case Some(x) => t.commentId; case _ => None} ,
                            status = t.status,
                            subject = t.subject,
-                           description = t.description)      
+                           description = t.description match { case Some(x) => t.description; case _ => None})      
       }
   }
 }

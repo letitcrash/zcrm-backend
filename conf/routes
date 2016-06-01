@@ -107,14 +107,14 @@ GET     /users/:userId/mailboxes                                                
 GET    /users/:userId/mailboxes/:mailboxId/mails                                             controllers.ExchangeController.getMailsForMailbox(userId: Int, mailboxId: Int)
 GET    /users/:userId/mailboxes/:mailboxId/mails/:mailId                                     controllers.ExchangeController.getMail(userId: Int, mailboxId: Int, mailId: Int)
 
-#Tasks
-#POST   /companies/:companyId/tasks                                                           controllers.TaskController.newTask(companyId: Int)
-#POST   /companies/:companyId/tasks/:taskId/mail                                              controllers.TaskController.attachMailToTask(companyId: Int, taskId: Int)
-#PUT    /companies/:companyId/tasks/:taskId                                                   controllers.TaskController.updateTask(companyId: Int, taskId: Int)
-#DELETE /companies/:companyId/tasks/:taskId/mail                                              controllers.TaskController.removeAttachedMailFromTask(companyId: Int, taskId: Int)
-#DELETE /companies/:companyId/tasks/:taskId                                                   controllers.TaskController.softDeleteTaskByTaskId(companyId: Int, taskId: Int)
-#GET    /companies/:companyId/tasks/:taskId                                                   controllers.TaskController.getTask(companyId: Int, taskId: Int)
-#GET    /companies/:companyId/tasks                                                           controllers.TaskController.getAllTasks(companyId: Int)
+#Tickets
+POST   /companies/:companyId/tickets                                                         controllers.TicketController.newTicket(companyId: Int)
+#POST   /companies/:companyId/tickets/:taskId/mail                                            controllers.TicketController.attachMailToTask(companyId: Int, taskId: Int)
+PUT    /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.updateTicket(companyId: Int, ticketId: Int)
+#DELETE /companies/:companyId/tickets/:taskId/mail                                            controllers.TicketController.removeAttachedMailFromTask(companyId: Int, taskId: Int)
+DELETE /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.deleteTicketById(companyId: Int, ticketId:Int) 
+GET    /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.getTicket(companyId: Int, ticketId: Int)
+GET    /companies/:companyId/tickets                                                         controllers.TicketController.searchAllTicketsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 
 
 #File

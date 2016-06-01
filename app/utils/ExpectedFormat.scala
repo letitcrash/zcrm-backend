@@ -106,18 +106,17 @@ object ExpectedFormat {
     "name"           -> Json.toJson("[M](string) Department name")
   ))
 
-  val expectedTaskFormat =  Json.toJson(ListMap(
-    "companyId"      -> Json.toJson("[M](int) company ID"),
-    "createdByUser"  ->  expectedUserFormat,
-    "assignedToUser" ->  expectedUserFormat,
-    "title"          -> Json.toJson("[M](string) Task title"),
-    "description"    -> Json.toJson("[O](string) Task description"),
-    "status"         -> Json.toJson("[O](string) One of the task statuses: NEW|OPEN|POSTPONED|RESOLVED"),
-    "attachedMails"  -> Json.toJson(List(ListMap(
-        "Id"         -> "[M](string) Exchange mail ID",
-        "subject"    -> "[M](string) Mail subject",
-        "fromEmail"  -> "[M](string) Mail sender email"))),
-    "dueDate"        -> Json.toJson("[O](string) Task to due date") 
+  val expectedTicketFormat =  Json.toJson(ListMap(
+    "id"             -> Json.toJson("[O](int) In DB id"),
+    "companyId"      -> Json.toJson("[M](int) Company ID"),
+    "createdByUserId"-> Json.toJson("[M](int) Created by userId"),
+    "requestedByUserId"-> Json.toJson("[M](int) Requested by userId"),
+    "assignedToUserId"-> Json.toJson("[M](int) Assigned to userId"),
+    "assignedToTeamId"-> Json.toJson("[O](int) Assigned to team id"),
+    "commentId"       -> Json.toJson("[O](int) Id of action"),
+    "status"          -> Json.toJson("[M](int) Status"),
+    "subject"         -> Json.toJson("[O](string) Subject"),
+    "description"     -> Json.toJson("[O](string) Description")    
   ))
 
   val expectedExchangeMailFormat = Json.toJson(ListMap(

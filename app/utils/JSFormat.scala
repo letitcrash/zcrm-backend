@@ -45,6 +45,7 @@ object JSFormat {
   implicit val employeeWithLevelFrmt        = Json.format[EmployeeWithLevel]
   implicit val companyFrmt                  = Json.format[Company]
   implicit val employeeFrmt                 = Json.format[Employee]
+  implicit val ticketFrmt                   = Json.format[Ticket]
 
   implicit val exchangeMailFrmt = Json.format[ExchangeMail]
 

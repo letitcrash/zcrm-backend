@@ -4,7 +4,7 @@ import models.Employee
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
-import models.Ticket
+import models.{Ticket, PagedResult}
 import play.api.Logger
 import utils.converters.TicketConverter._
 
@@ -35,6 +35,14 @@ object TicketDBRepository {
   def getTicketsByCompanyId(companyId: Int): Future[List[Ticket]] = {
     getTicketEntitiesByCompanyId(companyId).map(list => list.map(_.asTicket))
   } 
+
+  def searchTicketByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String]): Future[PagedResult[Ticket]] = {
+    searchTicketEntitiesByName(companyId, pageSize, pageNr, searchTerm).map{dbPage =>
+        PagedResult[Ticket](pageSize = dbPage.pageSize,
+                            pageNr = dbPage.pageNr,
+                            totalCount = dbPage.totalCount,
+                            data = dbPage.data.map(_.asTicket))}
+  }
   
 
 }

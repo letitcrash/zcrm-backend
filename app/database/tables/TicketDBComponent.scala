@@ -6,6 +6,7 @@ import slick.model.ForeignKeyAction._
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.profile.SqlProfile.ColumnOption.Nullable
+import database.PagedDBResult
 
 case class TicketEntity(
   id: Option[Int] = None,
@@ -62,6 +63,13 @@ trait TicketDBComponent extends DBComponent {
 
   }
 
+  def ticketQry(companyId: Int) = {
+
+    tickets.filter(t =>(t.companyId === companyId && 
+
+                        t.recordStatus === RowStatus.ACTIVE))
+  }
+
 
   //CRUD TicketEntity
   def insertTicket(ticket: TicketEntity): Future[TicketEntity] = {
@@ -90,6 +98,28 @@ trait TicketDBComponent extends DBComponent {
   def getTicketEntitiesByCompanyId(companyId: Int): Future[List[TicketEntity]] = {
     db.run(tickets.filter(t => (t.companyId === companyId && 
                                 t.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
+  }
+
+  def searchTicketEntitiesByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String] = None): Future[PagedDBResult[TicketEntity]] = {
+    val baseQry = searchTerm.map { st =>
+        val s = "%" + st + "%"
+        ticketQry(companyId).filter{_.subject.like(s)}
+      }.getOrElse(ticketQry(companyId))  
+
+    val pageRes = baseQry
+      .sortBy(_.subject.asc)
+      .drop(pageSize * (pageNr - 1))
+      .take(pageSize)
+
+    db.run(pageRes.result).flatMap( ticketList => 
+        db.run(baseQry.length.result).map( totalCount => 
+         PagedDBResult(
+            pageSize = pageSize,
+            pageNr = pageNr,
+            totalCount = totalCount,
+            data = ticketList)
+          )
+        )
   }
 }
 
