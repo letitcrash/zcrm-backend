@@ -67,16 +67,18 @@ object EmployeeDBRepository {
                                         positionIds: List[Int],
                                         shiftIds: List[Int],
                                         departmentIds: List[Int],
-                                        unionIds:List[Int],
-                                        delegateIds: List[Int],
-                                        teamIds: List[Int]): Future[List[Employee]] = {
+                                        unionIds:List[Int]
+                                       // delegateIds: List[Int],
+                                       // teamIds: List[Int]
+                                        ): Future[List[Employee]] = {
     getAllAggregatedEmployeesByCompanyId(companyId,
                                          positionIds,
                                          shiftIds,
                                          departmentIds,
-                                         unionIds,
-                                         delegateIds,
-                                         teamIds).flatMap( listAggEmployees =>
+                                         unionIds
+                                        // delegateIds,
+                                        // teamIds
+                                         ).flatMap( listAggEmployees =>
       Future.sequence(
         listAggEmployees.map( aggEmployee =>
             getDelegateEntitiesByUserId(aggEmployee._1._1._1._1._2._1.id.get).flatMap(
@@ -91,18 +93,18 @@ object EmployeeDBRepository {
                                             shiftIds: List[Int],
                                             departmentIds: List[Int],
                                             unionIds:List[Int],
-                                            delegateIds: List[Int],
-                                            teamIds: List[Int],
+                                           // delegateIds: List[Int],
+                                           // teamIds: List[Int],
                                             pageSize: Int,
                                             pageNr: Int,
                                             searchTerm: Option[String]): Future[PagedResult[Employee]] = {
     searchAllAggregatedEmployeesByCompanyId(companyId, 
+                                            positionIds, 
                                             shiftIds,
                                             departmentIds,
                                             unionIds,
-                                            delegateIds,
-                                            teamIds,
-                                            positionIds, 
+                                         //   delegateIds,
+                                         //   teamIds,
                                             pageSize, 
                                             pageNr, 
                                             searchTerm).flatMap( dbPage =>

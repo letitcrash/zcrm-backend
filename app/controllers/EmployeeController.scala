@@ -84,15 +84,16 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
   */
 
   def searchAllEmployeesByCompanyId(companyId: Int,
+                                    pageSize: Option[Int], 
+                                    pageNr: Option[Int],
+                                    searchTerm: Option[String],
                                     positionIds: List[Int],
                                     shiftIds: List[Int],
                                     departmentIds: List[Int],
-                                    unionIds:List[Int],
-                                    delegateIds: List[Int],
-                                    teamIds: List[Int],
-                                    pageSize: Option[Int], 
-                                    pageNr: Option[Int],
-                                    searchTerm: Option[String]) = CRMActionAsync{rq =>
+                                    unionIds:List[Int]
+                                   // delegateIds: List[Int],
+                                   // teamIds: List[Int]
+                                    ) = CRMActionAsync{rq =>
 
     import utils.JSFormat._
     if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
@@ -103,8 +104,8 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
                                                                 shiftIds,
                                                                 departmentIds,
                                                                 unionIds,
-                                                                delegateIds,
-                                                                teamIds,
+                                                              //  delegateIds,
+                                                              //  teamIds,
                                                                 psize,
                                                                 pnr,
                                                                 searchTerm).map(page => Json.toJson(page))
@@ -113,9 +114,10 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
                                                              positionIds,
                                                              shiftIds,
                                                              departmentIds,
-                                                             unionIds,
-                                                             delegateIds,
-                                                             teamIds).map(list => 
+                                                             unionIds
+                                                            // delegateIds,
+                                                            // teamIds
+                                                             ).map(list => 
         Json.toJson( PagedResult[Employee]( pageSize = list.length,
                                            pageNr = 1,
                                            totalCount = list.length,

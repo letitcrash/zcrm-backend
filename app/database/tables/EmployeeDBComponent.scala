@@ -102,8 +102,8 @@ trait EmployeeDBComponent extends DBComponentWithSlickQueryOps{
     aggregatedEmployee.filter(t => (t._1._1._1._1._1.companyId === companyId  && t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE) )
       .filteredBy( positionIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.positionId inSet _)
       .filteredBy( shiftIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.shiftId inSet _)
-      .filteredBy( departmentIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.departmentId inSet _)
       .filteredBy( unionIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.unionId inSet _)
+      .filteredBy( departmentIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.departmentId inSet _)
   }
 
   //CRUD EmployeeEntity
@@ -158,9 +158,10 @@ trait EmployeeDBComponent extends DBComponentWithSlickQueryOps{
                                            positionIds: List[Int],
                                            shiftIds: List[Int],
                                            departmentIds: List[Int],
-                                           unionIds:List[Int],
-                                           delegateIds: List[Int],
-                                           teamIds: List[Int])
+                                           unionIds:List[Int]
+                                          // delegateIds: List[Int],
+                                          // teamIds: List[Int]
+                                           )
    : Future[List[(((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), Option[PositionEntity]) , Option[ShiftEntity]),  Option[DepartmentEntity]), Option[UnionEntity])]] = {
     val baseQry = employeeQry(companyId,
                               positionIds,
@@ -175,12 +176,13 @@ trait EmployeeDBComponent extends DBComponentWithSlickQueryOps{
                                               shiftIds: List[Int],
                                               departmentIds: List[Int],
                                               unionIds:List[Int],
-                                              delegateIds: List[Int],
-                                              teamIds: List[Int],
+                                             // delegateIds: List[Int],
+                                             // teamIds: List[Int],
                                               pageSize: Int, 
                                               pageNr: Int, 
                                               searchTerm: Option[String] = None)
    : Future[PagedDBResult[(((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), Option[PositionEntity]) , Option[ShiftEntity]),  Option[DepartmentEntity]), Option[UnionEntity])]] = {
+
     val baseQry = searchTerm.map { st =>
         val s = "%" + st + "%"
         employeeQry(companyId,
