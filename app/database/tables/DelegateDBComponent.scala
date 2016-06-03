@@ -24,9 +24,9 @@ trait DelegateDBComponent extends DBComponent
   class DelegateTable(tag: Tag) extends Table[DelegateEntity](tag, "tbl_delegate") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def companyId = column[Int]("company_id")
-    def name = column[String]("name")
-    def createdAt = column[Timestamp]("created_at", O.Default(new Timestamp(System.currentTimeMillis())))
-    def updatedAt = column[Timestamp]("updated_at", O.Default(new Timestamp(System.currentTimeMillis())))
+    def name = column[String]("name", O.SqlType("VARCHAR(255)"))
+    def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
+    def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp not null"))
 
     def fkCompany = foreignKey("fk_delegate_company", companyId, companies)(_.id)
 

@@ -12,9 +12,9 @@ import database.PagedDBResult
 case class PositionEntity(id: Option[Int] = None,
                           companyId:  Int,
                           name: String,
+                          recordStatus: Int = RowStatus.ACTIVE,
                           createdAt: Option[Timestamp] = Some(new Timestamp(System.currentTimeMillis())),
-                          updatedAt: Option[Timestamp] = Some(new Timestamp(System.currentTimeMillis())),
-                          recordStatus: String = RowStatus.ACTIVE)
+                          updatedAt: Option[Timestamp] = Some(new Timestamp(System.currentTimeMillis())))
 
 trait PositionDBComponent extends DBComponent{
   this: DBComponent 
@@ -27,17 +27,17 @@ trait PositionDBComponent extends DBComponent{
   class PositionTable(tag: Tag) extends Table[PositionEntity](tag, "tbl_position") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def companyId = column[Int]("company_id")
-    def name = column[String]("name")
+    def name = column[String]("name", O.SqlType("VARCHAR(255)"))
     //def comment = column[String]("comment")
-    def createdAt = column[Timestamp]("created_at", O.Default(new Timestamp(System.currentTimeMillis())))
-    def updatedAt = column[Timestamp]("updated_at", O.Default(new Timestamp(System.currentTimeMillis())))
-    def recordStatus = column[String]("record_status", O.Default(RowStatus.ACTIVE))
+    def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
+    def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
+    def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp not null"))
 
     def fkPositionCompany =
       foreignKey("fk_position_company", companyId, companies)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
 
     override def * =
-      ( id.?, companyId, name, createdAt.?, updatedAt.?, recordStatus) <> (PositionEntity.tupled, PositionEntity.unapply)
+      ( id.?, companyId, name, recordStatus, createdAt.?, updatedAt.?) <> (PositionEntity.tupled, PositionEntity.unapply)
   }
 
   def positionQry(companyId: Int) = {

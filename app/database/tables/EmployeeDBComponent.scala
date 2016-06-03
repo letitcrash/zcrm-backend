@@ -25,7 +25,7 @@ case class EmployeeEntity(
                            // 100 - 999    = Human resource
                            // 0-99         = Admin levels
                            employeeLevel: Int,
-                           recordStatus: String = RowStatus.ACTIVE)
+                           recordStatus: Int = RowStatus.ACTIVE)
 
 
 
@@ -55,7 +55,7 @@ trait EmployeeDBComponent extends DBComponentWithSlickQueryOps{
    // def employeeType = column[String]("employee_type", Nullable)
     def comment = column[String]("comment")
     def employeeLevel = column[Int]("employee_level", O.Default(UserLevels.USER))
-    def recordStatus = column[String]("record_status", O.Default(RowStatus.ACTIVE))
+    def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
 
 
     def fkEmployeeUser =

@@ -30,9 +30,9 @@ trait FileDBComponent extends DBComponent {
   class FileTable(tag: Tag) extends Table[FileEntity](tag, "tbl_files") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def userId = column[Int]("user_id")
-    def fileHash = column[String]("file_hash")
-    def fileName = column[String]("file_name")    
-    def createdAt = column[Timestamp]("created_at", O.Default(new Timestamp(System.currentTimeMillis())))
+    def fileHash = column[String]("file_hash", O.SqlType("VARCHAR(255)"))
+    def fileName = column[String]("file_name", O.SqlType("VARCHAR(255)"))    
+    def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
 
 
     def fkUser = foreignKey("fk_file_user", userId, users)(_.id, onUpdate = Restrict, onDelete = Cascade)

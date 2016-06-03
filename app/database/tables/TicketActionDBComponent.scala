@@ -15,7 +15,7 @@ case class TicketActionEntity(
   actionType: Int,
   name: String,
   comment: Option[String] = None,
-  recordStatus: String = RowStatus.ACTIVE,
+  recordStatus: Int = RowStatus.ACTIVE,
   createdAt: Timestamp = new Timestamp(System.currentTimeMillis()),
   updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()))
 
@@ -34,11 +34,11 @@ trait TicketActionDBComponent extends DBComponent {
     def ticketId = column[Int]("ticket_id")
     def userId = column[Int]("user_id")
     def actionType = column[Int]("action_type")
-    def name = column[String]("name")
+    def name = column[String]("name", O.SqlType("VARCHAR(255)"))
     def comment = column[String]("comment", Nullable)
-    def recordStatus = column[String]("record_status", O.Default(RowStatus.ACTIVE))
-    def createdAt = column[Timestamp]("created_at", O.Default(new Timestamp(System.currentTimeMillis())))
-    def updatedAt = column[Timestamp]("updated_at", O.Default(new Timestamp(System.currentTimeMillis())))
+    def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
+    def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
+    def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp not null"))
 
     def fkParentActionId = foreignKey("fk_parent_action_id", parentActionId, actions)(_.id, onUpdate = Restrict, onDelete = Cascade)
     def fkTicketId = foreignKey("fk_action_ticket_id", ticketId, tickets)(_.id, onUpdate = Restrict, onDelete = Cascade)

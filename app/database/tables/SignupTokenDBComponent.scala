@@ -17,8 +17,8 @@ trait SignupTokenDBComponent extends DBComponent {
   val signupTokens = TableQuery[SignupTokensTable]
 
   class SignupTokensTable(tag: Tag) extends Table[SignupTokenEntity](tag, "tbl_signup_tokens") {
-    def token = column[String]("token", O.PrimaryKey)
-    def email = column[String]("email" )
+    def token = column[String]("token", O.PrimaryKey, O.SqlType("VARCHAR(255)"))
+    def email = column[String]("email", O.SqlType("VARCHAR(255)"))
     def createdAt = column[Timestamp]("created_at")
     def expiresAt = column[Timestamp]("valid_for")
     def usedAt = column[Option[Timestamp]]("used_at", O.Default(None))

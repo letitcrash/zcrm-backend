@@ -23,10 +23,10 @@ trait CompanyDBComponent extends DBComponent
 
   class CompanyTable(tag: Tag) extends Table[CompanyEntity](tag, "tbl_company") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
-    def name = column[String]("name")
+    def name = column[String]("name", O.SqlType("VARCHAR(255)"))
     def profileId = column[Int]("contact_profile_id")
-    def vatId = column[String]("vat_id")
-    def lastModified = column[Timestamp]("last_modified", O.Default(new Timestamp(currentTimeMillis())))
+    def vatId = column[String]("vat_id", O.SqlType("VARCHAR(255)"))
+    def lastModified = column[Timestamp]("last_modified")
 
     def contactProfile = foreignKey("fk_company_contact_profile", profileId, contactProfiles)(_.id,
       onUpdate = ForeignKeyAction.Restrict, onDelete = ForeignKeyAction.Cascade)

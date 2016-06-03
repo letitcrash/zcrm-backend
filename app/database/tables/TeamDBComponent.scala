@@ -13,7 +13,7 @@ case class TeamEntity(
   companyId: Int,
   name: String,
   description: Option[String] = None,
-  recordStatus: String = RowStatus.ACTIVE,
+  recordStatus: Int = RowStatus.ACTIVE,
   createdAt: Timestamp = new Timestamp(System.currentTimeMillis()),
   updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()))
 
@@ -35,11 +35,11 @@ trait TeamDBComponent extends DBComponent {
   class TeamTable(tag: Tag) extends Table[TeamEntity](tag, "tbl_team") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def companyId = column[Int]("company_id")
-    def name = column[String]("name")
-    def description = column[String]("description", Nullable)
-    def recordStatus = column[String]("record_status", O.Default(RowStatus.ACTIVE))
-    def createdAt = column[Timestamp]("created_at", O.Default(new Timestamp(System.currentTimeMillis())))
-    def updatedAt = column[Timestamp]("updated_at", O.Default(new Timestamp(System.currentTimeMillis())))
+    def name = column[String]("name", O.SqlType("VARCHAR(255)"))
+    def description = column[String]("description", Nullable, O.SqlType("VARCHAR(255)"))
+    def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
+    def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
+    def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp not null"))
 
     def fkCompanyId = foreignKey("fk_team_company", companyId, companies)(_.id, onUpdate = Restrict, onDelete = Cascade)
 

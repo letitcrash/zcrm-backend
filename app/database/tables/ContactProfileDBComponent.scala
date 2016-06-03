@@ -27,16 +27,16 @@ trait ContactProfileDBComponent extends DBComponent {
 
   class ContactProfileTable(tag: Tag) extends Table[ContactProfileEntity](tag, "tbl_contact") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
-    def firstname = column[String]("firstname", Nullable)
-    def lastname = column[String]("lastname", Nullable)
-    def email = column[String]("email", Nullable)
-    def address = column[String]("address", Nullable)
-    def city = column[String]("city", Nullable)
-    def zipCode = column[String]("zip_code", Nullable)
-    def phoneMobile = column[String]("phone_mobile", Nullable)
-    def phoneHome = column[String]("phone_home", Nullable)
-    def phoneWork = column[String]("phone_work", Nullable)
-    def lastModified = column[Timestamp]("last_modified", O.Default(new Timestamp(System.currentTimeMillis())))
+    def firstname = column[String]("firstname", Nullable, O.SqlType("VARCHAR(255)"))
+    def lastname = column[String]("lastname", Nullable, O.SqlType("VARCHAR(255)"))
+    def email = column[String]("email", Nullable, O.SqlType("VARCHAR(255)"))
+    def address = column[String]("address", Nullable, O.SqlType("VARCHAR(255)"))
+    def city = column[String]("city", Nullable, O.SqlType("VARCHAR(255)"))
+    def zipCode = column[String]("zip_code", Nullable, O.SqlType("VARCHAR(255)"))
+    def phoneMobile = column[String]("phone_mobile", Nullable, O.SqlType("VARCHAR(255)"))
+    def phoneHome = column[String]("phone_home", Nullable, O.SqlType("VARCHAR(255)"))
+    def phoneWork = column[String]("phone_work", Nullable, O.SqlType("VARCHAR(255)"))
+    def lastModified = column[Timestamp]("last_modified")
 
     override def * = (id.?, firstname.?, lastname.?, email.?, address.?, city.?,
       zipCode.?, phoneMobile.?, phoneHome.?, phoneWork.?, lastModified.?) <>

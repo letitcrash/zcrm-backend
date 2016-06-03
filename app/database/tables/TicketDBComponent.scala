@@ -19,7 +19,7 @@ case class TicketEntity(
   status: Int,
   subject: String,
   description: Option[String] = None,
-  recordStatus: String = RowStatus.ACTIVE,
+  recordStatus: Int = RowStatus.ACTIVE,
   createdAt: Timestamp = new Timestamp(System.currentTimeMillis()),
   updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()))
 
@@ -42,12 +42,12 @@ trait TicketDBComponent extends DBComponent {
     def assignedToUserId = column[Int]("assigned_to_user_id")
     def assignedToTeamId = column[Int]("assigned_to_team_id", Nullable)
     def commentId = column[Int]("comment_id", Nullable)
-    def status = column[Int]("status")
-    def subject = column[String]("subject")
+    def status = column[Int]("status", O.SqlType("VARCHAR(255)"))
+    def subject = column[String]("subject", O.SqlType("VARCHAR(255)"))
     def description = column[String]("description", Nullable)
-    def recordStatus = column[String]("record_status", O.Default(RowStatus.ACTIVE))
-    def createdAt = column[Timestamp]("created_at", O.Default(new Timestamp(System.currentTimeMillis())))
-    def updatedAt = column[Timestamp]("updated_at", O.Default(new Timestamp(System.currentTimeMillis())))
+    def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
+    def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
+    def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp not null"))
 
 
     def fkCompanyId = foreignKey("fk_ticket_company", companyId, companies)(_.id, onUpdate = Restrict, onDelete = Cascade)
