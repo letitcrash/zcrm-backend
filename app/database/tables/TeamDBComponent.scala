@@ -88,8 +88,16 @@ trait TeamDBComponent extends DBComponent {
 
   //CRUD TeamGroup 
   def insertTeamGroup(teamGroup: TeamGroupEntity): Future[TeamGroupEntity] = {
-      db.run((teamGroups returning teamGroups.map(_.teamId) into ((teamGroup,id) => teamGroup.copy(teamId=id))) += teamGroup)
+      //db.run((teamGroups returning teamGroups.map(_.teamId) into ((teamGroup,id) => teamGroup.copy(teamId=id))) += teamGroup)
+      db.run(teamGroups += teamGroup).map( res => teamGroup)
   }
+
+  //NOTE: pointless
+  /* 
+  def getTeamGroupByEntity(tg: TeamGroupEntity): Future[TeamGroupEntity] = {
+    db.run(teamGroups.filter(t => t.userId === tg.userId && t.teamId === tg.teamId).result.head) 
+  }
+  */
 
   def deleteTeamGroup(teamGroup: TeamGroupEntity): Future[TeamGroupEntity] = {
     db.run(teamGroups.filter( t => ( t.teamId === teamGroup.teamId &&
