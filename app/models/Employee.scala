@@ -11,5 +11,5 @@ case class Employee(
   teams: Option[List[Team]] = None,
   delegates: Option[List[Delegate]] = None, 
   flypass: Option[String] = None, 
-  paymentSystem: Option[Int] = None, 
+  salarySystem: Option[Int] = None, 
   employeeLevel: Int = UserLevels.USER)
