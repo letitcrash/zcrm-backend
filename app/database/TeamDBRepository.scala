@@ -49,13 +49,13 @@ object TeamDBRepository {
                              data = dbPage.data.map(_.asTeam))}
   }
 
-  def createTeamWithMembers(teamWithMembers: TeamWithMember, companyId: Int): Future[Team] ={
-    insertTeam(teamWithMembers.team.asTeamEntity(companyId)).flatMap(newTeam => 
+  def createTeamWithMembers(teamWithMembers: TeamWithMember, companyId: Int): Future[TeamWithMember] ={
+    insertTeam(teamWithMembers.asTeam.asTeamEntity(companyId)).flatMap(newTeam => 
        teamWithMembers.members.map( mbs => 
          insertTeamGroups( mbs.map( m =>
            m.asTeamGroupEntt(newTeam.id.get))).flatMap( list =>
-             Future(newTeam.asTeam))
-       ).getOrElse(Future(newTeam.asTeam)))
+             Future(teamWithMembers))
+       ).getOrElse(Future(teamWithMembers)))
   }
   
 
