@@ -36,7 +36,7 @@ trait MailboxDBComponent extends DBComponent {
     def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
     def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp not null"))
 
-    def fkUserId = foreignKey("fk_mailbox_user", userId, users)(_.id, onUpdate = Restrict, onDelete = Cascade ) 
+    def fkUserId = foreignKey("fk_mailbox_user", userId, users)(_.id)
 
     def * = (id.?, userId, server, login, password, recordStatus, createdAt, updatedAt) <> (MailboxEntity.tupled, MailboxEntity.unapply)
   }

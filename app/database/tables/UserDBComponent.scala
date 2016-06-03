@@ -40,7 +40,7 @@ trait UserDBComponent extends DBComponent {
     def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
     def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP"))
 
-    def fkContactProfile= foreignKey("fk_user_contact_profile", profileId, contactProfiles)(_.id, onUpdate = Restrict, onDelete = Cascade)
+    def fkContactProfile= foreignKey("fk_user_contact_profile", profileId, contactProfiles)(_.id)
     def idxUsername = index("username_uniq", username, unique = true)
 
     def * = (id.?, username, userLevel, profileId, recordStatus, updatedAt) <>

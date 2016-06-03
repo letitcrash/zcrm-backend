@@ -63,22 +63,22 @@ trait EmployeeDBComponent extends DBComponentWithSlickQueryOps{
 
 
     def fkEmployeeUser =
-      foreignKey("fk_employee_user", userId, users)(_.id, onUpdate = Restrict, onDelete = Cascade)
+      foreignKey("fk_employee_user", userId, users)(_.id)
 
     def fkEmployeeCompany =
-      foreignKey("fk_employee_company", companyId, companies)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
+      foreignKey("fk_employee_company", companyId, companies)(_.id)
 
     def fkEmployeePosition = 
-      foreignKey("fk_employee_position", positionId, positions)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
+      foreignKey("fk_employee_position", positionId, positions)(_.id)
 
     def fkEmployeeShift = 
-      foreignKey("fk_employee_shift", shiftId, shifts)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
+      foreignKey("fk_employee_shift", shiftId, shifts)(_.id)
 
     def fkEmployeeDepartment = 
-      foreignKey("fk_employee_department", departmentId, departments)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
+      foreignKey("fk_employee_department", departmentId, departments)(_.id)
 
     def fkEmployeeUnion = 
-      foreignKey("fk_employee_union", unionId, unions)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
+      foreignKey("fk_employee_union", unionId, unions)(_.id)
 
     override def * =
       ( id.?, companyId, userId, positionId.?, shiftId.?, departmentId.?, unionId.?,  flypass.?, paymentSystem.?, employeeLevel, recordStatus) <> (EmployeeEntity.tupled, EmployeeEntity.unapply)

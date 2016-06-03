@@ -47,7 +47,7 @@ trait ExchangeODSMailDBComponent extends DBComponent {
     def size = column[Int]("size")
     def received = column[Timestamp]("received")
 
-    def mailboxIdFk = foreignKey("fk_ods_mailbox_id", mailboxId, mailboxes)(_.id, onUpdate = Restrict, onDelete = Cascade)
+    def mailboxIdFk = foreignKey("fk_ods_mailbox_id", mailboxId, mailboxes)(_.id)
 
     def * = (id.?, mailboxId, extId, conversationExtId, sender, receivedBy, ccRecipients, bccRecipients,
              subject, body, importance, attachments, size, received) <> (ExchangeODSMailEntity.tupled, ExchangeODSMailEntity.unapply)

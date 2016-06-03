@@ -34,7 +34,7 @@ trait PositionDBComponent extends DBComponent{
     def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp not null"))
 
     def fkPositionCompany =
-      foreignKey("fk_position_company", companyId, companies)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
+      foreignKey("fk_position_company", companyId, companies)(_.id)
 
     override def * =
       ( id.?, companyId, name, recordStatus, createdAt.?, updatedAt.?) <> (PositionEntity.tupled, PositionEntity.unapply)

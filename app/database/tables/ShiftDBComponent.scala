@@ -32,7 +32,7 @@ trait ShiftDBComponent extends DBComponent {
     def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
     def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp not null"))
 
-    def fkCompanyId = foreignKey("fk_shift_company", companyId, companies)(_.id, onUpdate = Restrict, onDelete = Cascade)
+    def fkCompanyId = foreignKey("fk_shift_company", companyId, companies)(_.id)
 
     def * = (id.?, companyId, name, recordStatus, createdAt, updatedAt)<>(ShiftEntity.tupled, ShiftEntity.unapply)
   }

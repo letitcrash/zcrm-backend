@@ -40,9 +40,9 @@ trait TicketActionDBComponent extends DBComponent {
     def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
     def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp not null"))
 
-    def fkParentActionId = foreignKey("fk_parent_action_id", parentActionId, actions)(_.id, onUpdate = Restrict, onDelete = Cascade)
-    def fkTicketId = foreignKey("fk_action_ticket_id", ticketId, tickets)(_.id, onUpdate = Restrict, onDelete = Cascade)
-    def fkUserId = foreignKey("fk_action_user_id", userId, users)(_.id, onUpdate = Restrict, onDelete = Cascade)
+    def fkParentActionId = foreignKey("fk_parent_action_id", parentActionId, actions)(_.id)
+    def fkTicketId = foreignKey("fk_action_ticket_id", ticketId, tickets)(_.id)
+    def fkUserId = foreignKey("fk_action_user_id", userId, users)(_.id)
 
     def * = (id.?, parentActionId.?, ticketId, userId, actionType, name, comment.?, recordStatus, createdAt, updatedAt)<>(TicketActionEntity.tupled, TicketActionEntity.unapply)
   }

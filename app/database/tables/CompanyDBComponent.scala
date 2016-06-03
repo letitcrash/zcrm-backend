@@ -28,8 +28,7 @@ trait CompanyDBComponent extends DBComponent
     def vatId = column[String]("vat_id", O.SqlType("VARCHAR(255)"))
     def lastModified = column[Timestamp]("last_modified")
 
-    def contactProfile = foreignKey("fk_company_contact_profile", profileId, contactProfiles)(_.id,
-      onUpdate = ForeignKeyAction.Restrict, onDelete = ForeignKeyAction.Cascade)
+    def contactProfile = foreignKey("fk_company_contact_profile", profileId, contactProfiles)(_.id)
 
     override def * = (id.?, name, profileId, vatId, lastModified.?) <> (CompanyEntity.tupled, CompanyEntity.unapply)
   }

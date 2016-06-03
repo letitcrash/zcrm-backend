@@ -50,12 +50,12 @@ trait TicketDBComponent extends DBComponent {
     def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp not null"))
 
 
-    def fkCompanyId = foreignKey("fk_ticket_company", companyId, companies)(_.id, onUpdate = Restrict, onDelete = Cascade)
-    def fkCreatedByUserId = foreignKey("fk_ticket_created_by_user_id", createdByUserId, users)(_.id, onUpdate = Restrict, onDelete = Cascade)
-    def fkRequestedByUserId = foreignKey("fk_ticket_requested_by_user_id", requestedByUserId, users)(_.id, onUpdate = Restrict, onDelete = Cascade)
-    def fkAssignedToUserId = foreignKey("fk_ticket_assigned_to_user_id", assignedToUserId, users)(_.id, onUpdate = Restrict, onDelete = Cascade)
-    def fkAssignedToTeamId = foreignKey("fk_ticket_assigned_to_team_id", assignedToTeamId, teams)(_.id, onUpdate = Restrict, onDelete = Cascade)
-    def fkCommentId = foreignKey("fk_ticket_comment_id", commentId, actions)(_.id, onUpdate = Restrict, onDelete = Cascade)
+    def fkCompanyId = foreignKey("fk_ticket_company", companyId, companies)(_.id)
+    def fkCreatedByUserId = foreignKey("fk_ticket_created_by_user_id", createdByUserId, users)(_.id)
+    def fkRequestedByUserId = foreignKey("fk_ticket_requested_by_user_id", requestedByUserId, users)(_.id)
+    def fkAssignedToUserId = foreignKey("fk_ticket_assigned_to_user_id", assignedToUserId, users)(_.id)
+    def fkAssignedToTeamId = foreignKey("fk_ticket_assigned_to_team_id", assignedToTeamId, teams)(_.id)
+    def fkCommentId = foreignKey("fk_ticket_comment_id", commentId, actions)(_.id)
 
 
     def * = (id.?, companyId, createdByUserId, requestedByUserId, assignedToUserId, assignedToTeamId.?, commentId.?, status, subject,
