@@ -19,6 +19,8 @@ case class EmployeeEntity(
                            shiftId: Option[Int] = None, 
                            departmentId: Option[Int] = None, 
                            unionId: Option[Int] = None,
+                           flypass: Option[String] = None, 
+                           paymentSystem: Option[Int] = None, 
 
                            // The level the user has within a company, i.e admin or normal employee
                            // 1000 - 9999  = user level
@@ -53,7 +55,9 @@ trait EmployeeDBComponent extends DBComponentWithSlickQueryOps{
     def departmentId = column[Int]("department_id", Nullable)
     def unionId = column[Int]("union_id", Nullable)
    // def employeeType = column[String]("employee_type", Nullable)
-    def comment = column[String]("comment")
+    //def comment = column[String]("comment")
+    def flypass = column[String]("flypass", Nullable, O.SqlType("VARCHAR(255)"))
+    def paymentSystem = column[Int]("payment_system", Nullable)
     def employeeLevel = column[Int]("employee_level", O.Default(UserLevels.USER))
     def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
 
@@ -77,7 +81,8 @@ trait EmployeeDBComponent extends DBComponentWithSlickQueryOps{
       foreignKey("fk_employee_union", unionId, unions)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
 
     override def * =
-      ( id.?, companyId, userId, positionId.?, shiftId.?, departmentId.?, unionId.?,  employeeLevel, recordStatus) <> (EmployeeEntity.tupled, EmployeeEntity.unapply)
+      ( id.?, companyId, userId, positionId.?, shiftId.?, departmentId.?, unionId.?,  flypass.?, paymentSystem.?, employeeLevel, recordStatus) <> (EmployeeEntity.tupled, EmployeeEntity.unapply)
+
   }
 
   //JOINS 

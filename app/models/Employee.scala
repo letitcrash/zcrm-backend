@@ -10,4 +10,6 @@ case class Employee(
   union: Option[Union] = None, 
   teams: Option[List[Team]] = None,
   delegates: Option[List[Delegate]] = None, 
+  flypass: Option[String] = None, 
+  paymentSystem: Option[Int] = None, 
   employeeLevel: Int = UserLevels.USER)
