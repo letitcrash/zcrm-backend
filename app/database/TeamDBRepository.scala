@@ -28,8 +28,11 @@ object TeamDBRepository {
           .map(deleted => deleted.asTeam)
   }
 
-  def getTeamById(id: Int): Future[Team] = {
-    getTeamEntityById(id).map(team => team.asTeam)
+  def getTeamById(id: Int): Future[TeamWithMember] = {
+    //getTeamEntityById(id).map(team => team.asTeam)
+    getTeamEntityById(id).flatMap(team => 
+        getTeamEmployeesByTeamId(id).map( employees => 
+            (team, employees).asTeamWithMember))
   }
 
   def getTeamsByCompanyId(companyId: Int): Future[List[Team]] = {

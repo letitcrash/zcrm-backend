@@ -1,6 +1,6 @@
 package utils.converters
 
-import database.tables.{TeamEntity, TeamGroupEntity}
+import database.tables.{TeamEntity, TeamGroupEntity, EmployeeEntity, UserEntity, ContactProfileEntity}
 import models.{Team, TeamGroup, Employee, TeamWithMember}
 
 object TeamConverter {
@@ -62,6 +62,19 @@ object TeamConverter {
      id =  twm.id,
      name = twm.name,
      description = twm.description)
+  }
+
+  implicit class TeamEntityWithEmployeesToTeamWithMember(o: (TeamEntity, List[(TeamGroupEntity, (EmployeeEntity, (UserEntity, ContactProfileEntity)))])) {
+    import utils.converters.EmployeeConverter._
+
+    def asTeamWithMember: TeamWithMember = {
+      TeamWithMember(
+        id = o._1.id,
+        name = o._1.name, 
+        description = o._1.description,
+        members = Some(o._2.map( tup => tup._2.asEmployee))
+      )
+    }
   }
 
 }

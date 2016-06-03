@@ -25,6 +25,7 @@ case class TeamGroupEntity(
 trait TeamDBComponent extends DBComponent {
     this: DBComponent 
     with CompanyDBComponent
+    with EmployeeDBComponent
     with UserDBComponent => 
 
   import dbConfig.driver.api._
@@ -57,7 +58,8 @@ trait TeamDBComponent extends DBComponent {
   }
 
   def groupWithTeams = teamGroups join teams on ( _.teamId === _.id)
-
+  // (TeamGroupEntity, (EmployeeEntity, (UserEntity, ContactProfile)))
+  def teamWithEmployee = teamGroups join employeesWithUsersWihtProfile on ( _.userId === _._1.userId)
 
   def teamQry(companyId: Int) = {
     teams.filter(t =>(t.companyId === companyId && 
@@ -127,6 +129,10 @@ trait TeamDBComponent extends DBComponent {
 
   def getTeamEntitiesByUserId(userId: Int): Future[List[(TeamGroupEntity, TeamEntity)]] = {
     db.run(groupWithTeams.filter( _._1.userId === userId ).result).map(_.toList)
+  }
+
+  def getTeamEmployeesByTeamId(teamId: Int): Future[List[(TeamGroupEntity, (EmployeeEntity, (UserEntity, ContactProfileEntity)))]] = {
+    db.run(teamWithEmployee.filter( _._1.teamId === teamId ).result).map(_.toList)
   }
 
   def deleteTeamGroups(teamGroups: List[TeamGroupEntity]): Future[List[TeamGroupEntity]] = {
