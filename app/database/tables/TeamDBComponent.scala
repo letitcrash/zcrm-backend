@@ -40,7 +40,7 @@ trait TeamDBComponent extends DBComponent {
     def description = column[String]("description", Nullable, O.SqlType("VARCHAR(255)"))
     def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
     def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
-    def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp not null"))
+    def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
 
     def fkCompanyId = foreignKey("fk_team_company", companyId, companies)(_.id)
 
