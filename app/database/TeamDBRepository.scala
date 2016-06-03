@@ -1,6 +1,6 @@
 package database
 
-import models.Employee
+import models.{Employee, TeamWithMember}
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
@@ -47,6 +47,15 @@ object TeamDBRepository {
                              pageNr = dbPage.pageNr,
                              totalCount = dbPage.totalCount,
                              data = dbPage.data.map(_.asTeam))}
+  }
+
+  def createTeamWithMembers(teamWithMembers: TeamWithMember, companyId: Int): Future[Team] ={
+    insertTeam(teamWithMembers.team.asTeamEntity(companyId)).flatMap(newTeam => 
+       teamWithMembers.members.map( mbs => 
+         insertTeamGroups( mbs.map( m =>
+           m.asTeamGroupEntt(newTeam.id.get))).flatMap( list =>
+             Future(newTeam.asTeam))
+       ).getOrElse(Future(newTeam.asTeam)))
   }
   
 

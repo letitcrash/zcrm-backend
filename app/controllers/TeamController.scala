@@ -17,6 +17,12 @@ import scala.concurrent.Future
 class TeamController @Inject() extends CRMController {
   import utils.JSFormat.teamFrmt
   import utils.JSFormat.teamGroupFrmt
+  import utils.JSFormat.teamWithMembersFrmt
+
+
+  def newTeamWithMembers(companyId: Int) = CRMActionAsync[TeamWithMember](expectedTeamFormat) { rq => 
+    TeamDBRepository.createTeamWithMembers(rq.body, companyId).map( team => Json.toJson(team))
+  }
 
   //TODO: add permissions check
   def newTeam(companyId: Int) = CRMActionAsync[Team](expectedTeamFormat) { rq => 
@@ -24,6 +30,7 @@ class TeamController @Inject() extends CRMController {
        TeamDBRepository.createTeam(rq.body, companyId).map( team => Json.toJson(team))
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
+
 
 
   //TODO: add permissions check

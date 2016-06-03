@@ -58,7 +58,7 @@ GET     /companies/:companyId/unions                                            
 GET      /companies/:companyId/unions/:unionId                                               controllers.UnionController.getUnion(companyId: Int, unionId: Int) 
 
 #Team 
-POST     /companies/:companyId/teams                                                         controllers.TeamController.newTeam(companyId: Int)
+POST     /companies/:companyId/teams                                                         controllers.TeamController.newTeamWithMembers(companyId: Int)
 POST     /companies/:companyId/teams/:teamId/users/:userId                                   controllers.TeamController.addUserToTeam(companyId: Int, teamId: Int, userId: Int)
 PUT      /companies/:companyId/teams/:teamId                                                 controllers.TeamController.updateTeam(companyId: Int, teamId: Int) 
 DELETE   /companies/:companyId/teams/:teamId                                                 controllers.TeamController.deleteTeamById(companyId: Int, teamId: Int) 
