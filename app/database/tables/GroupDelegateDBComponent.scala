@@ -39,8 +39,9 @@ trait GroupDelegateDBComponent extends DBComponent
 
   //CRUD
   def insertGroupDelegate(entity: GroupDelegateEntity): Future[GroupDelegateEntity] = {
-    db.run((groupDelegates returning groupDelegates.map(_.delegateId) into ((gd, id) => gd.copy(delegateId = Some(id))))
-      += entity)
+    //db.run((groupDelegates returning groupDelegates.map(_.delegateId) into ((gd, id) => gd.copy(delegateId = Some(id)))) += entity)
+    db.run(groupDelegates += entity).map( res => entity)
+
   }
 
   //TODO: pointless 
