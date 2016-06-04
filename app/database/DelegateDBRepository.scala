@@ -34,8 +34,11 @@ object DelegateDBRepository {
   }
 
 
-  def addDelegateGroup(group: DelegateGroup): Future[DelegateGroup] = {
-    insertGroupDelegate(group.asGroupEntity).map( group => group.asDelegateGroup)
+  def addDelegateGroup(group: DelegateGroup): Future[Delegate] = {
+    insertGroupDelegate(group.asGroupEntity).flatMap( group => 
+        getDelegateEntityById(group.delegateId.get).map( delegateEntt =>
+            (group, delegateEntt).asDelegate))
+        
   }
 
   def searchDelegateByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String]): Future[PagedResult[Delegate]] = {
