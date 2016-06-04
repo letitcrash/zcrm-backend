@@ -31,6 +31,8 @@ object EmployeeConverter {
         union = unionTup.map(_.asUnion),
         teams = Some(teamEntts.map(_.asTeam)),
         delegates = Some(delegateEnnts.map(_.asDelegate)),
+        flypass = employeeTup.flypass,
+        salarySystem =  employeeTup.salarySystem,
         employeeLevel = employeeTup.employeeLevel
       )
     }
@@ -59,6 +61,8 @@ object EmployeeConverter {
         shiftId = o.shift match { case Some(s) => s.id; case _ => None}, 
         departmentId = o.department match { case Some(d) => d.id; case _ => None},
         unionId = o.union match { case Some(u) => u.id; case _ => None},
+        flypass = o.flypass,
+        salarySystem =  o.salarySystem,
         employeeLevel = o.employeeLevel)
     }
 
@@ -71,6 +75,8 @@ object EmployeeConverter {
         shiftId = o.shift match { case Some(s) => s.id; case _ => None}, 
         departmentId = o.department match { case Some(d) => d.id; case _ => None},
         unionId = o.union match { case Some(u) => u.id; case _ => None},
+        flypass = o.flypass,
+        salarySystem =  o.salarySystem,
         employeeLevel = o.employeeLevel)
     }
   }
