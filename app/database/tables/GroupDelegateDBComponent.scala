@@ -22,7 +22,7 @@ trait GroupDelegateDBComponent extends DBComponent
   val groupDelegates = TableQuery[GroupDelegateTable]
 
   class GroupDelegateTable(tag: Tag) extends Table[GroupDelegateEntity](tag, "tbl_group_delegate") {
-    def delegateId = column[Int]("delegate_id", O.PrimaryKey, O.AutoInc)
+    def delegateId = column[Int]("delegate_id")
     def userId = column[Int]("user_id")
     def delegateStartDate = column[Timestamp]("delegate_start_date", Nullable)
     def delegateEndDate = column[Timestamp]("delegate_end_date", Nullable)
