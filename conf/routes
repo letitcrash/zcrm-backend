@@ -115,7 +115,7 @@ PUT    /companies/:companyId/tickets/:ticketId                                  
 DELETE /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.deleteTicketById(companyId: Int, ticketId:Int) 
 GET    /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.getTicket(companyId: Int, ticketId: Int)
 GET    /companies/:companyId/tickets                                                         controllers.TicketController.searchAllTicketsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
-
+GET    /companies/:companyId/tickets/:ticketId/comments                                      controllers.TicketController.getAllActionWithPagination(companyId: Int, ticketId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 
 #File
 POST   /users/:userId/files                                                                  controllers.FileController.uploadFile(userId: Int)

@@ -2,7 +2,7 @@ package database
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
-import models.TicketAction
+import models.{TicketAction, PagedResult}
 import play.api.Logger
 import utils.converters.ActionConverter._
 
@@ -38,5 +38,12 @@ object TicketActionDBRepository {
     getActionEntitiesByUserId(userId).map(list => list.map(_.asAction))
   }
 
+  def getActionWithPagination(ticketId: Int, pageSize: Int, pageNr: Int): Future[PagedResult[TicketAction]] = {
+    getActionEntitiesWithPagination(ticketId, pageSize, pageNr).map{dbPage =>
+        PagedResult[TicketAction](pageSize = dbPage.pageSize,
+                                  pageNr = dbPage.pageNr,
+                                  totalCount = dbPage.totalCount,
+                                  data = dbPage.data.map(_.asAction))}
+  }
 
 }

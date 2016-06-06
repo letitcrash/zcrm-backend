@@ -66,5 +66,14 @@ class TicketController @Inject() extends CRMController {
       TicketDBRepository.searchTicketByName(companyId, psize, pnr, searchTerm).map(page => Json.toJson(page))
     } else { TicketDBRepository.getTicketsByCompanyId(companyId).map( tickets => Json.toJson(tickets)) }
   }
+
+  def getAllActionWithPagination(companyId: Int, ticketId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String]) = CRMActionAsync{rq =>
+    import utils.JSFormat._
+    if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
+      val psize = pageSize.getOrElse(10)
+      val pnr = pageNr.getOrElse(1)
+      TicketActionDBRepository.getActionWithPagination(ticketId, psize, pnr).map(page => Json.toJson(page))
+    } else { TicketActionDBRepository.getActionsByTicketId(ticketId).map( tickets => Json.toJson(tickets)) }
+  }
  
 }

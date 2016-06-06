@@ -6,6 +6,7 @@ import slick.model.ForeignKeyAction._
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.profile.SqlProfile.ColumnOption.Nullable
+import database.PagedDBResult
 
 case class TicketActionEntity(
   id: Option[Int] = None,
@@ -45,6 +46,12 @@ trait TicketActionDBComponent extends DBComponent {
     def * = (id.?, parentActionId.?, ticketId, userId, actionType, comment.?, recordStatus, createdAt, updatedAt)<>(TicketActionEntity.tupled, TicketActionEntity.unapply)
   }
 
+  def actionQry(ticketId: Int) = {
+    actions.filter(a =>(a.ticketId === ticketId && 
+                        a.recordStatus === RowStatus.ACTIVE))
+  }
+
+
   //CRUD ActionEntity
   def insertAction(action: TicketActionEntity): Future[TicketActionEntity] = {
       db.run((actions returning actions.map(_.id) into ((action,id) => action.copy(id=Some(id)))) += action)
@@ -77,6 +84,24 @@ trait TicketActionDBComponent extends DBComponent {
   def getActionEntitiesByUserId(userId: Int): Future[List[TicketActionEntity]] = {
     db.run(actions.filter(a => (a.userId === userId &&
                                          a.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
+  }
+
+  def getActionEntitiesWithPagination(ticketId: Int, pageSize: Int, pageNr: Int): Future[PagedDBResult[TicketActionEntity]] = {
+    val baseQry = actionQry(ticketId)    
+    val pageRes = baseQry
+      .sortBy(_.id.asc)
+      .drop(pageSize * (pageNr - 1))
+      .take(pageSize)
+
+    db.run(pageRes.result).flatMap( actionList => 
+        db.run(baseQry.length.result).map( totalCount => 
+         PagedDBResult(
+            pageSize = pageSize,
+            pageNr = pageNr,
+            totalCount = totalCount,
+            data = actionList)
+          )
+        )
   }
 }
 
