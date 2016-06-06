@@ -8,7 +8,7 @@ import models._
 import utils.ExpectedFormat._
 import controllers.session.InsufficientRightsException
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import database.TicketDBRepository 
+import database.{TicketDBRepository, TicketActionDBRepository}
 import play.api.libs.json.Json
 import scala.util.{Failure, Success, Try}
 import scala.concurrent.Future
@@ -16,6 +16,7 @@ import scala.concurrent.Future
 @Singleton
 class TicketController @Inject() extends CRMController {
   import utils.JSFormat.ticketFrmt
+  import utils.JSFormat.ticketActionFrmt
 
   //TODO: add permissions check
   def newTicket(companyId: Int) = CRMActionAsync[Ticket](expectedTicketFormat) { rq => 
@@ -24,6 +25,12 @@ class TicketController @Inject() extends CRMController {
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
+  //TODO: add permissions check
+  def addCommentToTicket(companyId: Int, ticketId: Int) = CRMActionAsync[TicketAction](expectedTicketActionFormat){ rq =>
+    // if(rq.header.belongsToCompany(companyId)){
+      TicketActionDBRepository.createAction(rq.body.copy(ticketId = ticketId, actionType = ActionType.COMMENT), companyId).map(ticketAction => Json.toJson(ticketAction))
+    // }else{ Future{Failure(new InsufficientRightsException())} }
+  }
 
   //TODO: add permissions check
   def updateTicket(companyId: Int, ticketId: Int) = CRMActionAsync[Ticket](expectedTicketFormat){ rq =>

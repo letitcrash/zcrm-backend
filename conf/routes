@@ -109,7 +109,7 @@ GET    /users/:userId/mailboxes/:mailboxId/mails/:mailId                        
 
 #Tickets
 POST   /companies/:companyId/tickets                                                         controllers.TicketController.newTicket(companyId: Int)
-#POST   /companies/:companyId/tickets/:taskId/mail                                            controllers.TicketController.attachMailToTask(companyId: Int, taskId: Int)
+POST   /companies/:companyId/tickets/:ticketId/comments                                      controllers.TicketController.addCommentToTicket(companyId: Int, ticketId: Int)
 PUT    /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.updateTicket(companyId: Int, ticketId: Int)
 #DELETE /companies/:companyId/tickets/:taskId/mail                                            controllers.TicketController.removeAttachedMailFromTask(companyId: Int, taskId: Int)
 DELETE /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.deleteTicketById(companyId: Int, ticketId:Int) 

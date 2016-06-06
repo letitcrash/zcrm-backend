@@ -119,20 +119,13 @@ object ExpectedFormat {
     "description"     -> Json.toJson("[O](string) Description")    
   ))
 
-  val expectedExchangeMailFormat = Json.toJson(ListMap(
-    "extId" -> Json.toJson("[M](string) Exchange UniqueID"),
-    "conversationExtId" -> Json.toJson("[M](string) Exchange Conversation ID"),
-    "mailboxId" -> Json.toJson("[M](int) Mailbox ID"),
-    "sender" -> Json.toJson("[M](string) Sender"),
-    "receivedBy" -> Json.toJson("[M](string) Received by"),
-    "ccRecipients" -> Json.toJson("[O](string) Copies divided by , "),
-    "bccRecipients" -> Json.toJson("[O](string) Blind carbon copies divided by , "),
-    "subject" -> Json.toJson("[M](string) Mail subject"),
-    "body" -> Json.toJson("[M](string) Mail body"),
-    "importance" -> Json.toJson("[O](string) Importance"),
-    "attachments" -> Json.toJson("[O](string) Attachments"),
-    "size" -> Json.toJson("[O](int) Mail size"),
-     "received" -> Json.toJson("[M](timestamp) Mail received at")
+  def expectedTicketActionFormat = Json.toJson(ListMap(
+    "id"              -> Json.toJson("[O](int) ID"),
+    "parentActionId"  -> Json.toJson("[O](int) Parent Action ID"),
+    "ticketId"        -> Json.toJson("[M](int) Assigned to ticket"),
+    "userId"          -> Json.toJson("[M](int) Created by user ID"),
+    "actionType"      -> Json.toJson("[M](int) 0 - Comment, 1 - Mail, 2 - File"),
+    "comment"         -> Json.toJson("[O](string) Comment")
   ))
 
   val expectedMailboxFormat = Json.toJson(ListMap(
