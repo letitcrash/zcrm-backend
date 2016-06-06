@@ -17,7 +17,7 @@ object ActionConverter {
   }
 
   implicit class ActionToEntity(a: TicketAction){
-      def asActionEntity(companyId: Int): TicketActionEntity = {
+      def asActionEntity(): TicketActionEntity = {
               TicketActionEntity(id = a.id,
                 parentActionId = a.parentActionId,
                 ticketId = a.ticketId,

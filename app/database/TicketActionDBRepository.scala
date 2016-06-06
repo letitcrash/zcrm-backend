@@ -12,12 +12,12 @@ object TicketActionDBRepository {
   import database.gen.current.dao._
 
   def createAction(action: TicketAction, companyId: Int): Future[TicketAction] = {
-    insertAction(action.asActionEntity(companyId))
+    insertAction(action.asActionEntity)
           .map(inserted => inserted.asAction)
   }
 
-  def updateAction(action: TicketAction, companyId: Int): Future[TicketAction] = {
-    updateActionEntity(action.asActionEntity(companyId))
+  def updateAction(action: TicketAction): Future[TicketAction] = {
+    updateActionEntity(action.asActionEntity)
           .map(updated => updated.asAction)
   }
 

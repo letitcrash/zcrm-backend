@@ -29,7 +29,7 @@ trait TicketActionDBComponent extends DBComponent {
 
   class ActionTable(tag: Tag) extends Table[TicketActionEntity](tag, "tbl_action") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
-    def parentActionId = column[Int]("company_id", Nullable)
+    def parentActionId = column[Int]("parent_action_id", Nullable)
     def ticketId = column[Int]("ticket_id")
     def userId = column[Int]("user_id")
     def actionType = column[Int]("action_type")
