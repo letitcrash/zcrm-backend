@@ -12,10 +12,10 @@ case class TicketEntity(
   id: Option[Int] = None,
   companyId: Int,
   createdByUserId: Int,
-  requestedByUserId: Int,
-  assignedToUserId: Int,
+  requestedByUserId: Option[Int] = None,
+  //requestedByEmail: Option[String] = None,
+  assignedToUserId: Option[Int] = None,
   assignedToTeamId: Option[Int] = None,
-  commentId: Option[Int] = None,
   status: Int,
   subject: String,
   description: Option[String] = None,
@@ -38,11 +38,10 @@ trait TicketDBComponent extends DBComponent {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def companyId = column[Int]("company_id")
     def createdByUserId = column[Int]("created_by_user_id")
-    def requestedByUserId = column[Int]("requested_by_user_id")
-    def assignedToUserId = column[Int]("assigned_to_user_id")
+    def requestedByUserId = column[Int]("requested_by_user_id", Nullable)
+    def assignedToUserId = column[Int]("assigned_to_user_id", Nullable)
     def assignedToTeamId = column[Int]("assigned_to_team_id", Nullable)
-    def commentId = column[Int]("comment_id", Nullable)
-    def status = column[Int]("status", O.SqlType("VARCHAR(255)"))
+    def status = column[Int]("status", O.Default(0))  //TODO Move to model
     def subject = column[String]("subject", O.SqlType("VARCHAR(255)"))
     def description = column[String]("description", Nullable)
     def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
@@ -55,10 +54,9 @@ trait TicketDBComponent extends DBComponent {
     def fkRequestedByUserId = foreignKey("fk_ticket_requested_by_user_id", requestedByUserId, users)(_.id)
     def fkAssignedToUserId = foreignKey("fk_ticket_assigned_to_user_id", assignedToUserId, users)(_.id)
     def fkAssignedToTeamId = foreignKey("fk_ticket_assigned_to_team_id", assignedToTeamId, teams)(_.id)
-    def fkCommentId = foreignKey("fk_ticket_comment_id", commentId, actions)(_.id)
 
 
-    def * = (id.?, companyId, createdByUserId, requestedByUserId, assignedToUserId, assignedToTeamId.?, commentId.?, status, subject,
+    def * = (id.?, companyId, createdByUserId, requestedByUserId.?, assignedToUserId.?, assignedToTeamId.?, status, subject,
              description.?, recordStatus, createdAt, updatedAt)<>(TicketEntity.tupled, TicketEntity.unapply)
 
   }

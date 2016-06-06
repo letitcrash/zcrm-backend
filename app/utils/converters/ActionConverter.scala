@@ -12,7 +12,6 @@ object ActionConverter {
                 ticketId = a.ticketId,
                 userId = a.userId,
                 actionType = a.actionType,
-                name = a.name,
                 comment = a.comment)
       }
   }
@@ -24,7 +23,6 @@ object ActionConverter {
                 ticketId = a.ticketId,
                 userId = a.userId,
                 actionType = a.actionType,
-                name = a.name,
                 comment = a.comment)
       }
   }

@@ -13,7 +13,6 @@ case class TicketActionEntity(
   ticketId: Int,
   userId: Int,
   actionType: Int,
-  name: String,
   comment: Option[String] = None,
   recordStatus: Int = RowStatus.ACTIVE,
   createdAt: Timestamp = new Timestamp(System.currentTimeMillis()),
@@ -34,7 +33,6 @@ trait TicketActionDBComponent extends DBComponent {
     def ticketId = column[Int]("ticket_id")
     def userId = column[Int]("user_id")
     def actionType = column[Int]("action_type")
-    def name = column[String]("name", O.SqlType("VARCHAR(255)"))
     def comment = column[String]("comment", Nullable)
     def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
     def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
@@ -44,7 +42,7 @@ trait TicketActionDBComponent extends DBComponent {
     def fkTicketId = foreignKey("fk_action_ticket_id", ticketId, tickets)(_.id)
     def fkUserId = foreignKey("fk_action_user_id", userId, users)(_.id)
 
-    def * = (id.?, parentActionId.?, ticketId, userId, actionType, name, comment.?, recordStatus, createdAt, updatedAt)<>(TicketActionEntity.tupled, TicketActionEntity.unapply)
+    def * = (id.?, parentActionId.?, ticketId, userId, actionType, comment.?, recordStatus, createdAt, updatedAt)<>(TicketActionEntity.tupled, TicketActionEntity.unapply)
   }
 
   //CRUD ActionEntity

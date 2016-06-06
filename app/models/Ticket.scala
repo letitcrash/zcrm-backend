@@ -3,10 +3,10 @@ package models
 case class Ticket(id: Option[String] = None,
                   companyId: Int,
                   createdByUserId: Int,
-                  requestedByUserId: Int,
-                  assignedToUserId: Int,
+                  requestedByUserId: Option[Int] = None,
+                  requestedByEmail: Option[String] = None,
+                  assignedToUserId: Option[Int] = None,
                   assignedToTeamId: Option[Int] = None,
-                  commentId: Option[Int] = None,
                   status: Int,
                   subject: String,
                   description: Option[String] = None)
