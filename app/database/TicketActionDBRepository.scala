@@ -30,16 +30,16 @@ object TicketActionDBRepository {
     getActionEntityById(id).map(action => action.asAction)
   }
 
-  def getActionsByTicketId(ticketId: Int): Future[List[TicketAction]] = {
-    getActionEntitiesByTicketId(ticketId).map(list => list.map(_.asAction))
+  def getActionsByTicketId(ticketId: Int, actionTypes: List[Int]): Future[List[TicketAction]] = {
+    getActionEntitiesByTicketId(ticketId, actionTypes).map(list => list.map(_.asAction))
   }
 
   def getActionsByUserId(userId: Int): Future[List[TicketAction]] = {
     getActionEntitiesByUserId(userId).map(list => list.map(_.asAction))
   }
 
-  def getActionWithPagination(ticketId: Int, pageSize: Int, pageNr: Int): Future[PagedResult[TicketAction]] = {
-    getActionEntitiesWithPagination(ticketId, pageSize, pageNr).map{dbPage =>
+  def getActionWithPagination(ticketId: Int, actionTypes: List[Int], pageSize: Int, pageNr: Int): Future[PagedResult[TicketAction]] = {
+    getActionEntitiesWithPagination(ticketId, actionTypes, pageSize, pageNr).map{dbPage =>
         PagedResult[TicketAction](pageSize = dbPage.pageSize,
                                   pageNr = dbPage.pageNr,
                                   totalCount = dbPage.totalCount,

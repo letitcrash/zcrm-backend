@@ -7,6 +7,7 @@ import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.profile.SqlProfile.ColumnOption.Nullable
 import database.PagedDBResult
+import utils.DBComponentWithSlickQueryOps
 
 case class TicketActionEntity(
   id: Option[Int] = None,
@@ -19,7 +20,7 @@ case class TicketActionEntity(
   createdAt: Timestamp = new Timestamp(System.currentTimeMillis()),
   updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()))
 
-trait TicketActionDBComponent extends DBComponent {
+trait TicketActionDBComponent extends DBComponentWithSlickQueryOps {
     this: DBComponent
     with UserDBComponent
     with TicketDBComponent =>
@@ -46,9 +47,9 @@ trait TicketActionDBComponent extends DBComponent {
     def * = (id.?, parentActionId.?, ticketId, userId, actionType, comment.?, recordStatus, createdAt, updatedAt)<>(TicketActionEntity.tupled, TicketActionEntity.unapply)
   }
 
-  def actionQry(ticketId: Int) = {
-    actions.filter(a =>(a.ticketId === ticketId && 
-                        a.recordStatus === RowStatus.ACTIVE))
+  def actionQry(ticketId: Int, actionTypes: List[Int]) = {
+    actions.filter(a => (a.ticketId === ticketId && a.recordStatus === RowStatus.ACTIVE) )
+           .filteredBy( actionTypes match { case List() => None; case list => Some(list) } )(_.actionType inSet _)
   }
 
 
@@ -76,9 +77,10 @@ trait TicketActionDBComponent extends DBComponent {
   }
 
   //FILTERS
-  def getActionEntitiesByTicketId(ticketId: Int): Future[List[TicketActionEntity]] = {
+  def getActionEntitiesByTicketId(ticketId: Int, actionTypes: List[Int]): Future[List[TicketActionEntity]] = {
     db.run(actions.filter(a => (a.ticketId === ticketId &&
-                                                   a.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
+                                a.recordStatus === RowStatus.ACTIVE))
+                  .filteredBy( actionTypes match { case List() => None; case list => Some(list) } )(_.actionType inSet _).result).map(_.toList)
   }
 
   def getActionEntitiesByUserId(userId: Int): Future[List[TicketActionEntity]] = {
@@ -86,8 +88,8 @@ trait TicketActionDBComponent extends DBComponent {
                                          a.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
   }
 
-  def getActionEntitiesWithPagination(ticketId: Int, pageSize: Int, pageNr: Int): Future[PagedDBResult[TicketActionEntity]] = {
-    val baseQry = actionQry(ticketId)    
+  def getActionEntitiesWithPagination(ticketId: Int, actionTypes: List[Int], pageSize: Int, pageNr: Int): Future[PagedDBResult[TicketActionEntity]] = {
+    val baseQry = actionQry(ticketId, actionTypes)    
     val pageRes = baseQry
       .sortBy(_.id.asc)
       .drop(pageSize * (pageNr - 1))
