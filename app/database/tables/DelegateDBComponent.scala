@@ -26,7 +26,7 @@ trait DelegateDBComponent extends DBComponent
     def companyId = column[Int]("company_id")
     def name = column[String]("name", O.SqlType("VARCHAR(255)"))
     def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
-    def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
+    def updatedAt = column[Timestamp]("updated_at")
 
     def fkCompany = foreignKey("fk_delegate_company", companyId, companies)(_.id)
 

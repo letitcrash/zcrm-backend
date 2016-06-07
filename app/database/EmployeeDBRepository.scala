@@ -123,6 +123,10 @@ object EmployeeDBRepository {
 
   }
 
+  def searchEmployeesForTypeahead(companyId: Int, searchTerm: Option[String] = None): Future[List[Employee]] = {
+    searchEmployeesWithUserWithContactProfileForTypeahead(companyId, searchTerm).map(entitiesList => entitiesList.map(_.asEmployee))
+  }
+
   def getEmployeeByEmployeeId(employeeId: Int): Future[Employee] = {
     getEmployeeWithUserById(employeeId).map(empl => empl.asEmployee)
   }

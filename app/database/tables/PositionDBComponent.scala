@@ -31,7 +31,7 @@ trait PositionDBComponent extends DBComponent{
     //def comment = column[String]("comment")
     def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
     def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
-    def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
+    def updatedAt = column[Timestamp]("updated_at")
 
     def fkPositionCompany =
       foreignKey("fk_position_company", companyId, companies)(_.id)

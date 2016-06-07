@@ -221,6 +221,19 @@ trait EmployeeDBComponent extends DBComponentWithSlickQueryOps{
         )
   }
 
+  def searchEmployeesWithUserWithContactProfileForTypeahead(companyId: Int, searchTerm: Option[String] = None): Future[List[(EmployeeEntity,  (UserEntity, ContactProfileEntity))]] = {
+    def qry(cmpId: Int) = employeesWithUsersWihtProfile.filter(t =>(t._1.companyId === cmpId && 
+                                                                    t._1.recordStatus === RowStatus.ACTIVE))
+    val baseQry = searchTerm.map { st =>
+        val s = "%" + st + "%"
+        qry(companyId).filter{t => t._2._2.firstname.like(s) || 
+                                   t._2._2.lastname.like(s) ||
+                                   t._2._2.email.like(s)}
+        .sortBy(_._1.id.asc)
+      }.getOrElse(qry(companyId).sortBy(_._1.id.asc))  
+    db.run(baseQry.result).map(_.toList)
+  }
+
   def getEmployeeWithUserById(employeeId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
     db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.id === employeeId && 
                                                      t._1.recordStatus === RowStatus.ACTIVE)).result.head)

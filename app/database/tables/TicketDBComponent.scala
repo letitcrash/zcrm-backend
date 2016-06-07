@@ -46,7 +46,7 @@ trait TicketDBComponent extends DBComponent {
     def description = column[String]("description", Nullable)
     def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
     def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
-    def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
+    def updatedAt = column[Timestamp]("updated_at")
 
 
     def fkCompanyId = foreignKey("fk_ticket_company", companyId, companies)(_.id)
@@ -62,9 +62,7 @@ trait TicketDBComponent extends DBComponent {
   }
 
   def ticketQry(companyId: Int) = {
-
     tickets.filter(t =>(t.companyId === companyId && 
-
                         t.recordStatus === RowStatus.ACTIVE))
   }
 

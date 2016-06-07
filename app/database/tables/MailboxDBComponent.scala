@@ -34,7 +34,7 @@ trait MailboxDBComponent extends DBComponent {
     def password = column[String]("password", O.SqlType("VARCHAR(255)"))
     def recordStatus = column[Int]("record_status",O.Default(RowStatus.ACTIVE))
     def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
-    def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
+    def updatedAt = column[Timestamp]("updated_at")
 
     def fkUserId = foreignKey("fk_mailbox_user", userId, users)(_.id)
 
