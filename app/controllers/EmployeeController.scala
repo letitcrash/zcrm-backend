@@ -96,9 +96,6 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
                                     ) = CRMActionAsync{rq =>
 
     import utils.JSFormat._
-    //For typeahead
-    if(pageNr.isEmpty && pageSize.isEmpty){EmployeeDBRepository.searchEmployeesForTypeahead(companyId, searchTerm).map(list => Json.toJson(list))}
-    
     if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
       val psize = pageSize.getOrElse(10)
       val pnr = pageNr.getOrElse(1)
@@ -126,6 +123,10 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
                                            totalCount = list.length,
                                            data = list)))
     }
+  }
+
+  def searchForTypeahead(companyId: Int, searchTerm: Option[String] = None) = CRMActionAsync{rq =>
+    EmployeeDBRepository.searchEmployeesForTypeahead(companyId, searchTerm).map(list => Json.toJson(list))
   }
 
   def updateEmployeePositionById(companyId: Int,  employeeId: Int, positionId: Int) = CRMActionAsync{rq =>
