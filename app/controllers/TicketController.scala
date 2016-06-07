@@ -8,7 +8,7 @@ import models._
 import utils.ExpectedFormat._
 import controllers.session.InsufficientRightsException
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import database.{TicketDBRepository, TicketActionDBRepository}
+import database.{TicketDBRepository, TicketActionDBRepository,ExchangeODSMailDBRepository,ExchangeSavedMailDBRepository,TicketAttachedMailDBRepository}
 import play.api.libs.json.Json
 import scala.util.{Failure, Success, Try}
 import scala.concurrent.Future
@@ -29,6 +29,21 @@ class TicketController @Inject() extends CRMController {
   def addCommentToTicket(companyId: Int, ticketId: Int) = CRMActionAsync[TicketAction](expectedTicketActionFormat){ rq =>
     // if(rq.header.belongsToCompany(companyId)){
       TicketActionDBRepository.createAction(rq.body.copy(ticketId = ticketId, actionType = ActionType.COMMENT), companyId).map(ticketAction => Json.toJson(ticketAction))
+    // }else{ Future{Failure(new InsufficientRightsException())} }
+  }
+
+  //TODO: add permissions check
+  def attachMailToTicket(companyId: Int, ticketId: Int, mailId: Int) = CRMActionAsync{ rq =>
+    // if(rq.header.belongsToCompany(companyId)){
+    import utils.JSFormat.exchangeMailFrmt
+    for{
+          userId       <- ExchangeODSMailDBRepository.getUserIdByODSMailId(mailId)
+          odsMail      <- ExchangeODSMailDBRepository.getODSMailById(mailId)
+          mail         <- ExchangeSavedMailDBRepository.insertSavedMail(odsMail)
+          action       <- TicketActionDBRepository.createAction(TicketAction(ticketId = ticketId, userId = userId, actionType = ActionType.MAIL), companyId)
+          attachedMail <- TicketAttachedMailDBRepository.createAttchedMailAction(ActionAttachedMail(actionId = action.id.get, mailId = mail.id.get )) 
+      } yield Json.toJson(mail)    
+     
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 

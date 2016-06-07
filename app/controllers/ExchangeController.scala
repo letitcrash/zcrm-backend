@@ -15,14 +15,14 @@ class ExchangeController extends CRMController {
 
   def getMailsForMailbox(userId: Int, mailboxId: Int) = CRMActionAsync{rq =>
     // if(rq.header.belongsToCompany(companyId)){
-    ExchangeODSMailDBRepository.getMailsByMailboxId(mailboxId).map(mails => Json.toJson(mails))
+    ExchangeODSMailDBRepository.getODSMailsByMailboxId(mailboxId).map(mails => Json.toJson(mails))
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
 
   def getMail(userId: Int, mailboxId: Int, mailId: Int)  = CRMActionAsync { rq =>
     // if(rq.header.belongsToCompany(companyId)){
-    ExchangeODSMailDBRepository.getMailById(mailId).map(mail => Json.toJson(mail))
+    ExchangeODSMailDBRepository.getODSMailById(mailId).map(mail => Json.toJson(mail))
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 }

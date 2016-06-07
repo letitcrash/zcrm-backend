@@ -24,6 +24,10 @@ object MailboxDBRepository {
     getMailboxEntitiesByUserId(userId).map(list => list.map(_.asMailbox))
   }
 
+  def getUserIdByMailboxId(mailboxId: Int): Future[Int] = {
+    getMailboxEntityById(mailboxId).map(res => res.userId)
+  }
+
   def updateMailbox(mailBox: Mailbox): Future[Mailbox] = {
     updateMailboxEntity(mailBox.asMailboxEntity).map(res => res.asMailbox)
   }
