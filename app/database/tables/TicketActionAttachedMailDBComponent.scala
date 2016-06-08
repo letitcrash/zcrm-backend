@@ -27,7 +27,7 @@ trait TicketActionAttachedMailDBComponent extends DBComponent {
     def mailId = column[Int]("mail_id")
 
     def fkActionId = foreignKey("fk_attached_mail_action_id", actionId, actions)(_.id)
-    def fkMaiktId = foreignKey("fk_attached_mail_saved_mail_id", mailId, saved_mails)(_.id)
+    def fkMailtId = foreignKey("fk_attached_mail_saved_mail_id", mailId, saved_mails)(_.id)
 
     def * = (id.?, actionId, mailId) <> (TicketActionAttachedMailEntity.tupled, TicketActionAttachedMailEntity.unapply)
   }

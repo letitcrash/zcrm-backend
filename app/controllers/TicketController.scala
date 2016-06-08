@@ -8,7 +8,7 @@ import models._
 import utils.ExpectedFormat._
 import controllers.session.InsufficientRightsException
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import database.{TicketDBRepository, TicketActionDBRepository,ExchangeODSMailDBRepository,ExchangeSavedMailDBRepository,TicketAttachedMailDBRepository}
+import database.{TicketDBRepository, TicketActionDBRepository,ExchangeODSMailDBRepository,ExchangeSavedMailDBRepository,TicketAttachedMailDBRepository, FileDBRepository, TicketAttachedFileDBRepository}
 import play.api.libs.json.Json
 import scala.util.{Failure, Success, Try}
 import scala.concurrent.Future
@@ -50,13 +50,33 @@ class TicketController @Inject() extends CRMController {
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
-  //FIXME: should be more id's or... smth
  def detachMailFromTicket(companyId: Int, ticketId: Int, attachedMailId: Int) = CRMActionAsync{rq =>
    import utils.JSFormat.ticketActionMailFrmt
    for{
           deletedAttachedMail <- TicketAttachedMailDBRepository.deleteAttachedMailAction(attachedMailId)
-          deletedAction       <- TicketActionDBRepository.getActionById(deletedAttachedMail.actionId)
+          deletedAction       <- TicketActionDBRepository.deleteAction(deletedAttachedMail.actionId)
    }yield Json.toJson(deletedAttachedMail)
+  }
+
+  //TODO: add permissions check
+  //TODO: Failure safe
+  def attachFileToTicket(companyId: Int, ticketId: Int, fileId: Int) = CRMActionAsync{ rq =>
+    // if(rq.header.belongsToCompany(companyId)){
+    import utils.JSFormat.ticketActionFileFrmt
+    for{
+          file         <- FileDBRepository.getFileById(fileId)
+          action       <- TicketActionDBRepository.createAction(TicketAction(ticketId = ticketId, userId = file.userId, actionType = ActionType.FILE), companyId)
+          attachedFile <- TicketAttachedFileDBRepository.createAttachedFileAction(TicketActionAttachedFile(actionId = action.id.get, fileId = file.id.get ))
+      } yield Json.toJson(attachedFile)    
+    // }else{ Future{Failure(new InsufficientRightsException())} }
+  }
+
+ def detachFileFromTicket(companyId: Int, ticketId: Int, attachedFileId: Int) = CRMActionAsync{rq =>
+   import utils.JSFormat.ticketActionFileFrmt
+   for{
+          deletedAttachedFile <- TicketAttachedFileDBRepository.deleteAttachedFileAction(attachedFileId)
+          deletedAction       <- TicketActionDBRepository.deleteAction(deletedAttachedFile.actionId)
+   }yield Json.toJson(deletedAttachedFile)
   }
 
 

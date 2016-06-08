@@ -12,7 +12,7 @@ object TicketAttachedMailDBRepository {
   import database.gen.current.dao._
 
   def createAttachedMailAction(action: TicketActionAttachedMail): Future[TicketActionAttachedMail] = {
-    insertAttachedMailEnitity(action.asAttachedActionEntity)
+    insertAttachedMailEnitity(action.asAttachedActionMailEntity)
           .map(inserted => inserted.asAttachedMailAction)
   }
 
