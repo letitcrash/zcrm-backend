@@ -8,5 +8,6 @@ case class Ticket(id: Option[String] = None,
                   assignedToUserId: Option[Int] = None,
                   assignedToTeamId: Option[Int] = None,
                   status: Int,
+                  priority: Int,
                   subject: String,
                   description: Option[String] = None)

@@ -16,6 +16,7 @@ object TicketConverter {
                      assignedToUserId = t.assignedToUserId match { case Some(x) => t.assignedToUserId; case _ => None},
                      assignedToTeamId = t.assignedToTeamId match { case Some(x) => t.assignedToTeamId; case _ => None},
                      status = t.status,
+                     priority = t.priority,
                      subject = t.subject,
                      description = t.description match { case Some(x) => t.description; case _ => None})    
       }
@@ -30,6 +31,7 @@ object TicketConverter {
                            assignedToUserId = t.assignedToUserId match { case Some(x) => t.assignedToUserId; case _ => None},
                            assignedToTeamId = t.assignedToTeamId match { case Some(x) => t.assignedToTeamId; case _ => None},
                            status = t.status,
+                           priority = t.priority,
                            subject = t.subject,
                            description = t.description match { case Some(x) => t.description; case _ => None})      
       }

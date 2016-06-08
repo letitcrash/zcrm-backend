@@ -1,7 +1,7 @@
 package database.tables
 
 import java.sql.Timestamp
-import models.RowStatus
+import models.{RowStatus,TicketStatus, TicketPriority}
 import slick.model.ForeignKeyAction._
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -17,6 +17,7 @@ case class TicketEntity(
   assignedToUserId: Option[Int] = None,
   assignedToTeamId: Option[Int] = None,
   status: Int,
+  priority: Int,
   subject: String,
   description: Option[String] = None,
   recordStatus: Int = RowStatus.ACTIVE,
@@ -41,7 +42,8 @@ trait TicketDBComponent extends DBComponent {
     def requestedByUserId = column[Int]("requested_by_user_id", Nullable)
     def assignedToUserId = column[Int]("assigned_to_user_id", Nullable)
     def assignedToTeamId = column[Int]("assigned_to_team_id", Nullable)
-    def status = column[Int]("status", O.Default(0))  //TODO Move to model
+    def status = column[Int]("status", O.Default(TicketStatus.NEW)) 
+    def priority = column[Int]("priority", O.Default(TicketPriority.MID)) 
     def subject = column[String]("subject", O.SqlType("VARCHAR(255)"))
     def description = column[String]("description", Nullable)
     def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
@@ -56,7 +58,7 @@ trait TicketDBComponent extends DBComponent {
     def fkAssignedToTeamId = foreignKey("fk_ticket_assigned_to_team_id", assignedToTeamId, teams)(_.id)
 
 
-    def * = (id.?, companyId, createdByUserId, requestedByUserId.?, assignedToUserId.?, assignedToTeamId.?, status, subject,
+    def * = (id.?, companyId, createdByUserId, requestedByUserId.?, assignedToUserId.?, assignedToTeamId.?, status, priority, subject,
              description.?, recordStatus, createdAt, updatedAt)<>(TicketEntity.tupled, TicketEntity.unapply)
 
   }

@@ -115,6 +115,7 @@ object ExpectedFormat {
     "assignedToTeamId"-> Json.toJson("[O](int) Assigned to team id"),
     "commentId"       -> Json.toJson("[O](int) Id of action"),
     "status"          -> Json.toJson("[M](int) Status [1:NEW 2:OPEN 3:POSTPONED 4:RESOLVED]"),
+    "priority"        -> Json.toJson("[M](int) Priority [0:LOW 2:MID 3:HIGH]"),
     "subject"         -> Json.toJson("[O](string) Subject"),
     "description"     -> Json.toJson("[O](string) Description")    
   ))
