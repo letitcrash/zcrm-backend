@@ -12,6 +12,7 @@ import database.{TicketDBRepository, TicketActionDBRepository,ExchangeODSMailDBR
 import play.api.libs.json.Json
 import scala.util.{Failure, Success, Try}
 import scala.concurrent.Future
+import java.text.DecimalFormat
 
 @Singleton
 class TicketController @Inject() extends CRMController {
@@ -42,6 +43,8 @@ class TicketController @Inject() extends CRMController {
           mail         <- ExchangeSavedMailDBRepository.insertSavedMail(odsMail)
           action       <- TicketActionDBRepository.createAction(TicketAction(ticketId = ticketId, userId = userId, actionType = ActionType.MAIL), companyId)
           attachedMail <- TicketAttachedMailDBRepository.createAttachedMailAction(TicketActionAttachedMail(actionId = action.id.get, mailId = mail.id.get ))
+          updatedOds   <- ExchangeODSMailDBRepository.updateODSMail(
+                                                      odsMail.copy(subject = Some(odsMail.subject.getOrElse("") + " [Ticket "+(new DecimalFormat("#000000")).format(ticketId)+"]")))
       } yield Json.toJson(mail)    
      
     // }else{ Future{Failure(new InsufficientRightsException())} }
