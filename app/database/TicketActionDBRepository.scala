@@ -4,7 +4,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
 import models.{TicketAction, PagedResult}
 import play.api.Logger
-import utils.converters.ActionConverter._
+import utils.converters.TicketActionConverter._
 
 
 object TicketActionDBRepository {

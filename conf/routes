@@ -115,6 +115,7 @@ POST   /companies/:companyId/tickets/:ticketId/mails/:mailId                    
 PUT    /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.updateTicket(companyId: Int, ticketId: Int)
 #DELETE /companies/:companyId/tickets/:taskId/mail                                            controllers.TicketController.removeAttachedMailFromTask(companyId: Int, taskId: Int)
 DELETE /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.deleteTicketById(companyId: Int, ticketId:Int) 
+DELETE /companies/:companyId/tickets/:ticketId/attachedmails/:attachedMailId                 controllers.TicketController.detachMailFromTicket(companyId: Int, ticketId: Int, attachedMailId: Int) 
 GET    /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.getTicket(companyId: Int, ticketId: Int)
 GET    /companies/:companyId/tickets                                                         controllers.TicketController.searchAllTicketsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 GET    /companies/:companyId/tickets/:ticketId/actions                                       controllers.TicketController.getAllActionWithPagination(companyId: Int, ticketId: Int, actionTypes: List[Int], pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])

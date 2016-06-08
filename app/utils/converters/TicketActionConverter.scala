@@ -1,9 +1,9 @@
 package utils.converters
 
 import database.tables.{TicketActionEntity, TicketActionAttachedMailEntity}
-import models.{TicketAction, ActionAttachedMail}
+import models.{TicketAction, TicketActionAttachedMail}
 
-object ActionConverter {
+object TicketActionConverter {
   
   implicit class EntityToAction (a: TicketActionEntity) {
       def asAction: TicketAction= {
@@ -28,14 +28,14 @@ object ActionConverter {
   }
 
   implicit class AttachedMailEntityToAttachedMail (a: TicketActionAttachedMailEntity) {
-      def asAttachedMailAction: ActionAttachedMail= {
-        ActionAttachedMail(id = a.id,
+      def asAttachedMailAction: TicketActionAttachedMail= {
+        TicketActionAttachedMail(id = a.id,
                            actionId = a.actionId,
                            mailId = a.mailId)
       }
   }
 
-  implicit class AttachedMailToEntity(a: ActionAttachedMail){
+  implicit class AttachedMailToEntity(a: TicketActionAttachedMail){
       def asAttachedActionEntity: TicketActionAttachedMailEntity = {
         TicketActionAttachedMailEntity(id = a.id,
                                        actionId = a.actionId,

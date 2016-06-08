@@ -41,11 +41,21 @@ class TicketController @Inject() extends CRMController {
           odsMail      <- ExchangeODSMailDBRepository.getODSMailById(mailId)
           mail         <- ExchangeSavedMailDBRepository.insertSavedMail(odsMail)
           action       <- TicketActionDBRepository.createAction(TicketAction(ticketId = ticketId, userId = userId, actionType = ActionType.MAIL), companyId)
-          attachedMail <- TicketAttachedMailDBRepository.createAttchedMailAction(ActionAttachedMail(actionId = action.id.get, mailId = mail.id.get )) 
+          attachedMail <- TicketAttachedMailDBRepository.createAttachedMailAction(TicketActionAttachedMail(actionId = action.id.get, mailId = mail.id.get ))
       } yield Json.toJson(mail)    
      
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
+
+  //FIXME: should be more id's or... smth
+ def detachMailFromTicket(companyId: Int, ticketId: Int, attachedMailId: Int) = CRMActionAsync{rq =>
+   import utils.JSFormat.ticketActionMailFrmt
+   for{
+          deletedAttachedMail <- TicketAttachedMailDBRepository.deleteAttachedMailAction(attachedMailId)
+          deletedAction       <- TicketActionDBRepository.getActionById(deletedAttachedMail.actionId)
+   }yield Json.toJson(deletedAttachedMail)
+  }
+
 
   //TODO: add permissions check
   def updateTicket(companyId: Int, ticketId: Int) = CRMActionAsync[Ticket](expectedTicketFormat){ rq =>
