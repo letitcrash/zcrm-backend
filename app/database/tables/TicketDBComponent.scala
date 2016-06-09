@@ -66,7 +66,7 @@ trait TicketDBComponent extends DBComponent {
 
   //(((((TicketEntity, (CompanyEntity, ContactProfileEntity)), Option[(UserEntity, ContactProfileEntity)]), 
   //                    Option[(UserEntity, ContactProfileEntity)]), Option[(UserEntity, ContactProfileEntity)]), Option[TeamEntity])
-  def aggregatedTicket = tickets join 
+  def aggregatedTickets = tickets join 
                          companyWithProfile on (_.companyId === _._1.id ) joinLeft 
                          usersWithProfile on (_._1.createdByUserId === _._1.id) joinLeft
                          usersWithProfile on (_._1._1.requestedByUserId === _._1.id) joinLeft
@@ -78,7 +78,7 @@ trait TicketDBComponent extends DBComponent {
                           //requestedByUserIds: List[Int],
                           assignedToUserIds: List[Int],
                           assignedToTeamIds: List[Int]) = {
-    aggregatedTicket.filter(t =>(t._1._1._1._1._1.companyId === companyId && t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE))
+    aggregatedTickets.filter(t =>(t._1._1._1._1._1.companyId === companyId && t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE))
       .filteredBy( createdByUserIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.createdByUserId inSet _)
      // .filteredBy( requestedByUserIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.requestedByUserId inSet _)
       .filteredBy( assignedToUserIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.assignedToUserId inSet _)
@@ -98,6 +98,12 @@ trait TicketDBComponent extends DBComponent {
   def getTicketEntityById(id: Int): Future[TicketEntity] = {
     db.run(tickets.filter(t =>(t.id === id && 
                                t.recordStatus === RowStatus.ACTIVE)).result.head)
+  }
+
+  def getAggregatedTicketEntityById(id: Int): Future[(((((TicketEntity, (CompanyEntity, ContactProfileEntity)), Option[(UserEntity, ContactProfileEntity)]), 
+                                                     Option[(UserEntity, ContactProfileEntity)]), Option[(UserEntity, ContactProfileEntity)]), Option[TeamEntity])] = {
+    db.run(aggregatedTickets.filter(t => (t._1._1._1._1._1.id === id &&
+                                          t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE)).result.head)
   }
 
   def updateTicketEntity(ticket: TicketEntity): Future[TicketEntity] = {
@@ -141,30 +147,35 @@ trait TicketDBComponent extends DBComponent {
         )
   }
 
-  def searchAllAggregatedTicketsByCompanyId(companyId: Int,
-                                            createdByUserIds: List[Int],
-                                            //requestedByUserIds: List[Int],
-                                            assignedToUserIds: List[Int],
-                                            assignedToTeamIds: List[Int],
-                                            pageSize: Int, 
-                                            pageNr: Int)
+  def getAllAggregatedTicketsByCompanyId(companyId: Int,
+                                         createdByUserIds: List[Int],
+                                         //requestedByUserIds: List[Int],
+                                         assignedToUserIds: List[Int],
+                                         assignedToTeamIds: List[Int],
+                                         pageSize: Option[Int], 
+                                         pageNr: Option[Int])
    : Future[PagedDBResult[(((((TicketEntity, (CompanyEntity, ContactProfileEntity)), Option[(UserEntity, ContactProfileEntity)]), 
                           Option[(UserEntity, ContactProfileEntity)]), Option[(UserEntity, ContactProfileEntity)]), Option[TeamEntity])]]= {
     val baseQry = aggregatedTicketQry(companyId,
-                            createdByUserIds,
-                            //requestedByUserIds,
-                            assignedToUserIds,
-                            assignedToTeamIds)
-    val pageRes = baseQry
-      .sortBy(_._1._1._1._1._1.id.asc)
-      .drop(pageSize * (pageNr - 1))
-      .take(pageSize)
+                                      createdByUserIds,
+                                      //requestedByUserIds,
+                                      assignedToUserIds,
+                                      assignedToTeamIds)
+    var pageRes = 
+    if (pageNr.nonEmpty || pageSize.nonEmpty) {
+      val psize = pageSize.getOrElse(10)
+      val pnr = pageNr.getOrElse(1)
+
+      baseQry.sortBy(_._1._1._1._1._1.id.asc)
+             .drop(psize * (pnr - 1))
+             .take(psize)
+    }else{ baseQry.sortBy(_._1._1._1._1._1.id.asc) }    
 
     db.run(pageRes.result).flatMap( list => 
         db.run(baseQry.length.result).map( totalCount => 
          PagedDBResult(
-            pageSize = pageSize,
-            pageNr = pageNr,
+            pageSize = pageSize.get,
+            pageNr = pageNr.get,
             totalCount = totalCount,
             data = list)
           )

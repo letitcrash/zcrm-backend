@@ -123,5 +123,21 @@ class TicketController @Inject() extends CRMController {
       TicketActionDBRepository.getActionWithPagination(ticketId, actionTypes, psize, pnr).map(page => Json.toJson(page))
     } else { TicketActionDBRepository.getActionsByTicketId(ticketId, actionTypes).map( tickets => Json.toJson(tickets)) }
   }
+
+  def getAllAggregatedTicketWithPagination(companyId: Int, createdByUserIds: List[Int], assignedToUserIds: List[Int], assignedToTeamIds: List[Int], pageSize: Option[Int], pageNr: Option[Int]) = CRMActionAsync{rq =>
+    import utils.JSFormat._
+    TicketDBRepository.getAllAggregatedTickets(companyId, createdByUserIds, assignedToUserIds, assignedToTeamIds, pageSize, pageNr)
+                       .map(page => Json.toJson(page))    
+  }
+
+  def getAggregadTicket(companyId: Int, ticketId: Int) = CRMActionAsync{rq =>
+     import utils.JSFormat._
+     TicketDBRepository.getAggregatedTicketById(ticketId).map(aggTicket => Json.toJson(aggTicket))
+  }
+
+    import utils.JSFormat._
+  def updateAggregatedTicket(companyId: Int, ticketId: Int) = CRMActionAsync[AggregatedTicket](expectedAggregatedTicketFormat){ rq  =>
+    TicketDBRepository.updateAggregatedTicket(rq.body).map(updated => Json.toJson(updated))
+  } 
  
 }

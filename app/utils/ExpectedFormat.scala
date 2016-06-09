@@ -113,7 +113,23 @@ object ExpectedFormat {
     "requestedByUserId"-> Json.toJson("[O](int) Requested by userId"),
     "assignedToUserId"-> Json.toJson("[O](int) Assigned to userId"),
     "assignedToTeamId"-> Json.toJson("[O](int) Assigned to team id"),
-    "commentId"       -> Json.toJson("[O](int) Id of action"),
+    "status"          -> Json.toJson("[M](int) Status [1:NEW 2:OPEN 3:POSTPONED 4:RESOLVED]"),
+    "priority"        -> Json.toJson("[M](int) Priority [0:LOW 1:MID 2:HIGH]"),
+    "subject"         -> Json.toJson("[O](string) Subject"),
+    "description"     -> Json.toJson("[O](string) Description")    
+  ))
+
+  val expectedAggregatedTicketFormat =  Json.toJson(ListMap(
+    "id"              -> Json.toJson("[O](int) In DB id"),
+    "company"         -> Json.toJson(ListMap(
+          "id"            -> Json.toJson("[M](int) CompanyId"),
+          "name"          -> Json.toJson("[O](string) Company Name"),
+          "vatId"         -> Json.toJson("[O](string) VatId"),
+          "contactProfile"-> expectedContactProfileFormat)),
+    "createdByUser"   -> expectedUserFormat,
+    "requestedByUser" -> expectedUserFormat,
+    "assignedToUser"  -> expectedUserFormat,
+    "assignedToTeam"  -> expectedTeamFormat,
     "status"          -> Json.toJson("[M](int) Status [1:NEW 2:OPEN 3:POSTPONED 4:RESOLVED]"),
     "priority"        -> Json.toJson("[M](int) Priority [0:LOW 1:MID 2:HIGH]"),
     "subject"         -> Json.toJson("[O](string) Subject"),

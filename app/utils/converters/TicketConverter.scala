@@ -40,7 +40,7 @@ object TicketConverter {
   implicit class AggregatedTicketEnttToTicket
   (tup: (((((TicketEntity, (CompanyEntity, ContactProfileEntity)), Option[(UserEntity, ContactProfileEntity)]), 
                              Option[(UserEntity, ContactProfileEntity)]), Option[(UserEntity, ContactProfileEntity)]), Option[TeamEntity]) ) {
-    def asEmployee(): AggregatedTicket = {
+    def asTicket(): AggregatedTicket = {
       import UserConverter._
       import CompanyConverter._
       import TeamConverter._
@@ -62,6 +62,21 @@ object TicketConverter {
                        priority = ticketEntt.priority,
                        subject = ticketEntt.subject,
                        description = ticketEntt.description match { case Some(x) => ticketEntt.description; case _ => None})      
+    }
+  }
+
+  implicit class AggregatedTicketToTicketEntt(t: AggregatedTicket) {
+    def asTicketEntity(): TicketEntity = {
+      TicketEntity(id = t.id match { case Some(x) => Some(Integer.parseInt(t.id.get)); case _ => None},
+                   companyId = t.company.id.get,
+                   createdByUserId = t.createdByUser.id.get,
+                   requestedByUserId = t.requestedByUser match { case Some(x) => x.id; case _ => None },
+                   assignedToUserId = t.assignedToUser match { case Some(x) => x.id; case _ => None},
+                   assignedToTeamId = t.assignedToTeam match { case Some(x) => x.id; case _ => None},
+                   status = t.status,
+                   priority = t.priority,
+                   subject = t.subject,
+                   description = t.description match { case Some(x) => t.description; case _ => None})      
     }
   }
 
