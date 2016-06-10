@@ -4,7 +4,7 @@ import models.Employee
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
-import models.{Ticket, AggregatedTicket, PagedResult}
+import models.{Ticket, AggregatedTicket, PagedResult, User}
 import play.api.Logger
 import utils.converters.TicketConverter._
 
@@ -68,5 +68,10 @@ object TicketDBRepository {
 //
 //  }
   
+
+  def addMembers(ticketId: Int, users: List[User]): Future[List[User]] = {
+    insertTicketMembers(users.map( u => (ticketId, u.id.get).asTicketMemberEntt))
+      .map(pair => users)
+  }
 
 }

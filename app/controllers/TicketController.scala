@@ -139,5 +139,18 @@ class TicketController @Inject() extends CRMController {
 //  def updateAggregatedTicket(companyId: Int, ticketId: Int) = CRMActionAsync[AggregatedTicket](expectedAggregatedTicketFormat){ rq  =>
 //    TicketDBRepository.updateAggregatedTicket(rq.body).map(updated => Json.toJson(updated))
 //  }
+
+  import utils.JSFormat.userFrmt
+  case class TicketMembers( ticketId: Int, members: List[User])
+  implicit val  ticketMembersFrmt       = Json.format[TicketMembers]
+
+  import scala.collection.immutable.ListMap
+  val expecteTicketMembersFormat = Json.toJson(ListMap(
+    "ticketId"        -> "[M] (int) id of the ticket",
+    "members"         -> "[M] (list[user])"))
+
+  def addMembersToTicket(companyId: Int, ticketId: Int) = CRMActionAsync[TicketMembers](expecteTicketMembersFormat){ rq => 
+    TicketDBRepository.addMembers(rq.body.ticketId, rq.body.members).map(users => Json.toJson(users))
+  }
  
 }

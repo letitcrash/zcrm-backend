@@ -2,7 +2,7 @@ package utils.converters
 
 import java.text.DecimalFormat
 
-import database.tables.{TicketEntity, CompanyEntity, UserEntity, ContactProfileEntity, TeamEntity}
+import database.tables.{TicketEntity, CompanyEntity, UserEntity, ContactProfileEntity, TeamEntity, TicketMemberEntity}
 import models.{Ticket, AggregatedTicket}
 
 object TicketConverter {
@@ -80,6 +80,12 @@ object TicketConverter {
     }
   }
 
+
+  implicit class TupMeberToEntity(t: (Int, Int)) {
+    def asTicketMemberEntt(): TicketMemberEntity = {
+      TicketMemberEntity(t._1, t._2)
+    }
+  }
 
 }
 
