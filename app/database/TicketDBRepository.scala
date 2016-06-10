@@ -44,29 +44,29 @@ object TicketDBRepository {
                             data = dbPage.data.map(_.asTicket))}
   }
 
-  def getAggregatedTicketById(ticketId: Int): Future[AggregatedTicket] = {
-    getAggregatedTicketEntityById(ticketId).map(aggTicket => aggTicket.asTicket)
-  }
-
-  def getAllAggregatedTickets(companyId: Int,
-                              createdByUserIds: List[Int],
-                              //requestedByUserIds: List[Int],
-                              assignedToUserIds: List[Int],
-                              assignedToTeamIds: List[Int],
-                              pageSize: Option[Int], 
-                              pageNr: Option[Int]): Future[PagedResult[AggregatedTicket]] = {
-    getAllAggregatedTicketsByCompanyId(companyId, createdByUserIds, assignedToUserIds, assignedToTeamIds, pageSize,pageNr)
-          .map(dbPage => PagedResult[AggregatedTicket](pageSize = dbPage.pageSize,
-                                                       pageNr = dbPage.pageNr,
-                                                       totalCount = dbPage.totalCount,
-                                                       data = dbPage.data.map(_.asTicket)))
-  }
-
-  def updateAggregatedTicket(aggTicket: AggregatedTicket): Future[AggregatedTicket] = {
-    updateTicketEntity(aggTicket.asTicketEntity)
-          .flatMap(updated => getAggregatedTicketById(updated.id.get))
-
-  }
+//  def getAggregatedTicketById(ticketId: Int): Future[AggregatedTicket] = {
+//    getAggregatedTicketEntityById(ticketId).map(aggTicket => aggTicket.asTicket)
+//  }
+//
+//  def getAllAggregatedTickets(companyId: Int,
+//                              createdByUserIds: List[Int],
+//                              //requestedByUserIds: List[Int],
+//                              assignedToUserIds: List[Int],
+//                              assignedToTeamIds: List[Int],
+//                              pageSize: Option[Int],
+//                              pageNr: Option[Int]): Future[PagedResult[AggregatedTicket]] = {
+//    getAllAggregatedTicketsByCompanyId(companyId, createdByUserIds, assignedToUserIds, assignedToTeamIds, pageSize,pageNr)
+//          .map(dbPage => PagedResult[AggregatedTicket](pageSize = dbPage.pageSize,
+//                                                       pageNr = dbPage.pageNr,
+//                                                       totalCount = dbPage.totalCount,
+//                                                       data = dbPage.data.map(_.asTicket)))
+//  }
+//
+//  def updateAggregatedTicket(aggTicket: AggregatedTicket): Future[AggregatedTicket] = {
+//    updateTicketEntity(aggTicket.asTicketEntity)
+//          .flatMap(updated => getAggregatedTicketById(updated.id.get))
+//
+//  }
   
 
 }

@@ -9,24 +9,24 @@ import slick.profile.SqlProfile.ColumnOption.Nullable
 import database.PagedDBResult
 
 case class TicketEntity(
-  id: Option[Int] = None,
-  companyId: Int,
-  createdByUserId: Int,
-  requestedByUserId: Option[Int] = None,
-  //requestedByEmail: Option[String] = None,
-  assignedToUserId: Option[Int] = None,
-  assignedToTeamId: Option[Int] = None,
-  status: Int,
-  priority: Int,
-  subject: String,
-  description: Option[String] = None,
-  recordStatus: Int = RowStatus.ACTIVE,
-  createdAt: Timestamp = new Timestamp(System.currentTimeMillis()),
-  updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()))
+                         id: Option[Int] = None,
+                         projectId: Int,
+                         createdByUserId: Int,
+                         requestedByUserId: Option[Int] = None,
+                         //requestedByEmail: Option[String] = None,
+                         assignedToUserId: Option[Int] = None,
+                         assignedToTeamId: Option[Int] = None,
+                         status: Int,
+                         priority: Int,
+                         subject: String,
+                         description: Option[String] = None,
+                         recordStatus: Int = RowStatus.ACTIVE,
+                         createdAt: Timestamp = new Timestamp(System.currentTimeMillis()),
+                         updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()))
 
 trait TicketDBComponent extends DBComponent {
     this: DBComponent 
-    with CompanyDBComponent
+    with ProjectDBComponent
     with UserDBComponent
     with TeamDBComponent
     with TicketActionDBComponent =>
@@ -37,13 +37,13 @@ trait TicketDBComponent extends DBComponent {
   
   class TicketTable(tag: Tag) extends Table[TicketEntity](tag, "tbl_ticket") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
-    def companyId = column[Int]("company_id")
+    def projectId = column[Int]("project_id")
     def createdByUserId = column[Int]("created_by_user_id")
     def requestedByUserId = column[Int]("requested_by_user_id", Nullable)
     def assignedToUserId = column[Int]("assigned_to_user_id", Nullable)
     def assignedToTeamId = column[Int]("assigned_to_team_id", Nullable)
-    def status = column[Int]("status", O.Default(TicketStatus.NEW)) 
-    def priority = column[Int]("priority", O.Default(TicketPriority.MID)) 
+    def status = column[Int]("status", O.Default(TicketStatus.NEW))
+    def priority = column[Int]("priority", O.Default(TicketPriority.MID))
     def subject = column[String]("subject", O.SqlType("VARCHAR(255)"))
     def description = column[String]("description", Nullable)
     def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
@@ -51,42 +51,42 @@ trait TicketDBComponent extends DBComponent {
     def updatedAt = column[Timestamp]("updated_at")
 
 
-    def fkCompanyId = foreignKey("fk_ticket_company", companyId, companies)(_.id)
+    def fkProjectId = foreignKey("fk_ticket_project", projectId, projects)(_.id)
     def fkCreatedByUserId = foreignKey("fk_ticket_created_by_user_id", createdByUserId, users)(_.id)
     def fkRequestedByUserId = foreignKey("fk_ticket_requested_by_user_id", requestedByUserId, users)(_.id)
     def fkAssignedToUserId = foreignKey("fk_ticket_assigned_to_user_id", assignedToUserId, users)(_.id)
     def fkAssignedToTeamId = foreignKey("fk_ticket_assigned_to_team_id", assignedToTeamId, teams)(_.id)
 
 
-    def * = (id.?, companyId, createdByUserId, requestedByUserId.?, assignedToUserId.?, assignedToTeamId.?, status, priority, subject,
+    def * = (id.?, projectId, createdByUserId, requestedByUserId.?, assignedToUserId.?, assignedToTeamId.?, status, priority, subject,
              description.?, recordStatus, createdAt, updatedAt)<>(TicketEntity.tupled, TicketEntity.unapply)
 
   }
 
 
-  //(((((TicketEntity, (CompanyEntity, ContactProfileEntity)), Option[(UserEntity, ContactProfileEntity)]), 
+  //(((((TicketEntity, (CompanyEntity, ContactProfileEntity)), Option[(UserEntity, ContactProfileEntity)]),
   //                    Option[(UserEntity, ContactProfileEntity)]), Option[(UserEntity, ContactProfileEntity)]), Option[TeamEntity])
-  def aggregatedTickets = tickets join 
-                         companyWithProfile on (_.companyId === _._1.id ) joinLeft 
-                         usersWithProfile on (_._1.createdByUserId === _._1.id) joinLeft
-                         usersWithProfile on (_._1._1.requestedByUserId === _._1.id) joinLeft
-                         usersWithProfile on (_._1._1._1.assignedToUserId === _._1.id) joinLeft
-                         teams on (_._1._1._1._1.assignedToTeamId === _.id)
+//  def aggregatedTickets = tickets join
+//                         companyWithProfile on (_.projectId === _._1.id ) joinLeft
+//                         usersWithProfile on (_._1.createdByUserId === _._1.id) joinLeft
+//                         usersWithProfile on (_._1._1.requestedByUserId === _._1.id) joinLeft
+//                         usersWithProfile on (_._1._1._1.assignedToUserId === _._1.id) joinLeft
+//                         teams on (_._1._1._1._1.assignedToTeamId === _.id)
 
-  def aggregatedTicketQry(companyId: Int,
-                          createdByUserIds: List[Int],
-                          //requestedByUserIds: List[Int],
-                          assignedToUserIds: List[Int],
-                          assignedToTeamIds: List[Int]) = {
-    aggregatedTickets.filter(t =>(t._1._1._1._1._1.companyId === companyId && t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE))
-      .filteredBy( createdByUserIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.createdByUserId inSet _)
-     // .filteredBy( requestedByUserIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.requestedByUserId inSet _)
-      .filteredBy( assignedToUserIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.assignedToUserId inSet _)
-      .filteredBy( assignedToTeamIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.assignedToTeamId inSet _)
-  }
+//  def aggregatedTicketQry(companyId: Int,
+//                          createdByUserIds: List[Int],
+//                          //requestedByUserIds: List[Int],
+//                          assignedToUserIds: List[Int],
+//                          assignedToTeamIds: List[Int]) = {
+//    aggregatedTickets.filter(t =>(t._1._1._1._1._1.projectId === companyId && t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE))
+//      .filteredBy( createdByUserIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.createdByUserId inSet _)
+//     // .filteredBy( requestedByUserIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.requestedByUserId inSet _)
+//      .filteredBy( assignedToUserIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.assignedToUserId inSet _)
+//      .filteredBy( assignedToTeamIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.assignedToTeamId inSet _)
+ //   }
 
   def ticketQry(companyId: Int) = {
-    tickets.filter(t =>(t.companyId === companyId && 
+    tickets.filter(t =>(t.projectId === companyId &&
                         t.recordStatus === RowStatus.ACTIVE))
   }
 
@@ -96,32 +96,33 @@ trait TicketDBComponent extends DBComponent {
   }
 
   def getTicketEntityById(id: Int): Future[TicketEntity] = {
-    db.run(tickets.filter(t =>(t.id === id && 
+    db.run(tickets.filter(t =>(t.id === id &&
                                t.recordStatus === RowStatus.ACTIVE)).result.head)
   }
 
-  def getAggregatedTicketEntityById(id: Int): Future[(((((TicketEntity, (CompanyEntity, ContactProfileEntity)), Option[(UserEntity, ContactProfileEntity)]), 
+/*  def getAggregatedTicketEntityById(id: Int): Future[(((((TicketEntity, (CompanyEntity, ContactProfileEntity)), Option[(UserEntity, ContactProfileEntity)]),
                                                      Option[(UserEntity, ContactProfileEntity)]), Option[(UserEntity, ContactProfileEntity)]), Option[TeamEntity])] = {
     db.run(aggregatedTickets.filter(t => (t._1._1._1._1._1.id === id &&
                                           t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE)).result.head)
   }
+*/
 
   def updateTicketEntity(ticket: TicketEntity): Future[TicketEntity] = {
-      db.run(tickets.filter(t =>(t.id === ticket.id && 
+      db.run(tickets.filter(t =>(t.id === ticket.id &&
                                 t.recordStatus === RowStatus.ACTIVE)).update(ticket)
-                  .map{num => if(num != 0) ticket 
+                  .map{num => if(num != 0) ticket
                               else throw new Exception("Can't update ticket, is it deleted?")})
   }
 
   def softDeleteTicketById(id: Int): Future[TicketEntity] = {
     getTicketEntityById(id).flatMap(res =>
-        updateTicketEntity(res.copy(recordStatus = RowStatus.DELETED, 
+        updateTicketEntity(res.copy(recordStatus = RowStatus.DELETED,
                             updatedAt = new Timestamp(System.currentTimeMillis()))))
-  } 
+  }
 
   //FILTERS
   def getTicketEntitiesByCompanyId(companyId: Int): Future[List[TicketEntity]] = {
-    db.run(tickets.filter(t => (t.companyId === companyId && 
+    db.run(tickets.filter(t => (t.projectId === companyId &&
                                 t.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
   }
 
@@ -147,40 +148,40 @@ trait TicketDBComponent extends DBComponent {
         )
   }
 
-  def getAllAggregatedTicketsByCompanyId(companyId: Int,
-                                         createdByUserIds: List[Int],
-                                         //requestedByUserIds: List[Int],
-                                         assignedToUserIds: List[Int],
-                                         assignedToTeamIds: List[Int],
-                                         pageSize: Option[Int], 
-                                         pageNr: Option[Int])
-   : Future[PagedDBResult[(((((TicketEntity, (CompanyEntity, ContactProfileEntity)), Option[(UserEntity, ContactProfileEntity)]), 
-                          Option[(UserEntity, ContactProfileEntity)]), Option[(UserEntity, ContactProfileEntity)]), Option[TeamEntity])]]= {
-    val baseQry = aggregatedTicketQry(companyId,
-                                      createdByUserIds,
-                                      //requestedByUserIds,
-                                      assignedToUserIds,
-                                      assignedToTeamIds)
-    var pageRes = 
-    if (pageNr.nonEmpty || pageSize.nonEmpty) {
-      val psize = pageSize.getOrElse(10)
-      val pnr = pageNr.getOrElse(1)
-
-      baseQry.sortBy(_._1._1._1._1._1.id.asc)
-             .drop(psize * (pnr - 1))
-             .take(psize)
-    }else{ baseQry.sortBy(_._1._1._1._1._1.id.asc) }    
-
-    db.run(pageRes.result).flatMap( list => 
-        db.run(baseQry.length.result).map( totalCount => 
-         PagedDBResult(
-            pageSize = pageSize.get,
-            pageNr = pageNr.get,
-            totalCount = totalCount,
-            data = list)
-          )
-        )
-  }
+//  def getAllAggregatedTicketsByCompanyId(companyId: Int,
+//                                         createdByUserIds: List[Int],
+//                                         //requestedByUserIds: List[Int],
+//                                         assignedToUserIds: List[Int],
+//                                         assignedToTeamIds: List[Int],
+//                                         pageSize: Option[Int],
+//                                         pageNr: Option[Int])
+//   : Future[PagedDBResult[(((((TicketEntity, (CompanyEntity, ContactProfileEntity)), Option[(UserEntity, ContactProfileEntity)]),
+//                          Option[(UserEntity, ContactProfileEntity)]), Option[(UserEntity, ContactProfileEntity)]), Option[TeamEntity])]]= {
+//    val baseQry = aggregatedTicketQry(companyId,
+//                                      createdByUserIds,
+//                                      //requestedByUserIds,
+//                                      assignedToUserIds,
+//                                      assignedToTeamIds)
+//    var pageRes =
+//    if (pageNr.nonEmpty || pageSize.nonEmpty) {
+//      val psize = pageSize.getOrElse(10)
+//      val pnr = pageNr.getOrElse(1)
+//
+//      baseQry.sortBy(_._1._1._1._1._1.id.asc)
+//             .drop(psize * (pnr - 1))
+//             .take(psize)
+//    }else{ baseQry.sortBy(_._1._1._1._1._1.id.asc) }
+//
+//    db.run(pageRes.result).flatMap( list =>
+//        db.run(baseQry.length.result).map( totalCount =>
+//         PagedDBResult(
+//            pageSize = pageSize.get,
+//            pageNr = pageNr.get,
+//            totalCount = totalCount,
+//            data = list)
+//          )
+//        )
+//  }
 
 }
 

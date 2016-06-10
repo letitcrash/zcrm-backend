@@ -8,7 +8,7 @@ case class TicketTeamMemberEntity(
   teamId: Int)
 
 trait TicketTeamMemberDBComponent extends DBComponent { 
-  this: DBComponent with ContactProfileDBComponent
+  this: DBComponent 
   with TicketDBComponent
   with TeamDBComponent => 
 
