@@ -49,9 +49,15 @@ trait TicketMemberDBComponent extends DBComponent {
     Future(ticketMembers)
   }
 
+  def deleteAllMembersByTicketId(ticketId: Int): Future[Int] = {
+    db.run(ticketMembers.filter(t => ( t.ticketId === ticketId)).delete)
+  }
+
   def getUsersByTicketId(ticketId: Int): Future[List[(TicketMemberEntity, (UserEntity, ContactProfileEntity))]] = {
     db.run(ticketMembersWithUser.filter( _._1.ticketId === ticketId).result).map(_.toList)
   }
+
+  
 
  
 }

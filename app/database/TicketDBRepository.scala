@@ -70,8 +70,9 @@ object TicketDBRepository {
   
 
   def addMembers(ticketId: Int, users: List[User]): Future[List[User]] = {
-    insertTicketMembers(users.map( u => (ticketId, u.id.get).asTicketMemberEntt))
-      .map(pair => users)
+    deleteAllMembersByTicketId(ticketId).flatMap(count =>
+      insertTicketMembers(users.map( u => (ticketId, u.id.get).asTicketMemberEntt))
+        .map(pair => users))
   }
 
 }
