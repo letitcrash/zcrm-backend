@@ -25,6 +25,11 @@ trait TicketTeamMemberDBComponent extends DBComponent {
     override def * = (ticketId, teamId) <> (TicketTeamMemberEntity.tupled, TicketTeamMemberEntity.unapply)
   }
   
+  //JOINS 
+
+  //(TicketTeamMemberEntity , TeamEntity)
+  def ticketTeamMembersWithTeam = ticketTeamMembers join teams on (_.teamId === _.id) 
+
   //CRUD
   def insertTicketTeamMember(entity: TicketTeamMemberEntity): Future[TicketTeamMemberEntity] = {
     db.run(ticketTeamMembers += entity).map( res => entity)
@@ -45,5 +50,10 @@ trait TicketTeamMemberDBComponent extends DBComponent {
     Future.sequence(ticketTeamMemberList.map( t =>  deleteTicketTeamMember(t)))
     Future(ticketTeamMemberList)
   }
+
+  def getTeamsByTicketId(ticketId: Int): Future[List[(TicketTeamMemberEntity , TeamEntity)]] = {
+    db.run(ticketTeamMembersWithTeam.filter(_._1.ticketId === ticketId ).result).map(_.toList)
+  }
+  
 
 }

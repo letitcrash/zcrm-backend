@@ -23,7 +23,11 @@ trait TicketMemberDBComponent extends DBComponent {
     def fkUser = foreignKey("fk_ticket_member_user", userId, users)(_.id)
     override def * = (ticketId, userId) <> (TicketMemberEntity.tupled, TicketMemberEntity.unapply)
   }
-  
+  //JOINS 
+
+  //(TicketMemberEntity, (UserEntity, ContactProfileEntity))
+  def ticketMembersWithUser = ticketMembers join usersWithProfile on (_.userId === _._1.id)
+
   //CRUD
   def insertTicketMember(entity: TicketMemberEntity): Future[TicketMemberEntity] = {
     db.run(ticketMembers += entity).map( res => entity)
@@ -45,4 +49,9 @@ trait TicketMemberDBComponent extends DBComponent {
     Future(ticketMembers)
   }
 
+  def getUsersByTicketId(ticketId: Int): Future[List[(TicketMemberEntity, (UserEntity, ContactProfileEntity))]] = {
+    db.run(ticketMembersWithUser.filter( _._1.ticketId === ticketId).result).map(_.toList)
+  }
+
+ 
 }
