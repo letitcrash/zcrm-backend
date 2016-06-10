@@ -15,7 +15,11 @@ object TicketDBRepository {
 
   def createTicket(ticket: Ticket, companyId: Int): Future[Ticket] = {
     insertTicket(ticket.asTicketEntity(companyId))
-          .map(inserted => inserted.asTicket)
+          .flatMap(inserted =>
+              addMembers(inserted.id.get, ticket.members.get).map( list =>
+
+              
+              inserted.asTicket))
   }
 
   def updateTicket(ticket: Ticket, companyId: Int): Future[Ticket] = {
