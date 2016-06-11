@@ -10,7 +10,7 @@ object TicketConverter {
   implicit class EntityToTicket (t: TicketEntity) {
       def asTicket: Ticket= {
               Ticket(id = Some(new DecimalFormat("#000000").format(t.id.get)),
-                     companyId = t.projectId,
+                     projectId = t.projectId,
                      createdByUserId = t.createdByUserId,
                      requestedByUserId = t.requestedByUserId match { case Some(x) => t.requestedByUserId; case _ => None },
                      assignedToUserId = t.assignedToUserId match { case Some(x) => t.assignedToUserId; case _ => None},
@@ -25,7 +25,7 @@ object TicketConverter {
   implicit class TicketToEntity(t: Ticket){
       def asTicketEntity(companyId: Int): TicketEntity = {
               TicketEntity(id = t.id match { case Some(x) => Some(Integer.parseInt(t.id.get)); case _ => None},
-                           projectId = t.companyId,
+                           projectId = t.projectId,
                            createdByUserId = t.createdByUserId,
                            requestedByUserId = t.requestedByUserId match { case Some(x) => t.requestedByUserId; case _ => None },
                            assignedToUserId = t.assignedToUserId match { case Some(x) => t.assignedToUserId; case _ => None},

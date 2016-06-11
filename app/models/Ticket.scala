@@ -1,7 +1,7 @@
 package models
 
 case class Ticket(id: Option[String] = None,
-                  companyId: Int,
+                  projectId: Int,
                   createdByUserId: Int,
                   requestedByUserId: Option[Int] = None,
                   members: Option[List[User]] = None, 

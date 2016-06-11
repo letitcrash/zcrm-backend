@@ -18,7 +18,8 @@ object FileConverter {
       UploadedFile(id = fileEntt.id,
                    userId = fileEntt.userId,
                    hash = fileEntt.hash,
-                   fileName = fileEntt.filename)
+                   fileName = fileEntt.filename,
+                   createdAt = Some(fileEntt.createdAt))
     }
   }
 
