@@ -14,12 +14,11 @@ object TicketDBRepository {
   import database.gen.current.dao._
 
   def createTicket(ticket: Ticket, companyId: Int): Future[Ticket] = {
-    insertTicket(ticket.asTicketEntity(companyId))
-          .flatMap(inserted =>
-              addMembers(inserted.id.get, ticket.members.get).map( list =>
+    for {
+      ticketEntt <- insertTicket(ticket.asTicketEntity(companyId))
+      members <- ticket.members.map( users => addMembers(ticketEntt.id.get, users)).getOrElse(Future())
+    } yield ticketEntt.asTicket
 
-              
-              inserted.asTicket))
   }
 
   def updateTicket(ticket: Ticket, companyId: Int): Future[Ticket] = {

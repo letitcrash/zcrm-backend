@@ -12,9 +12,9 @@ object TicketConverter {
               Ticket(id = Some(new DecimalFormat("#000000").format(t.id.get)),
                      projectId = t.projectId,
                      createdByUserId = t.createdByUserId,
-                     requestedByUserId = t.requestedByUserId match { case Some(x) => t.requestedByUserId; case _ => None },
-                     assignedToUserId = t.assignedToUserId match { case Some(x) => t.assignedToUserId; case _ => None},
-                     assignedToTeamId = t.assignedToTeamId match { case Some(x) => t.assignedToTeamId; case _ => None},
+                    //requestedByUserId = t.requestedByUserId match { case Some(x) => t.requestedByUserId; case _ => None },
+                    //assignedToUserId = t.assignedToUserId match { case Some(x) => t.assignedToUserId; case _ => None},
+                    //assignedToTeamId = t.assignedToTeamId match { case Some(x) => t.assignedToTeamId; case _ => None},
                      status = t.status,
                      priority = t.priority,
                      subject = t.subject,
@@ -27,9 +27,9 @@ object TicketConverter {
               TicketEntity(id = t.id match { case Some(x) => Some(Integer.parseInt(t.id.get)); case _ => None},
                            projectId = t.projectId,
                            createdByUserId = t.createdByUserId,
-                           requestedByUserId = t.requestedByUserId match { case Some(x) => t.requestedByUserId; case _ => None },
-                           assignedToUserId = t.assignedToUserId match { case Some(x) => t.assignedToUserId; case _ => None},
-                           assignedToTeamId = t.assignedToTeamId match { case Some(x) => t.assignedToTeamId; case _ => None},
+                           //requestedByUserId = t.requestedByUserId match { case Some(x) => t.requestedByUserId; case _ => None },
+                           //assignedToUserId  = t.assignedToUserId match { case Some(x) => t.assignedToUserId; case _ => None},
+                           //assignedToTeamId  = t.assignedToTeamId match { case Some(x) => t.assignedToTeamId; case _ => None},
                            status = t.status,
                            priority = t.priority,
                            subject = t.subject,
@@ -81,7 +81,7 @@ object TicketConverter {
   }
 
 
-  implicit class TupMeberToEntity(t: (Int, Int)) {
+  implicit class TupMemberToEntity(t: (Int, Int)) {
     def asTicketMemberEntt(): TicketMemberEntity = {
       TicketMemberEntity(t._1, t._2)
     }
