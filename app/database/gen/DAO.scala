@@ -42,6 +42,7 @@ class DAO extends UserDBComponent
     with TicketMemberDBComponent
     with TicketTeamMemberDBComponent
     with ProjectDBComponent
+    with FileFolderDBComponent
     with FileDBComponent{
  import dbConfig.driver.api._
 
@@ -75,6 +76,7 @@ class DAO extends UserDBComponent
       Logger.info("Dropping mailboxes         -> " + tryDrop(mailboxes.schema))
       Logger.info("Dropping ods_mails         -> " + tryDrop(ods_mails.schema))
       Logger.info("Dropping saved_mails       -> " + tryDrop(saved_mails.schema))
+      Logger.info("Dropping folders           -> " + tryDrop(folders.schema))
       Logger.info("Dropping files             -> " + tryDrop(files.schema))
       Logger.info("Dropping shifts            -> " + tryDrop(shifts.schema))
       Logger.info("Dropping teams             -> " + tryDrop(teams.schema))
@@ -126,6 +128,7 @@ class DAO extends UserDBComponent
     Logger.info("Creating mailboxes         -> " + tryCreate(mailboxes.schema))
     Logger.info("Creating ods_mails         -> " + tryCreate(ods_mails.schema))
     Logger.info("Creating saved_mails       -> " + tryCreate(saved_mails.schema))
+    Logger.info("Creating folders           -> " + tryCreate(folders.schema))
     Logger.info("Creating files             -> " + tryCreate(files.schema))
     Logger.info("Creating teams             -> " + tryCreate(teams.schema))
     Logger.info("Creating team groups       -> " + tryCreate(teamGroups.schema))
