@@ -65,7 +65,7 @@ trait SavedExchangeMailDBComponent extends DBComponent {
   }
 
   def getSavedMailEntitiesByConversationId(converstionId: String): Future[List[ExchangeSavedMailEntity]] = {
-      db.run(saved_mails.filter(_.conversationExtId === converstionId).result).map(_.toList)
+      db.run(saved_mails.filter(_.conversationExtId === converstionId).sortBy(_.received.asc).result).map(_.toList)
   }
 
   def updateSavedMailEntity(mail: ExchangeSavedMailEntity): Future[ExchangeSavedMailEntity] = {

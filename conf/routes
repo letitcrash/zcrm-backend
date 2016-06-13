@@ -112,7 +112,7 @@ GET    /users/:userId/mailboxes/:mailboxId                                      
 GET     /users/:userId/mailboxes                                                             controllers.MailboxController.searchAllMailboxesByName(userId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 
 #Mail
-GET    /users/:userId/mailboxes/:mailboxId/mails                                             controllers.ExchangeController.getMailsForMailbox(userId: Int, mailboxId: Int)
+GET    /users/:userId/mailboxes/:mailboxId/mails                                             controllers.ExchangeController.getMailsForMailboxGrouped(userId: Int, mailboxId: Int)
 GET    /users/:userId/mailboxes/:mailboxId/mails/:mailId                                     controllers.ExchangeController.getMail(userId: Int, mailboxId: Int, mailId: Int)
 
 #Tickets

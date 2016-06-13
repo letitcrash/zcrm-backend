@@ -19,6 +19,14 @@ class ExchangeController extends CRMController {
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
+  def getODSMailsForMailboxGrouped(userId: Int, mailboxId: Int) = CRMActionAsync{rq =>
+    // if(rq.header.belongsToCompany(companyId)){
+    import utils.JSFormat.groupedMailFrmt
+    ExchangeODSMailDBRepository.getODSMailsByMailboxId(mailboxId).map(mails => 
+          mails.groupBy(_.conversationExtId)).map(res => 
+                  Json.toJson(res.map{ case (k,v) => GroupedMail(conversationId = k.get, mails = v)}))
+    // }else{ Future{Failure(new InsufficientRightsException())} }
+  }
 
   def getMail(userId: Int, mailboxId: Int, mailId: Int)  = CRMActionAsync { rq =>
     // if(rq.header.belongsToCompany(companyId)){
