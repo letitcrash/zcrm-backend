@@ -11,12 +11,12 @@ object ProjectDBRepository {
   import database.gen.current.dao._
 
   def createProject(project: Project, companyId: Int): Future[Project] = {
-    insertProject(project.asProjectEntity(companyId))
+    insertProject(project.asProjectEntity)
           .map(inserted => inserted.asProject)
   }
 
   def updateProject(project: Project, companyId: Int): Future[Project] = {
-    updateProjectEntity(project.asProjectEntity(companyId))
+    updateProjectEntity(project.asProjectEntity)
           .map(updated => updated.asProject)
   }
 

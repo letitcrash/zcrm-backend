@@ -72,6 +72,13 @@ DELETE   /companies/:companyId/positions/:positionId                            
 GET      /companies/:companyId/positions                                                     controllers.PositionController.searchAllPositionsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 GET      /companies/:companyId/positions/:positionId                                         controllers.PositionController.getPosition(companyId: Int, positionId: Int) 
  
+#Project 
+POST     /companies/:companyId/projects                                                      controllers.ProjectController.newProject(companyId: Int)
+PUT      /companies/:companyId/projects/:projectId                                           controllers.ProjectController.updateProject(companyId: Int, projectId: Int) 
+DELETE   /companies/:companyId/projects/:projectId                                           controllers.ProjectController.deleteProjectById(companyId: Int, projectId:Int) 
+GET      /companies/:companyId/projects                                                      controllers.ProjectController.searchAllProjectsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
+GET      /companies/:companyId/projects/:projectId                                           controllers.ProjectController.getProject(companyId: Int, projectId: Int)  
+
 # Employees
 POST    /companies/:companyId/employees                                                     controllers.EmployeeController.inviteEmployee(companyId: Int)
 
