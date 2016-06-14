@@ -29,7 +29,7 @@ trait TicketActionDBComponent extends DBComponentWithSlickQueryOps {
 
   val actions = TableQuery[ActionTable]
 
-  class ActionTable(tag: Tag) extends Table[TicketActionEntity](tag, "tbl_action") {
+  class ActionTable(tag: Tag) extends Table[TicketActionEntity](tag, "tbl_ticket_action") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def parentActionId = column[Int]("parent_action_id", Nullable)
     def ticketId = column[Int]("ticket_id")
