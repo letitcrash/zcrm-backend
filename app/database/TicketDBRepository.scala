@@ -17,7 +17,7 @@ object TicketDBRepository {
     for {
       ticketEntt <- insertTicket(ticket.asTicketEntity(companyId))
       members <- ticket.members.map( users => addMembers(ticketEntt.id.get, users)).getOrElse(Future())
-      //teams <- ticket.teams.map( teams => addTeams 
+      teams <- ticket.teams.map( teams => addTeams(ticketEntt.id.get, teams)).getOrElse(Future())
     } yield ticketEntt.asTicket
 
   }
