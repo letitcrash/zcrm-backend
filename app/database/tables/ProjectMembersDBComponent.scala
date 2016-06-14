@@ -22,7 +22,7 @@ trait ProjectMembersDBComponent extends DBComponent {
 
   val projectMembers = TableQuery[ProjectMembersTable]
   
-  class ProjectMembersTable(tag: Tag) extends Table[ProjectMembersEntity](tag, "tbl_projectMembers") {
+  class ProjectMembersTable(tag: Tag) extends Table[ProjectMembersEntity](tag, "tbl_project_members") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def projectId = column[Int]("project_id")
     def userId = column[Int]("user_id")

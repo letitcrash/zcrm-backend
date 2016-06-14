@@ -17,6 +17,7 @@ case class ClientEntity(
 
 trait ClientDBComponent extends DBComponent {
     this: DBComponent 
+    with  CompanyDBComponent
     with  ContactProfileDBComponent =>
 
   import dbConfig.driver.api._
@@ -29,12 +30,15 @@ trait ClientDBComponent extends DBComponent {
     def contactProfileId = column[Int]("contact_profile_id")
     def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
 
-    def fkCompanyId = foreignKey("fk_client_contact_profile", contactProfileId, contactProfiles)(_.id)
+    def fkProfileId = foreignKey("fk_client_contact_profile", contactProfileId, contactProfiles)(_.id)
+    def fkCompanyId = foreignKey("fk_client_company", companyId, companies)(_.id)
 
     def * = (id.?, companyId, contactProfileId, createdAt)<>(ClientEntity.tupled, ClientEntity.unapply)
   }
 
   //JOINS 
+  //(ClientEntity, ContactProfileEntity)
+  def clientWithProfile = clients join contactProfiles on (_.contactProfileId === _.id)
 
 
   //CRUD 
