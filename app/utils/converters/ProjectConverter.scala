@@ -1,16 +1,17 @@
 package utils.converters
 
-import database.tables.ProjectEntity
-import models.Project
+import database.tables.{ProjectEntity, UserEntity, ContactProfileEntity}
+import models.{Project, User}
 
 object ProjectConverter {
   
   implicit class EntityToProject (p: ProjectEntity) {
-      def asProject: Project = {
+      def asProject(members: Option[List[User]] = None): Project = {
               Project(id = p.id,
                       companyId = p.companyId,
                       name = p.name,
-                      description = p.description)    
+                      members = members,
+                      description = p.description)     
       }
   }
 

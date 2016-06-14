@@ -11,7 +11,6 @@ import database.PagedDBResult
 case class ProjectEntity(
   id: Option[Int] = None,
   companyId: Int,
-  assignedToMembersId: Option[Int] = None,
   name: String,
   description: Option[String] = None,
   recordStatus: Int = RowStatus.ACTIVE,
@@ -30,7 +29,6 @@ trait ProjectDBComponent extends DBComponent {
   class ProjectTable(tag: Tag) extends Table[ProjectEntity](tag, "tbl_project") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def companyId = column[Int]("company_id")
-    def assignedToMembersId = column[Int]("assigned_to_members_id", Nullable)
     def name = column[String]("name", O.SqlType("VARCHAR(255)"))
     def description = column[String]("description", O.SqlType("VARCHAR(255)"), Nullable)
     def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
@@ -38,9 +36,8 @@ trait ProjectDBComponent extends DBComponent {
     def updatedAt = column[Timestamp]("updated_at")
 
     def fkCompanyId = foreignKey("fk_project_company", companyId, companies)(_.id)
-    def fkAssignedToTeamId = foreignKey("fk_ticket_assigned_to_team_id", assignedToMembersId, projectMembers)(_.id)
 
-    def * = (id.?, companyId, assignedToMembersId.?, name, description.?, recordStatus, createdAt, updatedAt)<>(ProjectEntity.tupled, ProjectEntity.unapply)
+    def * = (id.?, companyId, name, description.?, recordStatus, createdAt, updatedAt)<>(ProjectEntity.tupled, ProjectEntity.unapply)
   }
 
 
