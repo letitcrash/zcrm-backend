@@ -44,6 +44,7 @@ class DAO extends UserDBComponent
     with ProjectDBComponent
     with ProjectMembersDBComponent
     with FileFolderDBComponent
+    with ClientDBComponent
     with FileDBComponent{
  import dbConfig.driver.api._
 
@@ -93,6 +94,7 @@ class DAO extends UserDBComponent
       Logger.info("Dropping ticketTeam members-> " + tryDrop(ticketTeamMembers.schema))
       Logger.info("Dropping projects          -> " + tryDrop(projects.schema))
       Logger.info("Dropping project members   -> " + tryDrop(projectMembers.schema))
+      Logger.info("Dropping clients           -> " + tryDrop(clients.schema))
       Success("Tables dropped")
     } catch {
       case ex: Exception =>
@@ -146,6 +148,7 @@ class DAO extends UserDBComponent
     Logger.info("Creating ticketTeam members-> " + tryCreate(ticketTeamMembers.schema))
     Logger.info("Creating projects          -> " + tryCreate(projects.schema))
     Logger.info("Creating project members   -> " + tryCreate(projectMembers.schema))
+    Logger.info("Creating clients           -> " + tryCreate(clients.schema))
     Success("Created All tables!")
   }
 
