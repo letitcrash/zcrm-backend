@@ -4,7 +4,7 @@ import models.Employee
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
-import models.{Ticket, AggregatedTicket, PagedResult, User}
+import models.{Ticket, Team, AggregatedTicket, PagedResult, User}
 import play.api.Logger
 import utils.converters.TicketConverter._
 
@@ -17,6 +17,7 @@ object TicketDBRepository {
     for {
       ticketEntt <- insertTicket(ticket.asTicketEntity(companyId))
       members <- ticket.members.map( users => addMembers(ticketEntt.id.get, users)).getOrElse(Future())
+      //teams <- ticket.teams.map( teams => addTeams 
     } yield ticketEntt.asTicket
 
   }
@@ -81,6 +82,12 @@ object TicketDBRepository {
     deleteAllMembersByTicketId(ticketId).flatMap(count =>
       insertTicketMembers(users.map( u => (ticketId, u.id.get).asTicketMemberEntt))
         .map(pair => users))
+  }
+
+  def addTeams(ticketId: Int, teams: List[Team]): Future[List[Team]] = {
+    deleteAllTeamsByTicketId(ticketId).flatMap(count => 
+      insertTicketTeamMembers(teams.map( t => (ticketId, t.id.get).asTicketTeamMemberEntt))
+        .map( pair => teams))
   }
 
 }

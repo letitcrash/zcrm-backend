@@ -121,6 +121,7 @@ POST   /companies/:companyId/tickets/:ticketId/comments                         
 POST   /companies/:companyId/tickets/:ticketId/mails/:mailId                                 controllers.TicketController.attachMailToTicket(companyId: Int, ticketId: Int, mailId: Int)
 POST   /companies/:companyId/tickets/:ticketId/files/:fileId                                 controllers.TicketController.attachFileToTicket(companyId: Int, ticketId: Int, fileId: Int)
 POST   /companies/:companyId/tickets/:ticketId/members                                       controllers.TicketController.addMembersToTicket(companyId: Int, ticketId: Int)
+POST   /companies/:companyId/tickets/:ticketId/teams                                         controllers.TicketController.addTeamMembersToTicket(companyId: Int, ticketId: Int)
 PUT    /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.updateTicket(companyId: Int, ticketId: Int)
 DELETE /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.deleteTicketById(companyId: Int, ticketId:Int) 
 DELETE /companies/:companyId/tickets/:ticketId/attachedmails/:attachedMailId                 controllers.TicketController.detachMailFromTicket(companyId: Int, ticketId: Int, attachedMailId: Int) 
