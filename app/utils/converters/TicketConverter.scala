@@ -68,7 +68,7 @@ object TicketConverter {
   implicit class AggregatedTicketToTicketEntt(t: AggregatedTicket) {
     def asTicketEntity(): TicketEntity = {
       TicketEntity(id = t.id match { case Some(x) => Some(Integer.parseInt(t.id.get)); case _ => None},
-                   projectId = t.company.id.get,
+                   projectId = t.company.id,
                    createdByUserId = t.createdByUser.id.get,
                    requestedByUserId = t.requestedByUser match { case Some(x) => x.id; case _ => None },
                    assignedToUserId = t.assignedToUser match { case Some(x) => x.id; case _ => None},

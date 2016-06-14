@@ -10,7 +10,7 @@ import database.PagedDBResult
 
 case class TicketEntity(
                          id: Option[Int] = None,
-                         projectId: Int,
+                         projectId: Option[Int] = None,
                          createdByUserId: Int,
                          requestedByUserId: Option[Int] = None,
                          //requestedByEmail: Option[String] = None,
@@ -37,7 +37,7 @@ trait TicketDBComponent extends DBComponent {
   
   class TicketTable(tag: Tag) extends Table[TicketEntity](tag, "tbl_ticket") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
-    def projectId = column[Int]("project_id")
+    def projectId = column[Int]("project_id", Nullable)
     def createdByUserId = column[Int]("created_by_user_id")
     def requestedByUserId = column[Int]("requested_by_user_id", Nullable)
     def assignedToUserId = column[Int]("assigned_to_user_id", Nullable)
@@ -58,7 +58,7 @@ trait TicketDBComponent extends DBComponent {
     def fkAssignedToTeamId = foreignKey("fk_ticket_assigned_to_team_id", assignedToTeamId, teams)(_.id)
 
 
-    def * = (id.?, projectId, createdByUserId, requestedByUserId.?, assignedToUserId.?, assignedToTeamId.?, status, priority, subject,
+    def * = (id.?, projectId.?, createdByUserId, requestedByUserId.?, assignedToUserId.?, assignedToTeamId.?, status, priority, subject,
              description.?, recordStatus, createdAt, updatedAt)<>(TicketEntity.tupled, TicketEntity.unapply)
 
   }
