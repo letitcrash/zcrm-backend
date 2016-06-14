@@ -63,27 +63,32 @@ trait TicketDBComponent extends DBComponent {
 
   }
 
+  //JOINS
+  //(TicketEntity, (UserEntity, ContactProfileEntity))
+  def aggregatedTickets = tickets join usersWithProfile on (_.createdByUserId === _._1.id)
+                          
 
-  //(((((TicketEntity, (CompanyEntity, ContactProfileEntity)), Option[(UserEntity, ContactProfileEntity)]),
-  //                    Option[(UserEntity, ContactProfileEntity)]), Option[(UserEntity, ContactProfileEntity)]), Option[TeamEntity])
-//  def aggregatedTickets = tickets join
-//                         companyWithProfile on (_.projectId === _._1.id ) joinLeft
-//                         usersWithProfile on (_._1.createdByUserId === _._1.id) joinLeft
-//                         usersWithProfile on (_._1._1.requestedByUserId === _._1.id) joinLeft
-//                         usersWithProfile on (_._1._1._1.assignedToUserId === _._1.id) joinLeft
-//                         teams on (_._1._1._1._1.assignedToTeamId === _.id)
+/*
+//(((((TicketEntity, (CompanyEntity, ContactProfileEntity)), Option[(UserEntity, ContactProfileEntity)]), Option[(UserEntity, ContactProfileEntity)]), Option[(UserEntity, ContactProfileEntity)]), Option[TeamEntity])
+  def aggregatedTickets = tickets join
+                         companyWithProfile on (_.projectId === _._1.id ) joinLeft
+                         usersWithProfile on (_._1.createdByUserId === _._1.id) joinLeft
+                         usersWithProfile on (_._1._1.requestedByUserId === _._1.id) joinLeft
+                         usersWithProfile on (_._1._1._1.assignedToUserId === _._1.id) joinLeft
+                         teams on (_._1._1._1._1.assignedToTeamId === _.id)
 
-//  def aggregatedTicketQry(companyId: Int,
-//                          createdByUserIds: List[Int],
-//                          //requestedByUserIds: List[Int],
-//                          assignedToUserIds: List[Int],
-//                          assignedToTeamIds: List[Int]) = {
-//    aggregatedTickets.filter(t =>(t._1._1._1._1._1.projectId === companyId && t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE))
-//      .filteredBy( createdByUserIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.createdByUserId inSet _)
-//     // .filteredBy( requestedByUserIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.requestedByUserId inSet _)
-//      .filteredBy( assignedToUserIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.assignedToUserId inSet _)
-//      .filteredBy( assignedToTeamIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.assignedToTeamId inSet _)
- //   }
+  def aggregatedTicketQry(companyId: Int,
+                          createdByUserIds: List[Int],
+                          //requestedByUserIds: List[Int],
+                          assignedToUserIds: List[Int],
+                          assignedToTeamIds: List[Int]) = {
+    aggregatedTickets.filter(t =>(t._1._1._1._1._1.projectId === companyId && t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE))
+      .filteredBy( createdByUserIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.createdByUserId inSet _)
+     // .filteredBy( requestedByUserIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.requestedByUserId inSet _)
+      .filteredBy( assignedToUserIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.assignedToUserId inSet _)
+      .filteredBy( assignedToTeamIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.assignedToTeamId inSet _)
+   }
+*/
 
   def ticketQry(companyId: Int) = {
     tickets.filter(t =>(t.projectId === companyId &&
@@ -93,6 +98,11 @@ trait TicketDBComponent extends DBComponent {
   //CRUD TicketEntity
   def insertTicket(ticket: TicketEntity): Future[TicketEntity] = {
       db.run((tickets returning tickets.map(_.id) into ((ticket,id) => ticket.copy(id=Some(id)))) += ticket)
+  }
+
+  def getAggTicketEntityById(id: Int): Future[(TicketEntity, (UserEntity, ContactProfileEntity))] = {
+    db.run(aggregatedTickets.filter(t =>(t._1.id === id &&
+                               t._1.recordStatus === RowStatus.ACTIVE)).result.head)
   }
 
   def getTicketEntityById(id: Int): Future[TicketEntity] = {
@@ -148,40 +158,41 @@ trait TicketDBComponent extends DBComponent {
         )
   }
 
-//  def getAllAggregatedTicketsByCompanyId(companyId: Int,
-//                                         createdByUserIds: List[Int],
-//                                         //requestedByUserIds: List[Int],
-//                                         assignedToUserIds: List[Int],
-//                                         assignedToTeamIds: List[Int],
-//                                         pageSize: Option[Int],
-//                                         pageNr: Option[Int])
-//   : Future[PagedDBResult[(((((TicketEntity, (CompanyEntity, ContactProfileEntity)), Option[(UserEntity, ContactProfileEntity)]),
-//                          Option[(UserEntity, ContactProfileEntity)]), Option[(UserEntity, ContactProfileEntity)]), Option[TeamEntity])]]= {
-//    val baseQry = aggregatedTicketQry(companyId,
-//                                      createdByUserIds,
-//                                      //requestedByUserIds,
-//                                      assignedToUserIds,
-//                                      assignedToTeamIds)
-//    var pageRes =
-//    if (pageNr.nonEmpty || pageSize.nonEmpty) {
-//      val psize = pageSize.getOrElse(10)
-//      val pnr = pageNr.getOrElse(1)
-//
-//      baseQry.sortBy(_._1._1._1._1._1.id.asc)
-//             .drop(psize * (pnr - 1))
-//             .take(psize)
-//    }else{ baseQry.sortBy(_._1._1._1._1._1.id.asc) }
-//
-//    db.run(pageRes.result).flatMap( list =>
-//        db.run(baseQry.length.result).map( totalCount =>
-//         PagedDBResult(
-//            pageSize = pageSize.get,
-//            pageNr = pageNr.get,
-//            totalCount = totalCount,
-//            data = list)
-//          )
-//        )
-//  }
+/*
+  def getAllAggregatedTicketsByCompanyId(companyId: Int,
+                                         createdByUserIds: List[Int],
+                                         //requestedByUserIds: List[Int],
+                                         assignedToUserIds: List[Int],
+                                         assignedToTeamIds: List[Int],
+                                         pageSize: Option[Int],
+                                         pageNr: Option[Int])
+   : Future[PagedDBResult[(((((TicketEntity, (CompanyEntity, ContactProfileEntity)), Option[(UserEntity, ContactProfileEntity)]),
+                          Option[(UserEntity, ContactProfileEntity)]), Option[(UserEntity, ContactProfileEntity)]), Option[TeamEntity])]]= {
+    val baseQry = aggregatedTicketQry(companyId,
+                                      createdByUserIds,
+                                      //requestedByUserIds,
+                                      assignedToUserIds,
+                                      assignedToTeamIds)
+    var pageRes =
+    if (pageNr.nonEmpty || pageSize.nonEmpty) {
+      val psize = pageSize.getOrElse(10)
+      val pnr = pageNr.getOrElse(1)
 
+      baseQry.sortBy(_._1._1._1._1._1.id.asc)
+             .drop(psize * (pnr - 1))
+             .take(psize)
+    }else{ baseQry.sortBy(_._1._1._1._1._1.id.asc) }
+
+    db.run(pageRes.result).flatMap( list =>
+        db.run(baseQry.length.result).map( totalCount =>
+         PagedDBResult(
+            pageSize = pageSize.get,
+            pageNr = pageNr.get,
+            totalCount = totalCount,
+            data = list)
+          )
+        )
+  }
+*/
 }
 

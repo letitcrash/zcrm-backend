@@ -7,6 +7,24 @@ import models.{Ticket, AggregatedTicket}
 
 object TicketConverter {
   
+  implicit class AggEntityToTicket (t: (TicketEntity, (UserEntity, ContactProfileEntity))) {
+      import utils.converters.UserConverter._
+      def asTicket(members: List[(TicketMemberEntity, (UserEntity, ContactProfileEntity))]): Ticket= {
+              Ticket(id = Some(new DecimalFormat("#000000").format(t._1.id.get)),
+                     projectId = t._1.projectId,
+                     createdByUserId = t._1.createdByUserId,
+                     createdByUser = Some(t._2.asUser),
+                    //requestedByUserId = t.requestedByUserId match { case Some(x) => t.requestedByUserId; case _ => None },
+                    //assignedToUserId = t.assignedToUserId match { case Some(x) => t.assignedToUserId; case _ => None},
+                    //assignedToTeamId = t.assignedToTeamId match { case Some(x) => t.assignedToTeamId; case _ => None},
+                     members = Some(members.map( m => m._2.asUser)),
+                     status = t._1.status,
+                     priority = t._1.priority,
+                     subject = t._1.subject,
+                     description = t._1.description match { case Some(x) => t._1.description; case _ => None})    
+      }
+  }
+
   implicit class EntityToTicket (t: TicketEntity) {
       def asTicket: Ticket= {
               Ticket(id = Some(new DecimalFormat("#000000").format(t.id.get)),

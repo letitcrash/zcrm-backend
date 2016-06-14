@@ -32,7 +32,12 @@ object TicketDBRepository {
   }
 
   def getTicketById(id: Int): Future[Ticket] = {
-    getTicketEntityById(id).map(ticket => ticket.asTicket)
+    for {
+    ticket <- getAggTicketEntityById(id)
+    userEntts <- getUsersByTicketId(ticket._1.id.get)
+    } yield ticket.asTicket(userEntts)
+
+    //getAggTicketEntityById(id).map(ticket => ticket.asTicket)
   }
 
   def getTicketsByCompanyId(companyId: Int): Future[List[Ticket]] = {
