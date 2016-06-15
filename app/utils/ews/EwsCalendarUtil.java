@@ -20,9 +20,9 @@ public class EwsCalendarUtil {
         CalendarFolder cf= CalendarFolder.bind(service, WellKnownFolderName.Calendar);
         FindItemsResults<Appointment> findResults = cf.findAppointments(new CalendarView(startDate, endDate));
         for (Appointment appt : findResults.getItems()) {
-            CalendarItem item = new CalendarItem(appt.getSubject(), appt.getBody().toString(),
-                                                                                        new Timestamp(appt.getStart().getTime()),
-                                                                                        new Timestamp(appt.getEnd().getTime()));
+            CalendarItem item = new CalendarItem(appt.getSubject(), 
+                                                 new Timestamp(appt.getStart().getTime()),
+                                                 new Timestamp(appt.getEnd().getTime()));
             result.add(item);
         }
         return result;
