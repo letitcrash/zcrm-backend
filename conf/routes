@@ -115,6 +115,8 @@ GET     /users/:userId/mailboxes                                                
 GET    /users/:userId/mailboxes/:mailboxId/mails                                             controllers.ExchangeController.getODSMailsForMailboxGrouped(userId: Int, mailboxId: Int)
 GET    /users/:userId/mailboxes/:mailboxId/mails/:mailId                                     controllers.ExchangeController.getMail(userId: Int, mailboxId: Int, mailId: Int)
 
+GET    /users/:userId/mailboxes/:mailboxId/calendar                                          controllers.ExchangeController.getCalendarItemsByMailBoxId(userId: Int, mailboxId: Int, startDate: Long, endDate: Long)
+
 #Tickets
 POST   /companies/:companyId/tickets                                                         controllers.TicketController.newTicket(companyId: Int)
 POST   /companies/:companyId/tickets/:ticketId/comments                                      controllers.TicketController.addCommentToTicket(companyId: Int, ticketId: Int)
