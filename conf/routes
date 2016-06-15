@@ -27,6 +27,13 @@ GET     /companies                                                              
 GET     /companies/:companyId                                                                 controllers.CompanyController.get(companyId: Int)
 GET     /companies/:companyId/expand                                                          controllers.CompanyController.getExpanded(companyId: Int)
 
+#Clients
+POST    /companies/:companyId/clients                                                         controllers.ClientController.newClient(companyId: Int)                   
+PUT     /companies/:companyId/clients/:clientId                                               controllers.ClientController.updateClient(companyId: Int, clientId: Int)
+DELETE  /companies/:companyId/clients/:clientId                                               controllers.ClientController.deleteClient(companyId: Int, clientId: Int)
+GET     /companies/:companyId/clients                                                         controllers.ClientController.getAllClientesByCompanyId(companyId: Int)
+GET     /companies/:companyId/clients/:clientId																								controllers.ClientController.getClientById(companyId: Int, clientId: Int) 
+
 # Delegate
 
 POST	  /companies/:companyId/delegates                                                      controllers.DelegateController.newDelegate(companyId: Int)

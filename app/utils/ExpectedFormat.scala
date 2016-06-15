@@ -112,6 +112,12 @@ object ExpectedFormat {
     "name"           -> Json.toJson("[M](string) Department name")
   ))
 
+  val expectedClientFormat = Json.toJson(ListMap(
+    "id"             -> Json.toJson("[O](int) Id"),
+    "companyId"      -> Json.toJson("[M](int) company ID"),
+    "contactProfile" -> expectedContactProfileFormat
+  ))
+
   val expectedTicketFormat =  Json.toJson(ListMap(
     "id"             -> Json.toJson("[O](int) In DB id"),
     "companyId"      -> Json.toJson("[M](int) Company ID"),

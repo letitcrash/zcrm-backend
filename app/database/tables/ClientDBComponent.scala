@@ -42,9 +42,37 @@ trait ClientDBComponent extends DBComponent {
 
 
   //CRUD 
+  def insertClient(client: ClientEntity): Future[ClientEntity] = {
+      db.run((clients returning clients.map(_.id) into ((client,id) => client.copy(id=Some(id)))) += client)
+  }
 
+  def getClientEntityById(id: Int): Future[ClientEntity] = {
+    db.run(clients.filter(_.id === id).result.head)
+  }
 
+  def getClientWithProfileById(id: Int): Future[(ClientEntity, ContactProfileEntity)] = {
+    db.run(clientWithProfile.filter(_._1.id === id).result.head)
+  }
+
+  def updateClientEntity(client: ClientEntity): Future[ClientEntity] = {
+    db.run(clients.filter(_.id === client.id).update(client))
+                    .map(num => client) 
+  }
+
+  def deleteClientById(id: Int): Future[(ClientEntity, ContactProfileEntity)] = {
+    val deleted = getClientWithProfileById(id)
+    db.run(clients.filter(_.id === id).delete)
+    deleted
+  } 
+
+  //TODO:Pagination
   //FILTERS
+  def getAllClientsByCompanyId(companyId: Int): Future[List[ClientEntity]] = {
+    db.run(clients.filter(_.companyId === companyId).result).map(_.toList)
+  }
 
+  def getAllClientsWithContactProfileByCompanyId(companyId: Int): Future[List[(ClientEntity, ContactProfileEntity)]] = {
+    db.run(clientWithProfile.filter(_._1.companyId === companyId).result).map(_.toList)
+  }
 }
 
