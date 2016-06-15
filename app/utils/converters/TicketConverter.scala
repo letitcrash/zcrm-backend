@@ -2,7 +2,7 @@ package utils.converters
 
 import java.text.DecimalFormat
 
-import database.tables.{TicketEntity, CompanyEntity, UserEntity, ContactProfileEntity, TeamEntity, TicketMemberEntity, TicketTeamMemberEntity, TicketClientEntity}
+import database.tables.{TicketEntity, CompanyEntity, UserEntity, ContactProfileEntity, TeamEntity, TicketMemberEntity, TicketTeamMemberEntity, TicketClientEntity, ClientEntity}
 import models.{Ticket, AggregatedTicket}
 
 object TicketConverter {
@@ -10,7 +10,9 @@ object TicketConverter {
   implicit class AggEntityToTicket (t: (TicketEntity, (UserEntity, ContactProfileEntity))) {
       import utils.converters.UserConverter._
       import utils.converters.TeamConverter._
-      def asTicket(members: List[(TicketMemberEntity, (UserEntity, ContactProfileEntity))], teams: List[(TicketTeamMemberEntity , TeamEntity)]): Ticket= {
+      import utils.converters.ClientConverter._
+      def asTicket(members: List[(TicketMemberEntity, (UserEntity, ContactProfileEntity))], teams: List[(TicketTeamMemberEntity , TeamEntity)],
+                   clients: List[(TicketClientEntity, (ClientEntity, ContactProfileEntity))]): Ticket= {
               Ticket(id = Some(new DecimalFormat("#000000").format(t._1.id.get)),
                      projectId = t._1.projectId,
                      createdByUserId = t._1.createdByUserId,
@@ -20,6 +22,7 @@ object TicketConverter {
                     //assignedToTeamId = t.assignedToTeamId match { case Some(x) => t.assignedToTeamId; case _ => None},
                      members = Some(members.map( m => m._2.asUser)),
                      teams = Some(teams.map( m => m._2.asTeam)),
+                     clients = Some(clients.map( c => c._2.asClient)),
                      status = t._1.status,
                      priority = t._1.priority,
                      subject = t._1.subject,
