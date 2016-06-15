@@ -13,7 +13,7 @@ import scala.concurrent.Future
 object ExchangeRepository {
   import database.gen.current.dao._
 
-  def getCalendarItemsByMailboxId(mailboxId: Int, startDate: Timestamp, endDate: Timestamp):Future[List[CalendarItem]] = {
+  def getCalendarItemsByMailboxId(mailboxId: Int, startDate: Long, endDate: Long):Future[List[CalendarItem]] = {
     val ewsAuth = new EwsAuthUtil()
     val ewsCalendar = new EwsCalendarUtil()
     getMailboxEntityById(mailboxId).map{res =>

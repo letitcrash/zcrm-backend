@@ -37,8 +37,6 @@ class ExchangeController extends CRMController {
 
   def getCalendarItemsByMailBoxId(userId:Int, mailboxId: Int, startDate: Long, endDate: Long) = CRMActionAsync{ rq =>
     import utils.JSFormat.calendarItemFrmt
-    val start = new Timestamp(startDate)
-    val end = new Timestamp(endDate)
-    ExchangeRepository.getCalendarItemsByMailboxId(mailboxId, start, end).map(res => Json.toJson(res));
+    ExchangeRepository.getCalendarItemsByMailboxId(mailboxId, startDate, endDate).map(res => Json.toJson(res));
   }
 }

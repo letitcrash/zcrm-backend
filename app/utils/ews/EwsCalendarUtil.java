@@ -11,14 +11,17 @@ import models.CalendarItem;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.Date;
 
 public class EwsCalendarUtil {
 
-    public List<CalendarItem> findAppointments(ExchangeService service, Timestamp startDate, Timestamp endDate) throws Exception {
+    public List<CalendarItem> findAppointments(ExchangeService service, Long startDate, Long endDate) throws Exception {
         List<CalendarItem> result = new ArrayList<>();
 
         CalendarFolder cf= CalendarFolder.bind(service, WellKnownFolderName.Calendar);
-        FindItemsResults<Appointment> findResults = cf.findAppointments(new CalendarView(startDate, endDate));
+        FindItemsResults<Appointment> findResults = cf.findAppointments(new CalendarView(new Date(TimeUnit.SECONDS.toMillis(startDate)), 
+                                                                                         new Date(TimeUnit.SECONDS.toMillis(endDate))));
         for (Appointment appt : findResults.getItems()) {
             CalendarItem item = new CalendarItem(appt.getSubject(), 
                                                  new Timestamp(appt.getStart().getTime()),
