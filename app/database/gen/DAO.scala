@@ -43,6 +43,7 @@ class DAO extends UserDBComponent
     with TicketTeamMemberDBComponent
     with ProjectDBComponent
     with ProjectMembersDBComponent
+    with ProjectTeamMemberDBComponent
     with FileFolderDBComponent
     with ClientDBComponent
     with TicketClientDBComponent
@@ -95,6 +96,7 @@ class DAO extends UserDBComponent
       Logger.info("Dropping ticketTeam members-> " + tryDrop(ticketTeamMembers.schema))
       Logger.info("Dropping projects          -> " + tryDrop(projects.schema))
       Logger.info("Dropping project members   -> " + tryDrop(projectMembers.schema))
+      Logger.info("Dropping projectTeams      -> " + tryDrop(projectTeamMembers.schema))
       Logger.info("Dropping clients           -> " + tryDrop(clients.schema))
       Logger.info("Dropping ticket clients    -> " + tryDrop(ticketClients.schema))
       Success("Tables dropped")
@@ -150,6 +152,7 @@ class DAO extends UserDBComponent
     Logger.info("Creating ticketTeam members-> " + tryCreate(ticketTeamMembers.schema))
     Logger.info("Creating projects          -> " + tryCreate(projects.schema))
     Logger.info("Creating project members   -> " + tryCreate(projectMembers.schema))
+    Logger.info("Creating projectTeams      -> " + tryCreate(projectTeamMembers.schema))
     Logger.info("Creating clients           -> " + tryCreate(clients.schema))
     Logger.info("Creating ticket clients    -> " + tryCreate(ticketClients.schema))
     Success("Created All tables!")

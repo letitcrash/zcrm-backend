@@ -9,7 +9,6 @@ import slick.profile.SqlProfile.ColumnOption.Nullable
 import database.PagedDBResult
 
 case class ProjectMembersEntity(
-  id: Option[Int] = None,
   projectId: Int,
   userId: Int)
 
@@ -23,25 +22,20 @@ trait ProjectMembersDBComponent extends DBComponent {
   val projectMembers = TableQuery[ProjectMembersTable]
   
   class ProjectMembersTable(tag: Tag) extends Table[ProjectMembersEntity](tag, "tbl_project_members") {
-    def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def projectId = column[Int]("project_id")
     def userId = column[Int]("user_id")
 
     def fkUserId = foreignKey("fk_project_members_users", userId, users)(_.id)
     def fkProjectId = foreignKey("fk_project_members_project", projectId, projects)(_.id)
 
-    def * = (id.?, projectId, userId)<>(ProjectMembersEntity.tupled, ProjectMembersEntity.unapply)
+    def * = (projectId, userId)<>(ProjectMembersEntity.tupled, ProjectMembersEntity.unapply)
   }
 
   def membersWithUsers = projectMembers join usersWithProfile on ( _.userId === _._1.id)
 
     //CRUD ProjectMembersEntity
-  def insertProjectMember(projectMember: ProjectMembersEntity): Future[ProjectMembersEntity] = {
-      db.run((projectMembers returning projectMembers.map(_.id) into ((projectMembers,id) => projectMembers.copy(id=Some(id)))) += projectMember)
-  }
-
-  def getProjectMemberEntityById(id: Int): Future[ProjectMembersEntity] = {
-    db.run(projectMembers.filter(_.id === id).result.head)
+  def insertProjectMember(entity: ProjectMembersEntity): Future[ProjectMembersEntity] = {
+    db.run(projectMembers += entity).map( res => entity)
   }
 
   def getProjectMemeberByProjectId(projectId: Int): Future[List[ProjectMembersEntity]] = {
@@ -52,11 +46,13 @@ trait ProjectMembersDBComponent extends DBComponent {
     db.run(membersWithUsers.filter(_._1.projectId === projectId).result).map(_.toList)
   }
 
-  def deleteProjectMembersById(id: Int): Future[ProjectMembersEntity] = {
-    val deleted = getProjectMemberEntityById(id)
-    db.run(projectMembers.filter(_.id === id).delete)
-    deleted    
-  } 
+  def deleteAllMembersByProjectId(projectId: Int): Future[Int] = {
+    db.run(projectMembers.filter(t => ( t.projectId === projectId)).delete)
+  }
+
+  def insertProjectMembers(projectMembers: List[ProjectMembersEntity]): Future[List[ProjectMembersEntity]] = {
+    Future.sequence(projectMembers.map( d =>  insertProjectMember(d)))
+  }
 
 }
 

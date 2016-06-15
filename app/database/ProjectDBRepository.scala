@@ -1,8 +1,9 @@
 package database
 
-import models.{PagedResult, Project}
+import models.{PagedResult, Project, User, Team}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import utils.converters.ProjectConverter._
+import utils.converters.ProjectMemberConverter._
 
 import scala.concurrent.Future
 
@@ -36,7 +37,6 @@ object ProjectDBRepository {
   }
 
   def getProjectWithMembersByProjectId(id: Int): Future[Project] = {
-    import utils.converters.ProjectMemberConverter._
     for{
         project <- getProjectEntityById(id)
         members <- getProjectMembersWithUsersByProjectId(id).map(_.asProjectMemberWithUsers)
@@ -72,5 +72,17 @@ object ProjectDBRepository {
                                             totalCount = dbPage.totalCount,
                                             data = projectList))
     }
+  }
+
+  def addMembers(projectId: Int, users: List[User]): Future[List[User]] = {
+    deleteAllMembersByProjectId(projectId).flatMap(count =>
+      insertProjectMembers(users.map( u => (projectId, u.id.get).asProjectMemberEntt))
+        .map(pair => users))
+  }
+
+  def addTeams(projectId: Int, teams: List[Team]): Future[List[Team]] = {
+    deleteAllTeamsByProjectId(projectId).flatMap(count => 
+      insertProjectTeamMembers(teams.map( t => (projectId, t.id.get).asProjectTeamMemberEntt))
+        .map( pair => teams))
   }
 }
