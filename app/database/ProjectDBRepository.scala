@@ -26,7 +26,13 @@ object ProjectDBRepository {
   }
 
   def getProjectById(id: Int): Future[Project] = {
-    getProjectEntityById(id).map(project => project.asProject())
+    for{
+       project        <- getProjectEntityById(id)
+       countNew       <- getCountNewTicket(id)
+       countOpen      <- getCountOpenTicket(id)
+       countPostponed <- getCountPostponedTicket(id)
+       countResolved  <- getCountResolvedTicket(id)
+    }yield(project.asProject(None, Some(countNew), Some(countOpen), Some(countPostponed), Some(countResolved)))
   }
 
   def getProjectWithMembersByProjectId(id: Int): Future[Project] = {
@@ -38,15 +44,33 @@ object ProjectDBRepository {
   }
 
   def getProjectsByCompanyId(companyId: Int): Future[List[Project]] = {
-    getProjectEntitiesByCompanyId(companyId).map(list => list.map(_.asProject()))
+    getProjectEntitiesByCompanyId(companyId).flatMap(list =>
+      Future.sequence( 
+          list.map(project =>
+              for{
+                 countNew       <- getCountNewTicket(project.id.get)
+                 countOpen      <- getCountOpenTicket(project.id.get)
+                 countPostponed <- getCountPostponedTicket(project.id.get)
+                 countResolved  <- getCountResolvedTicket(project.id.get)
+              }yield(project.asProject(None, Some(countNew), Some(countOpen), Some(countPostponed), Some(countResolved))))))
   } 
 
 
   def searchProjectByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String]): Future[PagedResult[Project]] = {
-    searchProjectEntitiesByName(companyId, pageSize, pageNr, searchTerm).map{dbPage =>
-        PagedResult[Project](pageSize = dbPage.pageSize,
-                             pageNr = dbPage.pageNr,
-                             totalCount = dbPage.totalCount,
-                             data = dbPage.data.map(_.asProject()))}
+    searchProjectEntitiesByName(companyId, pageSize, pageNr, searchTerm).flatMap{dbPage =>
+        Future.sequence(
+            dbPage.data.map(project =>
+              for{
+                 countNew       <- getCountNewTicket(project.id.get)
+                 countOpen      <- getCountOpenTicket(project.id.get)
+                 countPostponed <- getCountPostponedTicket(project.id.get)
+                 countResolved  <- getCountResolvedTicket(project.id.get)
+              }yield(project.asProject(None, Some(countNew), Some(countOpen), Some(countPostponed), Some(countResolved)))))
+                  .map(projectList =>
+                       PagedResult[Project](pageSize = dbPage.pageSize,
+                                            pageNr = dbPage.pageNr,
+                                            totalCount = dbPage.totalCount,
+                                            data = projectList))
+    }
   }
 }

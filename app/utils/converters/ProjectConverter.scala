@@ -6,12 +6,20 @@ import models.{Project, User}
 object ProjectConverter {
   
   implicit class EntityToProject (p: ProjectEntity) {
-      def asProject(members: Option[List[User]] = None): Project = {
+      def asProject(members: Option[List[User]] = None, 
+                    countNew: Option[Int] = None,
+                    countOpen: Option[Int] = None,
+                    countPostponed: Option[Int] = None,
+                    countResolved: Option[Int] = None): Project = {
               Project(id = p.id,
                       companyId = p.companyId,
                       name = p.name,
                       members = members,
-                      description = p.description)     
+                      description = p.description,
+                      countNew = countNew,
+                      countOpen = countOpen,
+                      countPostponed = countPostponed,
+                      countResolved = countResolved)     
       }
   }
 

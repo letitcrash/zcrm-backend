@@ -4,4 +4,8 @@ case class Project(id: Option[Int] = None,
                    companyId: Int,
                    name: String,
                    members: Option[List[User]] = None,
-                   description: Option[String] = None)
+                   description: Option[String] = None,
+                   countNew: Option[Int] = None,
+                   countOpen: Option[Int] = None,
+                   countPostponed: Option[Int] = None,
+                   countResolved: Option[Int] = None)

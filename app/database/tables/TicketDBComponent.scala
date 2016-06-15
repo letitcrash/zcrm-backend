@@ -158,6 +158,27 @@ trait TicketDBComponent extends DBComponent {
         )
   }
 
+
+  //Counts
+  def getCountNewTicket(projectId: Int): Future[Int] = {
+   db.run(tickets.filter(s => (s.projectId === projectId && 
+                               s.status === TicketStatus.NEW)).length.result)
+  }
+
+  def getCountOpenTicket(projectId: Int): Future[Int] = {
+   db.run(tickets.filter(s => (s.projectId === projectId && 
+                               s.status === TicketStatus.OPEN)).length.result)
+  }
+
+  def getCountPostponedTicket(projectId: Int): Future[Int] = {
+   db.run(tickets.filter(s => (s.projectId === projectId && 
+                               s.status === TicketStatus.POSTPONED)).length.result)
+  }
+  
+  def getCountResolvedTicket(projectId: Int): Future[Int] = {
+   db.run(tickets.filter(s => (s.projectId === projectId && 
+                               s.status === TicketStatus.RESOLVED)).length.result)
+  }
 /*
   def getAllAggregatedTicketsByCompanyId(companyId: Int,
                                          createdByUserIds: List[Int],
