@@ -4,7 +4,7 @@ import models.Employee
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
-import models.{Ticket, Team, AggregatedTicket, PagedResult, User, Client}
+import models.{Ticket, Team, PagedResult, User, Client}
 import play.api.Logger
 import utils.converters.TicketConverter._
 
@@ -54,31 +54,6 @@ object TicketDBRepository {
                             data = dbPage.data.map(_.asTicket))}
   }
 
-//  def getAggregatedTicketById(ticketId: Int): Future[AggregatedTicket] = {
-//    getAggregatedTicketEntityById(ticketId).map(aggTicket => aggTicket.asTicket)
-//  }
-//
-//  def getAllAggregatedTickets(companyId: Int,
-//                              createdByUserIds: List[Int],
-//                              //requestedByUserIds: List[Int],
-//                              assignedToUserIds: List[Int],
-//                              assignedToTeamIds: List[Int],
-//                              pageSize: Option[Int],
-//                              pageNr: Option[Int]): Future[PagedResult[AggregatedTicket]] = {
-//    getAllAggregatedTicketsByCompanyId(companyId, createdByUserIds, assignedToUserIds, assignedToTeamIds, pageSize,pageNr)
-//          .map(dbPage => PagedResult[AggregatedTicket](pageSize = dbPage.pageSize,
-//                                                       pageNr = dbPage.pageNr,
-//                                                       totalCount = dbPage.totalCount,
-//                                                       data = dbPage.data.map(_.asTicket)))
-//  }
-//
-//  def updateAggregatedTicket(aggTicket: AggregatedTicket): Future[AggregatedTicket] = {
-//    updateTicketEntity(aggTicket.asTicketEntity)
-//          .flatMap(updated => getAggregatedTicketById(updated.id.get))
-//
-//  }
-  
-
   def addMembers(ticketId: Int, users: List[User]): Future[List[User]] = {
     deleteAllMembersByTicketId(ticketId).flatMap(count =>
       insertTicketMembers(users.map( u => (ticketId, u.id.get).asTicketMemberEntt))
@@ -96,5 +71,4 @@ object TicketDBRepository {
       insertTicketClients(clients.map( c => (ticketId, c.id.get).asTicketClientEntt))
         .map( pair => clients))
   }
-
 }

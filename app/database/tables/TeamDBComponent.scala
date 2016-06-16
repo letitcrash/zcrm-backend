@@ -162,6 +162,10 @@ trait TeamDBComponent extends DBComponent {
         )
   }
 
+  def getTeamsCountByCompanyId(companyId: Int): Future[Int] = {
+   db.run(teams.filter(t => (t.companyId === companyId && 
+                             t.recordStatus === RowStatus.ACTIVE)).length.result)
+  }
 
 }
 

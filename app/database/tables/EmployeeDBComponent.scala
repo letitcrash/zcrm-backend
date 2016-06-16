@@ -269,5 +269,8 @@ trait EmployeeDBComponent extends DBComponentWithSlickQueryOps{
     getEmployeeById(employeeId).flatMap(empl =>
           updateEmployeeWithUser(empl.copy(unionId = unionId)))
   }
-
+  
+  def getEmployeeCountByCompanyId(companyId: Int): Future[Int] = {
+   db.run(employees.filter(_.companyId === companyId).length.result)
+  }
 }

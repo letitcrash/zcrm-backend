@@ -131,23 +131,6 @@ object ExpectedFormat {
     "description"     -> Json.toJson("[O](string) Description")    
   ))
 
-  val expectedAggregatedTicketFormat =  Json.toJson(ListMap(
-    "id"              -> Json.toJson("[O](int) In DB id"),
-    "company"         -> Json.toJson(ListMap(
-          "id"            -> Json.toJson("[M](int) CompanyId"),
-          "name"          -> Json.toJson("[O](string) Company Name"),
-          "vatId"         -> Json.toJson("[O](string) VatId"),
-          "contactProfile"-> expectedContactProfileFormat)),
-    "createdByUser"   -> expectedUserFormat,
-    "requestedByUser" -> expectedUserFormat,
-    "assignedToUser"  -> expectedUserFormat,
-    "assignedToTeam"  -> expectedTeamFormat,
-    "status"          -> Json.toJson("[M](int) Status [1:NEW 2:OPEN 3:POSTPONED 4:RESOLVED]"),
-    "priority"        -> Json.toJson("[M](int) Priority [0:LOW 1:MID 2:HIGH]"),
-    "subject"         -> Json.toJson("[O](string) Subject"),
-    "description"     -> Json.toJson("[O](string) Description")    
-  ))
-
   def expectedTicketActionFormat = Json.toJson(ListMap(
     "id"              -> Json.toJson("[O](int) ID"),
     "parentActionId"  -> Json.toJson("[O](int) Parent Action ID"),

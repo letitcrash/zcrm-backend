@@ -47,12 +47,12 @@ object JSFormat {
   implicit val employeeFrmt                 = Json.format[Employee]
   implicit val clientFrmt                   = Json.format[Client]
   implicit val ticketFrmt                   = Json.format[Ticket]
-  implicit val aggregatedTicketFrmt         = Json.format[AggregatedTicket]
   implicit val ticketActionFrmt             = Json.format[TicketAction]
   implicit val ticketActionMailFrmt         = Json.format[TicketActionAttachedMail]
   implicit val ticketActionFileFrmt         = Json.format[TicketActionAttachedFile]
   implicit val projectFrmt                  = Json.format[Project]
   implicit val calendarItemFrmt             = Json.format[CalendarItem]
+  implicit val dashboardFrmt                = Json.format[Dashboard]
 
   implicit val exchangeMailFrmt             = Json.format[ExchangeMail]
   implicit val groupedMailFrmt              = Json.format[GroupedMail]

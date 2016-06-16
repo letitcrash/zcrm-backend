@@ -26,6 +26,7 @@ GET     /companies                                                              
 
 GET     /companies/:companyId                                                                 controllers.CompanyController.get(companyId: Int)
 GET     /companies/:companyId/expand                                                          controllers.CompanyController.getExpanded(companyId: Int)
+GET     /companies/:companyId/dashboard                                                        controllers.DashboardController.getCountsForCompany(companyId: Int)
 
 #Clients
 POST    /companies/:companyId/clients                                                         controllers.ClientController.newClient(companyId: Int)                   
@@ -131,7 +132,7 @@ POST   /companies/:companyId/tickets/:ticketId/mails/:mailId                    
 POST   /companies/:companyId/tickets/:ticketId/files/:fileId                                 controllers.TicketController.attachFileToTicket(companyId: Int, ticketId: Int, fileId: Int)
 POST   /companies/:companyId/tickets/:ticketId/members                                       controllers.TicketController.addMembersToTicket(companyId: Int, ticketId: Int)
 POST   /companies/:companyId/tickets/:ticketId/teams                                         controllers.TicketController.addTeamMembersToTicket(companyId: Int, ticketId: Int)
-POST   /companies/:companyId/tickets/:ticketId/clients                                      controllers.TicketController.addClientsToTicket(companyId: Int, ticketId: Int)
+POST   /companies/:companyId/tickets/:ticketId/clients                                       controllers.TicketController.addClientsToTicket(companyId: Int, ticketId: Int)
 PUT    /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.updateTicket(companyId: Int, ticketId: Int)
 DELETE /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.deleteTicketById(companyId: Int, ticketId:Int) 
 DELETE /companies/:companyId/tickets/:ticketId/attachedmails/:attachedMailId                 controllers.TicketController.detachMailFromTicket(companyId: Int, ticketId: Int, attachedMailId: Int) 

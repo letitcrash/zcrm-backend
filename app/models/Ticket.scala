@@ -1,7 +1,7 @@
 package models
 
 case class Ticket(id: Option[String] = None,
-                  //companyId: Int,
+                  companyId: Int,
                   projectId: Option[Int] = None, 
                   createdByUserId: Int,
                   createdByUser: Option[User] = None,
@@ -16,15 +16,3 @@ case class Ticket(id: Option[String] = None,
                   priority: Int,
                   subject: String,
                   description: Option[String] = None)
-
-case class AggregatedTicket(id: Option[String] = None,
-                            company: Company,
-                            createdByUser: User,
-                            requestedByUser: Option[User] = None,
-                            requestedByEmail: Option[String] = None,
-                            assignedToUser: Option[User] = None,
-                            assignedToTeam: Option[Team] = None,
-                            status: Int,
-                            priority: Int,
-                            subject: String,
-                            description: Option[String] = None)

@@ -96,5 +96,10 @@ trait ProjectDBComponent extends DBComponent {
           )
         )
   }
+
+  def getProjectCountByCompanyId(companyId: Int): Future[Int] = {
+    db.run(projects.filter(p => (p.companyId === companyId && 
+                                 p.recordStatus === RowStatus.ACTIVE)).length.result)
+  }
 }
 
