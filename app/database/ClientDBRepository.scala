@@ -28,10 +28,6 @@ object ClientDBRepository {
         client  <- updateClientEntity(client.asClientEntity)
         updated <- getClientWithProfileById(client.id.get).map(_.asClient)
     }yield(updated)
-
-    updateClientEntity(client.asClientEntity)
-          .flatMap(updated => 
-                   getClientWithProfileById(updated.id.get).map(_.asClient))
   }
 
   def deleteClient(clientId: Int): Future[Client] = {
