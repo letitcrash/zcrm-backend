@@ -17,17 +17,17 @@ object ClientDBRepository {
   def createClient(client: Client): Future[Client] = {
     for{
         profile <- upsertProfile(client.contactProfile.asEntity())
-        client  <- insertClient(client.asClientEntity)
-        inserted<- getClientWithProfileById(client.id.get).map(_.asClient)
-    }yield(inserted)
+        client  <- insertClient(client.copy(contactProfile = profile.asProfile).asClientEntity)
+        inserted<- getClientWithProfileById(client.id.get)
+    }yield(inserted.asClient)
   }
 
   def updateClient(client: Client): Future[Client] = {
     for{
         profile <- upsertProfile(client.contactProfile.asEntity())
-        client  <- updateClientEntity(client.asClientEntity)
-        updated <- getClientWithProfileById(client.id.get).map(_.asClient)
-    }yield(updated)
+        client  <- updateClientEntity(client.copy(contactProfile = profile.asProfile).asClientEntity)
+        updated <- getClientWithProfileById(client.id.get)
+    }yield(updated.asClient)
   }
 
   def deleteClient(clientId: Int): Future[Client] = {
