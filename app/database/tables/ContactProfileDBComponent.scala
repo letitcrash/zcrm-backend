@@ -16,7 +16,7 @@ case class ContactProfileEntity(
   phoneNumberMobile:  Option[String] = None,
   phoneNumberHome:    Option[String] = None,
   phoneNumberWork:    Option[String] = None,
-  lastModified:       Option[Timestamp] = None)
+  lastModified:       Option[Timestamp] = Some(new Timestamp(System.currentTimeMillis())))
 
 trait ContactProfileDBComponent extends DBComponent {
   this: DBComponent =>
@@ -36,7 +36,7 @@ trait ContactProfileDBComponent extends DBComponent {
     def phoneMobile = column[String]("phone_mobile", Nullable, O.SqlType("VARCHAR(255)"))
     def phoneHome = column[String]("phone_home", Nullable, O.SqlType("VARCHAR(255)"))
     def phoneWork = column[String]("phone_work", Nullable, O.SqlType("VARCHAR(255)"))
-    def lastModified = column[Timestamp]("last_modified")
+    def lastModified = column[Timestamp]("last_modified", Nullable)
 
     override def * = (id.?, firstname.?, lastname.?, email.?, address.?, city.?,
       zipCode.?, phoneMobile.?, phoneHome.?, phoneWork.?, lastModified.?) <>
