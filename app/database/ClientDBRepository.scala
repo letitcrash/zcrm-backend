@@ -7,6 +7,7 @@ import scala.concurrent.Future
 import models.{Client, PagedResult}
 import play.api.Logger
 import utils.converters.ClientConverter._
+import utils.converters.ContactProfileConverter._
 
 
 object ClientDBRepository {
@@ -14,12 +15,20 @@ object ClientDBRepository {
   import database.gen.current.dao._
 
   def createClient(client: Client): Future[Client] = {
-    insertClient(client.asClientEntity)
-          .flatMap(inserted => 
-                   getClientWithProfileById(inserted.id.get).map(_.asClient))
+    for{
+        profile <- upsertProfile(client.contactProfile.asEntity())
+        client  <- insertClient(client.asClientEntity)
+        inserted<- getClientWithProfileById(client.id.get).map(_.asClient)
+    }yield(inserted)
   }
 
   def updateClient(client: Client): Future[Client] = {
+    for{
+        profile <- upsertProfile(client.contactProfile.asEntity())
+        client  <- updateClientEntity(client.asClientEntity)
+        updated <- getClientWithProfileById(client.id.get).map(_.asClient)
+    }yield(updated)
+
     updateClientEntity(client.asClientEntity)
           .flatMap(updated => 
                    getClientWithProfileById(updated.id.get).map(_.asClient))
