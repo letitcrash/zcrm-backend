@@ -135,7 +135,7 @@ object ExpectedFormat {
     "id"              -> Json.toJson("[O](int) ID"),
     "parentActionId"  -> Json.toJson("[O](int) Parent Action ID"),
     "ticketId"        -> Json.toJson("[M](int) Assigned to ticket"),
-    "userId"          -> Json.toJson("[M](int) Created by user ID"),
+    "user"            -> expectedUserFormat,
     "actionType"      -> Json.toJson("[M](int) 0 - Comment, 1 - Mail, 2 - File"),
     "comment"         -> Json.toJson("[O](string) Comment")
   ))
