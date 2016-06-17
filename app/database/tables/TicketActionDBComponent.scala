@@ -37,8 +37,8 @@ trait TicketActionDBComponent extends DBComponentWithSlickQueryOps {
     def actionType = column[Int]("action_type")
     def comment = column[String]("comment", Nullable)
     def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
-    def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
-    def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp not null"))
+    def createdAt = column[Timestamp]("created_at", Nullable)
+    def updatedAt = column[Timestamp]("updated_at", Nullable)
 
     def fkParentActionId = foreignKey("fk_parent_action_id", parentActionId, actions)(_.id)
     def fkTicketId = foreignKey("fk_action_ticket_id", ticketId, tickets)(_.id)

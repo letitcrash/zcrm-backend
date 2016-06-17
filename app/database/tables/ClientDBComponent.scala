@@ -28,7 +28,7 @@ trait ClientDBComponent extends DBComponent {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def companyId = column[Int]("company_id")
     def contactProfileId = column[Int]("contact_profile_id")
-    def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
+    def createdAt = column[Timestamp]("created_at", Nullable)
 
     def fkProfileId = foreignKey("fk_client_contact_profile", contactProfileId, contactProfiles)(_.id)
     def fkCompanyId = foreignKey("fk_client_company", companyId, companies)(_.id)

@@ -8,6 +8,7 @@ import exceptions.UsernameAlreadyExistException
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import org.mindrot.jbcrypt.BCrypt
+import slick.profile.SqlProfile.ColumnOption.Nullable
 
 case class UserEntity(
   id: Option[Int] = None,
@@ -38,7 +39,7 @@ trait UserDBComponent extends DBComponent {
     def username = column[String]("username", O.SqlType("VARCHAR(255)"))
     def profileId = column[Int]("contact_profile_id")    
     def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
-    def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
+    def updatedAt = column[Timestamp]("updated_at", Nullable)
 
     def fkContactProfile= foreignKey("fk_user_contact_profile", profileId, contactProfiles)(_.id)
     def idxUsername = index("username_uniq", username, unique = true)

@@ -27,7 +27,7 @@ trait FileFolderDBComponent extends DBComponent {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def parentId = column[Int]("parent_id", Nullable)
     def name = column[String]("name", O.SqlType("VARCHAR(255)"))
-    def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
+    def createdAt = column[Timestamp]("created_at", Nullable)
 
     def fkParentFolderId = foreignKey("fk_parent_folder", parentId, folders)(_.id)
 

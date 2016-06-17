@@ -2,6 +2,7 @@ package database.tables
 
 import java.sql.Timestamp
 import scala.concurrent.Future
+import slick.profile.SqlProfile.ColumnOption.Nullable
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import database.PagedDBResult
@@ -25,8 +26,8 @@ trait DelegateDBComponent extends DBComponent
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def companyId = column[Int]("company_id")
     def name = column[String]("name", O.SqlType("VARCHAR(255)"))
-    def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
-    def updatedAt = column[Timestamp]("updated_at")
+    def createdAt = column[Timestamp]("created_at", Nullable)
+    def updatedAt = column[Timestamp]("updated_at", Nullable)
 
     def fkCompany = foreignKey("fk_delegate_company", companyId, companies)(_.id)
 

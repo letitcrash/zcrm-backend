@@ -36,7 +36,7 @@ trait FileDBComponent extends DBComponent {
     def fileHash = column[String]("file_hash", O.SqlType("VARCHAR(255)"))
     def fileName = column[String]("file_name", O.SqlType("VARCHAR(255)"))    
     def folderId = column[Int]("folder", Nullable)    
-    def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp not null default CURRENT_TIMESTAMP"))
+    def createdAt = column[Timestamp]("created_at", Nullable)
 
 
     def fkUser = foreignKey("fk_file_user", userId, users)(_.id)

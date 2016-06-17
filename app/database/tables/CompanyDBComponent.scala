@@ -4,6 +4,7 @@ import java.sql.Timestamp
 import System.currentTimeMillis
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
+import slick.profile.SqlProfile.ColumnOption.Nullable
 import database.PagedDBResult
 
 
@@ -26,7 +27,7 @@ trait CompanyDBComponent extends DBComponent
     def name = column[String]("name", O.SqlType("VARCHAR(255)"))
     def profileId = column[Int]("contact_profile_id")
     def vatId = column[String]("vat_id", O.SqlType("VARCHAR(255)"))
-    def lastModified = column[Timestamp]("last_modified")
+    def lastModified = column[Timestamp]("last_modified", Nullable)
 
     def contactProfile = foreignKey("fk_company_contact_profile", profileId, contactProfiles)(_.id)
 
