@@ -13,7 +13,8 @@ object TicketActionConverter {
                      ticketId = t._1.ticketId,
                      user = t._2.asUser,
                      actionType = t._1.actionType,
-                     comment = t._1.comment)
+                     comment = t._1.comment,
+                     createdAt = Some(t._1.createdAt))
       }
   }
 
