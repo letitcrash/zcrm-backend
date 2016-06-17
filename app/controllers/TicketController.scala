@@ -178,5 +178,25 @@ class TicketController @Inject() extends CRMController {
   def addClientsToTicket(companyId: Int, ticketId: Int) = CRMActionAsync[TicketClients](expecteTicketClientsFormat){ rq =>
     TicketDBRepository.addClients(rq.body.ticketId, rq.body.clients).map(clients => Json.toJson(clients))
   }
+
+  case class updateStatus(id:Int, status: Int)
+  implicit val updateStatusFrmt = Json.format[updateStatus]
+  val expectedUpdateStatusFormat = Json.toJson(ListMap(
+    "id"        -> "[M] (int) id of the client",
+    "status"    -> "[M] (int) Status"))
+  def updateStatusById(companyId: Int, ticketId: Int) = CRMActionAsync[updateStatus](expectedUpdateStatusFormat){rq =>
+    TicketDBRepository.getTicketById(rq.body.id).flatMap(ticket =>
+       TicketDBRepository.updateTicket(ticket.copy(status = rq.body.status), companyId).map(res => Json.toJson(res)))
+  }
+
+  case class updatePriority(id:Int, priority: Int)
+  implicit val updatePriorityFrmt = Json.format[updatePriority]
+  val expectedUpdatePriorityFormat = Json.toJson(ListMap(
+    "id"        -> "[M] (int) id of the client",
+    "priority"    -> "[M] (int) priority"))
+  def updatePriorityById(companyId: Int, ticketId: Int) = CRMActionAsync[updatePriority](expectedUpdatePriorityFormat){rq =>
+    TicketDBRepository.getTicketById(rq.body.id).flatMap(ticket =>
+       TicketDBRepository.updateTicket(ticket.copy(priority = rq.body.priority), companyId).map(res => Json.toJson(res)))
+  }
  
 }
