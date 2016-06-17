@@ -1,4 +1,5 @@
 package models
+import java.sql.Timestamp
 
 case class Ticket(id: Option[String] = None,
                   companyId: Int,
@@ -15,4 +16,5 @@ case class Ticket(id: Option[String] = None,
                   status: Int,
                   priority: Int,
                   subject: String,
-                  description: Option[String] = None)
+                  description: Option[String] = None,
+                  createdAt: Option[Timestamp] = None)

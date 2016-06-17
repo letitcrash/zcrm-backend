@@ -8,7 +8,7 @@ import models._
 import utils.ExpectedFormat._
 import controllers.session.InsufficientRightsException
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import database.{TicketDBRepository, TicketActionDBRepository,ExchangeODSMailDBRepository,ExchangeSavedMailDBRepository,TicketAttachedMailDBRepository, FileDBRepository, TicketAttachedFileDBRepository}
+import database.{TicketDBRepository, TicketActionDBRepository,ExchangeODSMailDBRepository,ExchangeSavedMailDBRepository,TicketAttachedMailDBRepository, FileDBRepository, TicketAttachedFileDBRepository, UserDBRepository}
 import play.api.libs.json.Json
 import scala.util.{Failure, Success, Try}
 import scala.concurrent.Future
@@ -41,7 +41,8 @@ class TicketController @Inject() extends CRMController {
           userId       <- ExchangeODSMailDBRepository.getUserIdByODSMailId(mailId)
           odsMail      <- ExchangeODSMailDBRepository.getODSMailById(mailId)
           mail         <- ExchangeSavedMailDBRepository.insertSavedMail(odsMail)
-          action       <- TicketActionDBRepository.createAction(TicketAction(ticketId = ticketId, userId = userId, actionType = ActionType.MAIL), companyId)
+          user         <- UserDBRepository.getUserByUserId(userId)
+          action       <- TicketActionDBRepository.createAction(TicketAction(ticketId = ticketId, user = user, actionType = ActionType.MAIL), companyId)
           attachedMail <- TicketAttachedMailDBRepository.createAttachedMailAction(TicketActionAttachedMail(actionId = action.id.get, mailId = mail.id.get ))
           updatedOds   <- ExchangeODSMailDBRepository.updateODSMail(
                                                       odsMail.copy(subject = Some(odsMail.subject.getOrElse("") + " [Ticket "+(new DecimalFormat("#000000")).format(ticketId)+"]")))
@@ -65,7 +66,8 @@ class TicketController @Inject() extends CRMController {
     import utils.JSFormat.ticketActionFileFrmt
     for{
           file         <- FileDBRepository.getFileById(fileId)
-          action       <- TicketActionDBRepository.createAction(TicketAction(ticketId = ticketId, userId = file.userId, actionType = ActionType.FILE), companyId)
+          user         <- UserDBRepository.getUserByUserId(file.userId)
+          action       <- TicketActionDBRepository.createAction(TicketAction(ticketId = ticketId, user = user, actionType = ActionType.FILE), companyId)
           attachedFile <- TicketAttachedFileDBRepository.createAttachedFileAction(TicketActionAttachedFile(actionId = action.id.get, fileId = file.id.get ))
       } yield Json.toJson(attachedFile)    
     // }else{ Future{Failure(new InsufficientRightsException())} }

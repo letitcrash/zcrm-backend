@@ -3,7 +3,8 @@ package utils.converters
 import java.text.DecimalFormat
 
 import database.tables.{TicketEntity, CompanyEntity, UserEntity, ContactProfileEntity, TeamEntity, TicketMemberEntity, TicketTeamMemberEntity, TicketClientEntity, ClientEntity}
-import models.Ticket 
+import models.Ticket
+import java.sql.Timestamp 
 
 object TicketConverter {
   
@@ -27,7 +28,8 @@ object TicketConverter {
                      status = t._1.status,
                      priority = t._1.priority,
                      subject = t._1.subject,
-                     description = t._1.description match { case Some(x) => t._1.description; case _ => None})    
+                     description = t._1.description match { case Some(x) => t._1.description; case _ => None},
+                     createdAt = Some(t._1.createdAt))    
       }
   }
 
@@ -43,7 +45,8 @@ object TicketConverter {
                      status = t.status,
                      priority = t.priority,
                      subject = t.subject,
-                     description = t.description match { case Some(x) => t.description; case _ => None})    
+                     description = t.description match { case Some(x) => t.description; case _ => None}, 
+                     createdAt = Some(t.createdAt))    
       }
   }
 

@@ -47,9 +47,11 @@ trait TicketActionDBComponent extends DBComponentWithSlickQueryOps {
     def * = (id.?, parentActionId.?, ticketId, userId, actionType, comment.?, recordStatus, createdAt, updatedAt)<>(TicketActionEntity.tupled, TicketActionEntity.unapply)
   }
 
+  def actionsWithUsersWithProfile = actions join usersWithProfile on (_.userId === _._1.id)
+
   def actionQry(ticketId: Int, actionTypes: List[Int]) = {
-    actions.filter(a => (a.ticketId === ticketId && a.recordStatus === RowStatus.ACTIVE) )
-           .filteredBy( actionTypes match { case List() => None; case list => Some(list) } )(_.actionType inSet _)
+    actionsWithUsersWithProfile.filter(a => (a._1.ticketId === ticketId && a._1.recordStatus === RowStatus.ACTIVE) )
+           .filteredBy( actionTypes match { case List() => None; case list => Some(list) } )(_._1.actionType inSet _)
   }
 
 
@@ -58,14 +60,19 @@ trait TicketActionDBComponent extends DBComponentWithSlickQueryOps {
       db.run((actions returning actions.map(_.id) into ((action,id) => action.copy(id=Some(id)))) += action)
   }
 
+  def getActionEntityWithProfileById(id: Int): Future[(TicketActionEntity, (UserEntity, ContactProfileEntity))] = {
+    db.run(actionsWithUsersWithProfile.filter(a =>(a._1.id === id &&
+                                                   a._1.recordStatus === RowStatus.ACTIVE)).result.head)
+  }
+
   def getActionEntityById(id: Int): Future[TicketActionEntity] = {
-    db.run(actions.filter(a =>(a.id === id &&
-                                         a.recordStatus === RowStatus.ACTIVE)).result.head)
+   db.run(actions.filter(a =>(a.id === id &&
+                              a.recordStatus === RowStatus.ACTIVE)).result.head)
   }
 
   def updateActionEntity(action: TicketActionEntity): Future[TicketActionEntity] = {
       db.run(actions.filter(a =>(a.id === action.id &&
-                                           a.recordStatus === RowStatus.ACTIVE)).update(action)
+                                 a.recordStatus === RowStatus.ACTIVE)).update(action)
                   .map{num => if(num != 0) action
                               else throw new Exception("Can't update action, is it deleted?")})
   }
@@ -77,21 +84,21 @@ trait TicketActionDBComponent extends DBComponentWithSlickQueryOps {
   }
 
   //FILTERS
-  def getActionEntitiesByTicketId(ticketId: Int, actionTypes: List[Int]): Future[List[TicketActionEntity]] = {
-    db.run(actions.filter(a => (a.ticketId === ticketId &&
-                                a.recordStatus === RowStatus.ACTIVE))
-                  .filteredBy( actionTypes match { case List() => None; case list => Some(list) } )(_.actionType inSet _).result).map(_.toList)
+  def getActionEntitiesByTicketId(ticketId: Int, actionTypes: List[Int]): Future[List[(TicketActionEntity, (UserEntity, ContactProfileEntity))]] = {
+    db.run(actionsWithUsersWithProfile.filter(a => (a._1.ticketId === ticketId &&
+                                                    a._1.recordStatus === RowStatus.ACTIVE))
+                  .filteredBy( actionTypes match { case List() => None; case list => Some(list) } )(_._1.actionType inSet _).result).map(_.toList)
   }
 
-  def getActionEntitiesByUserId(userId: Int): Future[List[TicketActionEntity]] = {
-    db.run(actions.filter(a => (a.userId === userId &&
-                                         a.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
+  def getActionEntitiesByUserId(userId: Int): Future[List[(TicketActionEntity, (UserEntity, ContactProfileEntity))]] = {
+    db.run(actionsWithUsersWithProfile.filter(a => (a._1.userId === userId &&
+                                                    a._1.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
   }
 
-  def getActionEntitiesWithPagination(ticketId: Int, actionTypes: List[Int], pageSize: Int, pageNr: Int): Future[PagedDBResult[TicketActionEntity]] = {
+  def getActionEntitiesWithPagination(ticketId: Int, actionTypes: List[Int], pageSize: Int, pageNr: Int): Future[PagedDBResult[(TicketActionEntity, (UserEntity, ContactProfileEntity))]] = {
     val baseQry = actionQry(ticketId, actionTypes)    
     val pageRes = baseQry
-      .sortBy(_.id.asc)
+      .sortBy(_._1.id.asc)
       .drop(pageSize * (pageNr - 1))
       .take(pageSize)
 

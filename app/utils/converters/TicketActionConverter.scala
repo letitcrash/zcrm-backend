@@ -1,18 +1,19 @@
 package utils.converters
 
-import database.tables.{TicketActionEntity, TicketActionAttachedMailEntity, TicketActionAttachedFileEntity}
+import database.tables.{TicketActionEntity, TicketActionAttachedMailEntity, TicketActionAttachedFileEntity, UserEntity, ContactProfileEntity}
 import models.{TicketAction, TicketActionAttachedMail,TicketActionAttachedFile}
 
 object TicketActionConverter {
   
-  implicit class EntityToAction (a: TicketActionEntity) {
+  implicit class EntityToAction (t: (TicketActionEntity, (UserEntity, ContactProfileEntity))) {
+      import utils.converters.UserConverter._
       def asAction: TicketAction= {
-        TicketAction(id = a.id,
-                     parentActionId = a.parentActionId,
-                     ticketId = a.ticketId,
-                     userId = a.userId,
-                     actionType = a.actionType,
-                     comment = a.comment)
+        TicketAction(id = t._1.id,
+                     parentActionId = t._1.parentActionId,
+                     ticketId = t._1.ticketId,
+                     user = t._2.asUser,
+                     actionType = t._1.actionType,
+                     comment = t._1.comment)
       }
   }
 
@@ -21,7 +22,7 @@ object TicketActionConverter {
               TicketActionEntity(id = a.id,
                                  parentActionId = a.parentActionId,
                                  ticketId = a.ticketId,
-                                 userId = a.userId,
+                                 userId = a.user.id.get,
                                  actionType = a.actionType,
                                  comment = a.comment)
       }

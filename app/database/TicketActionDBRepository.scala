@@ -13,21 +13,24 @@ object TicketActionDBRepository {
 
   def createAction(action: TicketAction, companyId: Int): Future[TicketAction] = {
     insertAction(action.asActionEntity)
-          .map(inserted => inserted.asAction)
+          .flatMap(inserted => 
+                   getActionEntityWithProfileById(inserted.id.get).map(_.asAction))
   }
 
   def updateAction(action: TicketAction): Future[TicketAction] = {
     updateActionEntity(action.asActionEntity)
-          .map(updated => updated.asAction)
+          .flatMap(updated => 
+                   getActionEntityWithProfileById(updated.id.get).map(_.asAction))
   }
 
   def deleteAction(actionId: Int): Future[TicketAction] = {
     softDeleteActionById(actionId)
-          .map(deleted => deleted.asAction)
+          .flatMap(deleted => 
+                   getActionEntityWithProfileById(deleted.id.get).map(_.asAction))
   }
 
   def getActionById(id: Int): Future[TicketAction] = {
-    getActionEntityById(id).map(action => action.asAction)
+    getActionEntityWithProfileById(id).map(action => action.asAction)
   }
 
   def getActionsByTicketId(ticketId: Int, actionTypes: List[Int]): Future[List[TicketAction]] = {
