@@ -117,6 +117,14 @@ trait TeamDBComponent extends DBComponent {
     lastDeleted
   }
 
+  def deleteUserFromTeamGroup(teamId:Int, userId: Int): Future[TeamGroupEntity] = {
+    val deleted = db.run(teamGroups.filter(t => (t.userId === userId && 
+                                                 t.teamId === teamId)).result.head)
+    db.run(teamGroups.filter(t => (t.userId === userId && 
+                                   t.teamId === teamId)).delete)
+    deleted
+  }
+
   //FILTERS
   def insertTeamGroups(teamGroups: List[TeamGroupEntity]): Future[List[TeamGroupEntity]] = {
     Future.sequence(teamGroups.map( t =>  insertTeamGroup(t)))

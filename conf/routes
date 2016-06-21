@@ -69,7 +69,8 @@ GET      /companies/:companyId/unions/:unionId                                  
 POST     /companies/:companyId/teams                                                         controllers.TeamController.newTeamWithMembers(companyId: Int)
 POST     /companies/:companyId/teams/:teamId/users/:userId                                   controllers.TeamController.addUserToTeam(companyId: Int, teamId: Int, userId: Int)
 PUT      /companies/:companyId/teams/:teamId                                                 controllers.TeamController.updateTeam(companyId: Int, teamId: Int) 
-DELETE   /companies/:companyId/teams/:teamId                                                 controllers.TeamController.deleteTeamById(companyId: Int, teamId: Int) 
+DELETE   /companies/:companyId/teams/:teamId                                                 controllers.TeamController.deleteTeamById(companyId: Int, teamId: Int)
+DELETE   /companies/:companyId/teams/:teamId/users/:userId                                   controllers.TeamController.removeUserFromTeam(companyId: Int, teamId: Int, userId: Int)
 GET      /companies/:companyId/teams                                                         controllers.TeamController.searchAllTeamsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 GET      /companies/:companyId/teams/:teamId                                                 controllers.TeamController.getTeam(companyId: Int, teamId: Int)  
 

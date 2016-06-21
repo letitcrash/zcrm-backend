@@ -44,6 +44,10 @@ object TeamDBRepository {
     insertTeamGroup(teamGroup.asEntity).map( tg => tg.asTeamGroup)
   }
 
+  def deleteUserFromTeam(userId: Int, teamId: Int): Future[TeamGroup] = {
+   deleteUserFromTeamGroup(userId, teamId).map(_.asTeamGroup)
+  }
+
   def searchTeamByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String]): Future[PagedResult[Team]] = {
     searchTeamEntitiesByName(companyId, pageSize, pageNr, searchTerm).map{dbPage =>
         PagedResult[Team](pageSize = dbPage.pageSize,
