@@ -39,6 +39,8 @@ trait MailboxDBComponent extends DBComponent {
     def fkUserId = foreignKey("fk_mailbox_user", userId, users)(_.id)
 
     def * = (id.?, userId, server, login, password, recordStatus, createdAt, updatedAt) <> (MailboxEntity.tupled, MailboxEntity.unapply)
+
+    def UqCombo = index("unique_combo", (server,login,password), unique = true)
   }
 
   def mailboxQry(userId: Int) = {
