@@ -46,6 +46,10 @@ object TicketDBRepository {
     getTicketEntitiesByCompanyId(companyId).map(list => list.map(_.asTicket))
   } 
 
+  def getTicketsByCreatedByUserId(userId: Int): Future[List[Ticket]] = {
+    getTicketEntitiesByCreatedByUserId(userId).map(list => list.map(_.asTicket))
+  } 
+
   def searchTicketByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String]): Future[PagedResult[Ticket]] = {
     searchTicketEntitiesByName(companyId, pageSize, pageNr, searchTerm).map{dbPage =>
         PagedResult[Ticket](pageSize = dbPage.pageSize,

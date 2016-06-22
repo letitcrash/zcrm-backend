@@ -113,6 +113,11 @@ trait TicketDBComponent extends DBComponent {
                                 t.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
   }
 
+  def getTicketEntitiesByCreatedByUserId(userId: Int): Future[List[TicketEntity]] = {
+    db.run(tickets.filter(t => (t.createdByUserId === userId &&
+                                t.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
+  }
+
   def searchTicketEntitiesByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String] = None): Future[PagedDBResult[TicketEntity]] = {
     val baseQry = searchTerm.map { st =>
         val s = "%" + st + "%"

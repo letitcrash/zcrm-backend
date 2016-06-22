@@ -142,6 +142,7 @@ DELETE /companies/:companyId/tickets/:ticketId/attachedmails/:attachedMailId    
 DELETE /companies/:companyId/tickets/:ticketId/attachedfiles/:attachedFileId                 controllers.TicketController.detachFileFromTicket(companyId: Int, ticketId: Int, attachedFileId: Int)
 GET    /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.getTicket(companyId: Int, ticketId: Int)
 GET    /companies/:companyId/tickets                                                         controllers.TicketController.searchAllTicketsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
+GET    /companies/:companyId/tickets/users/:userId                                           controllers.TicketController.getAllTicketsByCreatedByUser(companyId:Int, userId: Int)
 GET    /companies/:companyId/tickets/:ticketId/actions                                       controllers.TicketController.getAllActionWithPagination(companyId: Int, ticketId: Int, actionTypes: List[Int], pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 
 #File

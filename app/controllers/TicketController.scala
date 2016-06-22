@@ -103,6 +103,12 @@ class TicketController @Inject() extends CRMController {
       TicketDBRepository.getTicketsByCompanyId(companyId).map( ticket => Json.toJson(ticket))
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
+
+   def getAllTicketsByCreatedByUser(companyId:Int, userId: Int) = CRMActionAsync { rq =>
+    // if(rq.header.belongsToCompany(companyId)){
+      TicketDBRepository.getTicketsByCreatedByUserId(userId).map( ticket => Json.toJson(ticket))
+    // }else{ Future{Failure(new InsufficientRightsException())} }
+  }
   
   def deleteTicketById(companyId: Int, ticketId:Int) = CRMActionAsync{rq =>
       TicketDBRepository.deleteTicket(ticketId).map(deletedTicket => Json.toJson(deletedTicket))
