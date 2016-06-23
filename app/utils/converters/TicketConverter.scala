@@ -13,7 +13,8 @@ object TicketConverter {
       import utils.converters.TeamConverter._
       import utils.converters.ClientConverter._
       def asTicket(members: List[(TicketMemberEntity, (UserEntity, ContactProfileEntity))], teams: List[(TicketTeamMemberEntity , TeamEntity)],
-                   clients: List[(TicketClientEntity, (ClientEntity, ContactProfileEntity))]): Ticket= {
+                   clients: List[(TicketClientEntity, (ClientEntity, ContactProfileEntity))],
+                   requesters: List[(TicketRequesterEntity, (UserEntity, ContactProfileEntity))]): Ticket= {
               Ticket(id = Some(new DecimalFormat("#000000").format(t._1.id.get)),
                      companyId = t._1.companyId,
                      projectId = t._1.projectId,
@@ -25,6 +26,7 @@ object TicketConverter {
                      members = Some(members.map( m => m._2.asUser)),
                      teams = Some(teams.map( m => m._2.asTeam)),
                      clients = Some(clients.map( c => c._2.asClient)),
+                     requesters = Some(requesters.map( c => c._2.asUser)),
                      status = t._1.status,
                      priority = t._1.priority,
                      subject = t._1.subject,
