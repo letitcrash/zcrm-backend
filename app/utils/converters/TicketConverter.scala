@@ -2,7 +2,8 @@ package utils.converters
 
 import java.text.DecimalFormat
 
-import database.tables.{TicketEntity, CompanyEntity, UserEntity, ContactProfileEntity, TeamEntity, TicketMemberEntity, TicketTeamMemberEntity, TicketClientEntity, ClientEntity, TicketRequesterEntity}
+import database.tables.{TicketEntity, CompanyEntity, UserEntity, ContactProfileEntity, TeamEntity, TicketMemberEntity, 
+                        ProjectEntity, TicketTeamMemberEntity, TicketClientEntity, ClientEntity, TicketRequesterEntity}
 import models.Ticket
 import java.sql.Timestamp 
 
@@ -12,12 +13,16 @@ object TicketConverter {
       import utils.converters.UserConverter._
       import utils.converters.TeamConverter._
       import utils.converters.ClientConverter._
+      import utils.converters.ProjectConverter._
       def asTicket(members: List[(TicketMemberEntity, (UserEntity, ContactProfileEntity))], teams: List[(TicketTeamMemberEntity , TeamEntity)],
                    clients: List[(TicketClientEntity, (ClientEntity, ContactProfileEntity))],
-                   requesters: List[(TicketRequesterEntity, (UserEntity, ContactProfileEntity))]): Ticket= {
+                   requesters: List[(TicketRequesterEntity, (UserEntity, ContactProfileEntity))],
+                   projectEntity: Option[ProjectEntity]): Ticket= {
               Ticket(id = Some(new DecimalFormat("#000000").format(t._1.id.get)),
                      companyId = t._1.companyId,
                      projectId = t._1.projectId,
+                     project = projectEntity.map(_.asSimpleProject),
+                     //project = projectEntity match { case Some(p) => p.asProject ; case _ => None}
                      createdByUserId = t._1.createdByUserId,
                      createdByUser = Some(t._2.asUser),
                     //requestedByUserId = t.requestedByUserId match { case Some(x) => t.requestedByUserId; case _ => None },

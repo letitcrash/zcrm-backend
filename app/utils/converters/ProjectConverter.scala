@@ -21,6 +21,12 @@ object ProjectConverter {
                       countPostponed = countPostponed,
                       countResolved = countResolved)     
       }
+
+      def asSimpleProject = {
+              Project(id = p.id,
+                      companyId = p.companyId,
+                      name = p.name)
+      }
   }
 
   implicit class ProjectToEntity(p: Project){

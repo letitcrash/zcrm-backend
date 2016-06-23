@@ -40,8 +40,11 @@ object TicketDBRepository {
     teamsEntts <- getTeamsByTicketId(ticket._1.id.get)
     clientEntts <- getClientsByTicketId(ticket._1.id.get)
     requesterEntts <- getRequestersByTicketId(ticket._1.id.get)
-    } yield ticket.asTicket(userEntts, teamsEntts, clientEntts, requesterEntts)
+    projectEntt <- ticket._1.projectId match { case Some(pId) => getProjectEntityById(pId).map(p => Some(p)); case _ => Future(None) }
+    } yield ticket.asTicket(userEntts, teamsEntts, clientEntts, requesterEntts, projectEntt)
   }
+
+
 
   def getTicketsByCompanyId(companyId: Int): Future[List[Ticket]] = {
     getTicketEntitiesByCompanyId(companyId).map(list => list.map(_.asTicket))
