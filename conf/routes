@@ -134,6 +134,7 @@ POST   /companies/:companyId/tickets/:ticketId/files/:fileId                    
 POST   /companies/:companyId/tickets/:ticketId/members                                       controllers.TicketController.addMembersToTicket(companyId: Int, ticketId: Int)
 POST   /companies/:companyId/tickets/:ticketId/teams                                         controllers.TicketController.addTeamMembersToTicket(companyId: Int, ticketId: Int)
 POST   /companies/:companyId/tickets/:ticketId/clients                                       controllers.TicketController.addClientsToTicket(companyId: Int, ticketId: Int)
+POST   /companies/:companyId/tickets/:ticketId/requesters                                    controllers.TicketController.addRequestersToTicket(companyId: Int, ticketId: Int)
 PUT    /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.updateTicket(companyId: Int, ticketId: Int)
 PUT    /companies/:companyId/tickets/:ticketId/status                                        controllers.TicketController.updateStatusById(companyId: Int, ticketId: Int)
 PUT    /companies/:companyId/tickets/:ticketId/priority                                      controllers.TicketController.updatePriorityById(companyId: Int, ticketId: Int)

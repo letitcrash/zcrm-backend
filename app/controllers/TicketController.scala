@@ -206,5 +206,18 @@ class TicketController @Inject() extends CRMController {
     TicketDBRepository.getTicketById(rq.body.id).flatMap(ticket =>
        TicketDBRepository.updateTicket(ticket.copy(priority = rq.body.priority), companyId).map(res => Json.toJson(res)))
   }
+
+  import utils.JSFormat.userFrmt
+  case class TicketRequesters( ticketId: Int, requesters: List[User])
+  implicit val  ticketRequestersFrmt       = Json.format[TicketRequesters]
+
+  import scala.collection.immutable.ListMap
+  val expecteTicketRequestersFormat = Json.toJson(ListMap(
+    "ticketId"        -> "[M] (int) id of the ticket",
+    "requesters"      -> "[M] (list[user])"))
+
+  def addRequestersToTicket(companyId: Int, ticketId: Int) = CRMActionAsync[TicketRequesters](expecteTicketRequestersFormat){ rq => 
+    TicketDBRepository.addRequesters(rq.body.ticketId, rq.body.requesters).map(users => Json.toJson(users))
+  }
  
 }

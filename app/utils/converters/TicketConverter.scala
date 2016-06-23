@@ -2,7 +2,7 @@ package utils.converters
 
 import java.text.DecimalFormat
 
-import database.tables.{TicketEntity, CompanyEntity, UserEntity, ContactProfileEntity, TeamEntity, TicketMemberEntity, TicketTeamMemberEntity, TicketClientEntity, ClientEntity}
+import database.tables.{TicketEntity, CompanyEntity, UserEntity, ContactProfileEntity, TeamEntity, TicketMemberEntity, TicketTeamMemberEntity, TicketClientEntity, ClientEntity, TicketRequesterEntity}
 import models.Ticket
 import java.sql.Timestamp 
 
@@ -81,6 +81,12 @@ object TicketConverter {
   implicit class TupClientToEntity(t: (Int, Int)) {
     def asTicketClientEntt(): TicketClientEntity = {
       TicketClientEntity(t._1, t._2)
+    }
+  }
+
+  implicit class TupRequesterToEntity(t: (Int, Int)) {
+    def asTicketRequesterEntt(): TicketRequesterEntity = {
+      TicketRequesterEntity(t._1, t._2)
     }
   }
 
