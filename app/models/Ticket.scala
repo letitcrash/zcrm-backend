@@ -19,4 +19,5 @@ case class Ticket(id: Option[String] = None,
                   priority: Int,
                   subject: String,
                   description: Option[String] = None,
+                  deadline: Option[Timestamp] = None,
                   createdAt: Option[Timestamp] = None)

@@ -25,6 +25,7 @@ case class TicketEntity(
                          subject: String,
                          description: Option[String] = None,
                          recordStatus: Int = RowStatus.ACTIVE,
+                         deadline: Option[Timestamp] = None,
                          createdAt: Timestamp = new Timestamp(System.currentTimeMillis()),
                          updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()))
 
@@ -53,6 +54,7 @@ trait TicketDBComponent extends DBComponent {
     def subject = column[String]("subject", O.SqlType("VARCHAR(255)"))
     def description = column[String]("description", Nullable)
     def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
+    def deadline = column[Timestamp]("deadline", Nullable)
     def createdAt = column[Timestamp]("created_at", Nullable)
     def updatedAt = column[Timestamp]("updated_at", Nullable)
 
@@ -65,7 +67,7 @@ trait TicketDBComponent extends DBComponent {
 
 
     def * = (id.?, companyId, projectId.?, createdByUserId, requestedByUserId.?, assignedToUserId.?, assignedToTeamId.?, status, priority, subject,
-             description.?, recordStatus, createdAt, updatedAt)<>(TicketEntity.tupled, TicketEntity.unapply)
+             description.?, recordStatus, deadline.?, createdAt, updatedAt)<>(TicketEntity.tupled, TicketEntity.unapply)
 
   }
 

@@ -36,6 +36,7 @@ object TicketConverter {
                      priority = t._1.priority,
                      subject = t._1.subject,
                      description = t._1.description match { case Some(x) => t._1.description; case _ => None},
+                     deadline = t._1.deadline,
                      createdAt = Some(t._1.createdAt))    
       }
   }
@@ -52,7 +53,8 @@ object TicketConverter {
                      status = t.status,
                      priority = t.priority,
                      subject = t.subject,
-                     description = t.description match { case Some(x) => t.description; case _ => None}, 
+                     description = t.description match { case Some(x) => t.description; case _ => None},
+                     deadline = t.deadline, 
                      createdAt = Some(t.createdAt))    
       }
   }
@@ -69,7 +71,8 @@ object TicketConverter {
                            status = t.status,
                            priority = t.priority,
                            subject = t.subject,
-                           description = t.description match { case Some(x) => t.description; case _ => None})      
+                           description = t.description match { case Some(x) => t.description; case _ => None},
+                           deadline = t.deadline)      
       }
   }
 

@@ -128,7 +128,8 @@ object ExpectedFormat {
     "status"          -> Json.toJson("[M](int) Status [1:NEW 2:OPEN 3:POSTPONED 4:RESOLVED]"),
     "priority"        -> Json.toJson("[M](int) Priority [0:LOW 1:MID 2:HIGH]"),
     "subject"         -> Json.toJson("[O](string) Subject"),
-    "description"     -> Json.toJson("[O](string) Description")    
+    "description"     -> Json.toJson("[O](string) Description"),
+    "deadline"        -> Json.toJson("[O](timestamp) Deadline")    
   ))
 
   def expectedTicketActionFormat = Json.toJson(ListMap(
