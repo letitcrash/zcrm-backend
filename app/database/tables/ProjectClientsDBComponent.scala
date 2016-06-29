@@ -21,9 +21,9 @@ trait ProjectClientDBComponent extends DBComponent {
 
   val projectClients = TableQuery[ProjectClientTable]
   
-  class ProjectClientTable(tag: Tag) extends Table[ProjectClientEntity](tag, "tbl_projectClient") {
+  class ProjectClientTable(tag: Tag) extends Table[ProjectClientEntity](tag, "tbl_project_clients") {
     def projectId = column[Int]("project_id")
-    def clientId = column[Int]("clietn_id")    
+    def clientId = column[Int]("client_id")    
 
     def fkProjectId = foreignKey("fk_project_clients_project", projectId, projects)(_.id)
     def fkClientIf = foreignKey("fk_project_clients_client", clientId, clients)(_.id)
