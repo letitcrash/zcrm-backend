@@ -1,7 +1,7 @@
 package utils.converters
 
 import database.tables.{ProjectEntity, UserEntity, ContactProfileEntity}
-import models.{Project, User}
+import models.{Project, User, Client}
 
 object ProjectConverter {
   
@@ -10,11 +10,13 @@ object ProjectConverter {
                     countNew: Option[Int] = None,
                     countOpen: Option[Int] = None,
                     countPostponed: Option[Int] = None,
-                    countResolved: Option[Int] = None): Project = {
+                    countResolved: Option[Int] = None,
+                    clients: Option[List[Client]] = None): Project = {
               Project(id = p.id,
                       companyId = p.companyId,
                       name = p.name,
                       members = members,
+                      clients = clients,
                       description = p.description,
                       countNew = countNew,
                       countOpen = countOpen,

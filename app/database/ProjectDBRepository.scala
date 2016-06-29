@@ -1,9 +1,10 @@
 package database
 
-import models.{PagedResult, Project, User, Team}
+import models.{PagedResult, Project, User, Team, Client}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import utils.converters.ProjectConverter._
 import utils.converters.ProjectMemberConverter._
+import utils.converters.ClientConverter._
 
 import scala.concurrent.Future
 
@@ -29,11 +30,13 @@ object ProjectDBRepository {
   def getProjectById(id: Int): Future[Project] = {
     for{
        project        <- getProjectEntityById(id)
+       clients        <- getClientEntitiesByProjectId(id) 
        countNew       <- getCountNewTicket(id)
        countOpen      <- getCountOpenTicket(id)
        countPostponed <- getCountPostponedTicket(id)
        countResolved  <- getCountResolvedTicket(id)
-    }yield(project.asProject(None, Some(countNew), Some(countOpen), Some(countPostponed), Some(countResolved)))
+       clients        <- getClientEntitiesByProjectId(id)
+    }yield(project.asProject(None, Some(countNew), Some(countOpen), Some(countPostponed), Some(countResolved), Some(clients.map(_.asClient))))
   }
 
   def getProjectWithMembersByProjectId(id: Int): Future[Project] = {
@@ -52,7 +55,8 @@ object ProjectDBRepository {
                  countOpen      <- getCountOpenTicket(project.id.get)
                  countPostponed <- getCountPostponedTicket(project.id.get)
                  countResolved  <- getCountResolvedTicket(project.id.get)
-              }yield(project.asProject(None, Some(countNew), Some(countOpen), Some(countPostponed), Some(countResolved))))))
+                 clients        <- getClientEntitiesByProjectId(project.id.get)
+              }yield(project.asProject(None, Some(countNew), Some(countOpen), Some(countPostponed), Some(countResolved),  Some(clients.map(_.asClient)))))))
   } 
 
 
@@ -65,7 +69,8 @@ object ProjectDBRepository {
                  countOpen      <- getCountOpenTicket(project.id.get)
                  countPostponed <- getCountPostponedTicket(project.id.get)
                  countResolved  <- getCountResolvedTicket(project.id.get)
-              }yield(project.asProject(None, Some(countNew), Some(countOpen), Some(countPostponed), Some(countResolved)))))
+                 clients        <- getClientEntitiesByProjectId(project.id.get)
+              }yield(project.asProject(None, Some(countNew), Some(countOpen), Some(countPostponed), Some(countResolved),  Some(clients.map(_.asClient))))))
                   .map(projectList =>
                        PagedResult[Project](pageSize = dbPage.pageSize,
                                             pageNr = dbPage.pageNr,
@@ -84,5 +89,11 @@ object ProjectDBRepository {
     deleteAllTeamsByProjectId(projectId).flatMap(count => 
       insertProjectTeamMembers(teams.map( t => (projectId, t.id.get).asProjectTeamMemberEntt))
         .map( pair => teams))
+  }
+
+  def addClients(projectId: Int, clients: List[Client]): Future[List[Client]] = {
+    deleteAllClientsByProjectId(projectId).flatMap(count =>
+      insertProjectClientEntities(clients.map(_.asClientEntity), projectId)
+        .map(_ => clients))
   }
 }

@@ -59,5 +59,18 @@ class ProjectController @Inject() extends CRMController {
       ProjectDBRepository.searchProjectByName(companyId, psize, pnr, searchTerm).map(page => Json.toJson(page))
     } else { ProjectDBRepository.getProjectsByCompanyId(companyId).map( projects => Json.toJson(projects)) }
   }
+
+  import utils.JSFormat.clientFrmt
+  case class ProjectClients( projectId: Int, clients: List[Client])
+  implicit val  projectClientFrmt       = Json.format[ProjectClients]
+
+  import scala.collection.immutable.ListMap
+  val expecteProjectClientsFormat = Json.toJson(ListMap(
+    "projectId"      -> "[M] (int) id of the project",
+    "clients"        -> "[M] (list[client])"))
+
+  def addClientsToProject(companyId: Int, projectId: Int) = CRMActionAsync[ProjectClients](expecteProjectClientsFormat){ rq =>
+    ProjectDBRepository.addClients(rq.body.projectId, rq.body.clients).map(clients => Json.toJson(clients))
+  }
  
 }
