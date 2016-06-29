@@ -89,6 +89,14 @@ class TicketController @Inject() extends CRMController {
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
+  import utils.JSFormat.projectFrmt
+  def updateProject(companyId: Int, ticketId: Int) = CRMActionAsync[Project](expectedProjectFormat){rq =>
+    for{
+        ticket   <- TicketDBRepository.getTicketById(ticketId)
+        updated  <- TicketDBRepository.updateTicket(ticket.copy(project = Some(rq.body)), companyId)
+    } yield Json.toJson(updated)
+  }
+
 
   //TODO: add permissions check
   def getTicket(companyId: Int, ticketId: Int) = CRMActionAsync { rq =>
