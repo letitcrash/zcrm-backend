@@ -24,8 +24,16 @@ object TicketDBRepository {
   }
 
   def updateTicket(ticket: Ticket, companyId: Int): Future[Ticket] = {
-    updateTicketEntity(ticket.asTicketEntity(companyId))
-          .map(updated => updated.asTicket)
+    import utils.converters.ProjectConverter._
+    for{
+       updProject     <- updateProjectEntity(ticket.project.get.asProjectEntity)
+       updTicket      <- updateTicketEntity(ticket.copy(project = Some(updProject.asProject())).asTicketEntity(companyId))
+       aggTicket      <- getAggTicketEntityById(updTicket.id.get)
+       userEntts      <- getUsersByTicketId(aggTicket._1.id.get)
+       teamsEntts     <- getTeamsByTicketId(aggTicket._1.id.get)
+       clientEntts    <- getClientsByTicketId(aggTicket._1.id.get)
+       requesterEntts <- getRequestersByTicketId(aggTicket._1.id.get)
+    }yield aggTicket.asTicket(userEntts, teamsEntts, clientEntts, requesterEntts, Some(updProject)) 
   }
 
   def deleteTicket(ticketId: Int): Future[Ticket] = {
@@ -47,19 +55,50 @@ object TicketDBRepository {
 
 
   def getTicketsByCompanyId(companyId: Int): Future[List[Ticket]] = {
-    getTicketEntitiesByCompanyId(companyId).map(list => list.map(_.asTicket))
+    getTicketEntitiesByCompanyId(companyId).flatMap{list => 
+      Future.sequence(list.map(t =>
+        for {
+          ticket <- getAggTicketEntityById(t.id.get)
+          userEntts <- getUsersByTicketId(ticket._1.id.get)
+          teamsEntts <- getTeamsByTicketId(ticket._1.id.get)
+          clientEntts <- getClientsByTicketId(ticket._1.id.get)
+          requesterEntts <- getRequestersByTicketId(ticket._1.id.get)
+          projectEntt <- ticket._1.projectId match { case Some(pId) => getProjectEntityById(pId).map(p => Some(p)); case _ => Future(None) }
+        } yield ticket.asTicket(userEntts, teamsEntts, clientEntts, requesterEntts, projectEntt)))}
   } 
 
   def getTicketsByCreatedByUserId(userId: Int): Future[List[Ticket]] = {
-    getTicketEntitiesByCreatedByUserId(userId).map(list => list.map(_.asTicket))
+    getTicketEntitiesByCreatedByUserId(userId).flatMap{list => 
+      Future.sequence(list.map(t =>
+        for {
+          ticket <- getAggTicketEntityById(t.id.get)
+          userEntts <- getUsersByTicketId(ticket._1.id.get)
+          teamsEntts <- getTeamsByTicketId(ticket._1.id.get)
+          clientEntts <- getClientsByTicketId(ticket._1.id.get)
+          requesterEntts <- getRequestersByTicketId(ticket._1.id.get)
+          projectEntt <- ticket._1.projectId match { case Some(pId) => getProjectEntityById(pId).map(p => Some(p)); case _ => Future(None) }
+        } yield ticket.asTicket(userEntts, teamsEntts, clientEntts, requesterEntts, projectEntt)))}
   } 
 
   def searchTicketByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String]): Future[PagedResult[Ticket]] = {
-    searchTicketEntitiesByName(companyId, pageSize, pageNr, searchTerm).map{dbPage =>
-        PagedResult[Ticket](pageSize = dbPage.pageSize,
-                            pageNr = dbPage.pageNr,
-                            totalCount = dbPage.totalCount,
-                            data = dbPage.data.map(_.asTicket))}
+    searchTicketEntitiesByName(companyId, pageSize, pageNr, searchTerm).flatMap{dbPage =>
+        Future.sequence(
+            dbPage.data.map(t =>
+              for {
+                ticket <- getAggTicketEntityById(t.id.get)
+                userEntts <- getUsersByTicketId(ticket._1.id.get)
+                teamsEntts <- getTeamsByTicketId(ticket._1.id.get)
+                clientEntts <- getClientsByTicketId(ticket._1.id.get)
+                requesterEntts <- getRequestersByTicketId(ticket._1.id.get)
+                projectEntt <- ticket._1.projectId match { case Some(pId) => getProjectEntityById(pId).map(p => Some(p)); case _ => Future(None) }
+              } yield ticket.asTicket(userEntts, teamsEntts, clientEntts, requesterEntts, projectEntt)))
+                  .map(ticketList =>
+                       PagedResult[Ticket](pageSize = dbPage.pageSize,
+                                            pageNr = dbPage.pageNr,
+                                            totalCount = dbPage.totalCount,
+                                            data = ticketList))
+    }
+
   }
 
   def addMembers(ticketId: Int, users: List[User]): Future[List[User]] = {
