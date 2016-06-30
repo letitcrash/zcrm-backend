@@ -14,6 +14,7 @@ case class ProjectEntity(
   name: String,
   description: Option[String] = None,
   recordStatus: Int = RowStatus.ACTIVE,
+  deadline: Option[Timestamp] = None,
   createdAt: Timestamp = new Timestamp(System.currentTimeMillis()),
   updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()))
 
@@ -32,12 +33,13 @@ trait ProjectDBComponent extends DBComponent {
     def name = column[String]("name", O.SqlType("VARCHAR(255)"))
     def description = column[String]("description", O.SqlType("VARCHAR(255)"), Nullable)
     def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
+    def deadline = column[Timestamp]("deadline", Nullable)
     def createdAt = column[Timestamp]("created_at", Nullable)
     def updatedAt = column[Timestamp]("updated_at", Nullable)
 
     def fkCompanyId = foreignKey("fk_project_company", companyId, companies)(_.id)
 
-    def * = (id.?, companyId, name, description.?, recordStatus, createdAt, updatedAt)<>(ProjectEntity.tupled, ProjectEntity.unapply)
+    def * = (id.?, companyId, name, description.?, recordStatus, deadline.?, createdAt, updatedAt)<>(ProjectEntity.tupled, ProjectEntity.unapply)
   }
 
 

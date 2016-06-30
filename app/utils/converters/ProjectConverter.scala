@@ -18,6 +18,8 @@ object ProjectConverter {
                       members = members,
                       clients = clients,
                       description = p.description,
+                      createdAt = Some(p.createdAt),
+                      deadline = p.deadline,
                       countNew = countNew,
                       countOpen = countOpen,
                       countPostponed = countPostponed,
@@ -27,7 +29,9 @@ object ProjectConverter {
       def asSimpleProject = {
               Project(id = p.id,
                       companyId = p.companyId,
-                      name = p.name)
+                      name = p.name,
+                      createdAt = Some(p.createdAt),
+                      deadline = p.deadline)
       }
   }
 
@@ -36,7 +40,8 @@ object ProjectConverter {
               ProjectEntity(id = p.id,
                             companyId = p.companyId,
                             name = p.name,
-                            description = p.description) 
+                            description = p.description,
+                            deadline = p.deadline) 
       }
   }
 }

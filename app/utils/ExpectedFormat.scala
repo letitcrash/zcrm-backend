@@ -104,7 +104,8 @@ object ExpectedFormat {
   val expectedProjectFormat = Json.toJson(ListMap(
     "companyId"      -> Json.toJson("[M](int) company ID"),
     "name"           -> Json.toJson("[M](string) Project name"),
-    "description"    -> Json.toJson("[O](string) Description")
+    "description"    -> Json.toJson("[O](string) Description"),
+    "deadline"       -> Json.toJson("[O](timestamp)")
   ))
 
   val expectedDepartmentFormat = Json.toJson(ListMap(
