@@ -109,6 +109,12 @@ trait TicketDBComponent extends DBComponent {
                             updatedAt = new Timestamp(System.currentTimeMillis()))))
   }
 
+  def deleteTicketsByProjectId(projectId: Int): Future[List[TicketEntity]] = {
+    getTicketEntitiesByProjectId(projectId).flatMap(tickets =>
+      Future.sequence(tickets.map(ticket => updateTicketEntity(ticket.copy(recordStatus = RowStatus.DELETED,
+                                                               updatedAt = new Timestamp(System.currentTimeMillis()))))))
+  }
+
   //FILTERS
   def getTicketEntitiesByCompanyId(companyId: Int): Future[List[TicketEntity]] = {
     db.run(tickets.filter(t => (t.companyId === companyId &&
@@ -119,6 +125,12 @@ trait TicketDBComponent extends DBComponent {
     db.run(tickets.filter(t => (t.createdByUserId === userId &&
                                 t.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
   }
+
+  def getTicketEntitiesByProjectId(projectId: Int): Future[List[TicketEntity]] = {
+    db.run(tickets.filter(t => (t.projectId === projectId &&
+                                t.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
+  }
+
 
   def searchTicketEntitiesByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String] = None): Future[PagedDBResult[TicketEntity]] = {
     val baseQry = searchTerm.map { st =>

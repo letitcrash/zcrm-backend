@@ -23,8 +23,10 @@ object ProjectDBRepository {
   }
 
   def deleteProject(projectId: Int): Future[Project] = {
-    softDeleteProjectById(projectId)
-          .map(deleted => deleted.asProject())
+    for{
+      tickets <- deleteTicketsByProjectId(projectId)
+      project <- softDeleteProjectById(projectId)
+    } yield project.asProject()
   }
 
   def getProjectById(id: Int): Future[Project] = {
