@@ -1,7 +1,7 @@
 package utils.converters
 
 import database.tables.{ProjectMembersEntity, UserEntity, ContactProfileEntity, ProjectTeamMemberEntity}
-import models.ProjectMembers
+import models.{ProjectMembers, User}
 
 object ProjectMemberConverter {
   
@@ -14,6 +14,13 @@ object ProjectMemberConverter {
         members = Some(tup.map(_._2.asUser))
       )
     }
+  }
+
+  implicit class ProjectMememberEntitiesToUsers(tup: (ProjectMembersEntity, (UserEntity, ContactProfileEntity))) {
+    import utils.converters.UserConverter._
+      def asUser: User = {
+        tup._2.asUser
+      }
   }
 
 

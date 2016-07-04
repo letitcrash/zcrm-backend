@@ -32,13 +32,13 @@ object ProjectDBRepository {
   def getProjectById(id: Int): Future[Project] = {
     for{
        project        <- getProjectEntityById(id)
-       members        <- getProjectMembersWithUsersByProjectId(id).map(_.asProjectMemberWithUsers)
+       members        <- getProjectMembersWithUsersByProjectId(id)
        clients        <- getClientEntitiesByProjectId(id) 
        countNew       <- getCountNewTicket(id)
        countOpen      <- getCountOpenTicket(id)
        countPostponed <- getCountPostponedTicket(id)
        countResolved  <- getCountResolvedTicket(id)
-    }yield(project.asProject(members.members, Some(countNew), Some(countOpen), Some(countPostponed), Some(countResolved), Some(clients.map(_.asClient))))
+    }yield(project.asProject(Some(members.map(_.asUser)), Some(countNew), Some(countOpen), Some(countPostponed), Some(countResolved), Some(clients.map(_.asClient))))
   }
 
   def getProjectWithMembersByProjectId(id: Int): Future[Project] = {
@@ -58,8 +58,8 @@ object ProjectDBRepository {
                  countPostponed <- getCountPostponedTicket(project.id.get)
                  countResolved  <- getCountResolvedTicket(project.id.get)
                  clients        <- getClientEntitiesByProjectId(project.id.get)
-                 members        <- getProjectMembersWithUsersByProjectId(project.id.get).map(_.asProjectMemberWithUsers)
-              }yield(project.asProject(members.members, Some(countNew), Some(countOpen), Some(countPostponed), Some(countResolved),  Some(clients.map(_.asClient)))))))
+                 members        <- getProjectMembersWithUsersByProjectId(project.id.get)
+              }yield(project.asProject(Some(members.map(_.asUser)), Some(countNew), Some(countOpen), Some(countPostponed), Some(countResolved),  Some(clients.map(_.asClient)))))))
   } 
 
 
@@ -73,8 +73,8 @@ object ProjectDBRepository {
                  countPostponed <- getCountPostponedTicket(project.id.get)
                  countResolved  <- getCountResolvedTicket(project.id.get)
                  clients        <- getClientEntitiesByProjectId(project.id.get)
-                 members        <- getProjectMembersWithUsersByProjectId(project.id.get).map(_.asProjectMemberWithUsers)
-              }yield(project.asProject(members.members, Some(countNew), Some(countOpen), Some(countPostponed), Some(countResolved),  Some(clients.map(_.asClient))))))
+                 members        <- getProjectMembersWithUsersByProjectId(project.id.get)
+              }yield(project.asProject(Some(members.map(_.asUser)), Some(countNew), Some(countOpen), Some(countPostponed), Some(countResolved),  Some(clients.map(_.asClient))))))
                   .map(projectList =>
                        PagedResult[Project](pageSize = dbPage.pageSize,
                                             pageNr = dbPage.pageNr,
