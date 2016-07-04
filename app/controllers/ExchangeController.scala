@@ -8,10 +8,11 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import database._
 import play.api.libs.json.Json
 import java.sql.Timestamp
+import javax.inject._
 
 import scala.concurrent.Future
 
-class ExchangeController extends CRMController {
+class ExchangeController @Inject()(exchangeRepo: ExchangeRepository) extends CRMController {
   import utils.JSFormat.exchangeMailFrmt
 
   def getMailsForMailbox(userId: Int, mailboxId: Int) = CRMActionAsync{rq =>
@@ -35,8 +36,13 @@ class ExchangeController extends CRMController {
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
-  def getCalendarItemsByMailBoxId(userId:Int, mailboxId: Int, startDate: Long, endDate: Long) = CRMActionAsync{ rq =>
+  import utils.JSFormat.mailToSendFrmt
+  def sendMail(userId: Int, mailboxId: Int) = CRMActionAsync[MailToSend](expectedMailToSendFormat){rq =>
+    exchangeRepo.sendMail(mailboxId, rq.body).map(_ => Json.toJson("If you're lucky, mail will be send!"))
+  }
+
+  def getCalendarItemsByMailBoxId(userId:Int, mailboxId: Int, startDate: Long, endDate: Long) = CRMActionAsync { rq =>
     import utils.JSFormat.calendarItemFrmt
-    ExchangeRepository.getCalendarItemsByMailboxId(mailboxId, startDate, endDate).map(res => Json.toJson(res));
+    exchangeRepo.getCalendarItemsByMailboxId(mailboxId, startDate, endDate).map(res => Json.toJson(res));
   }
 }

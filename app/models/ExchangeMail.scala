@@ -16,3 +16,7 @@ case class ExchangeMail(id: Option[Int] = None,
                         attachments: Option[String] = None,
                         size: Option[Int] = None,
                         received: Option[Timestamp] = None)
+
+case class MailToSend(subject: String,
+                      body: String,
+                      to: List[String])

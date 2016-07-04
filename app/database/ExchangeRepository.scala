@@ -1,24 +1,30 @@
 package database
 
-import java.sql.Timestamp
+import javax.inject._
 
-import models._
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import utils.ews.{EwsAuthUtil, EwsCalendarUtil}
+import models.{CalendarItem, MailToSend}
+import utils.ews.{EwsAuthUtil, EwsCalendarUtil, EwsMailUtil}
 import scala.collection.JavaConverters._
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
+
 
 import scala.concurrent.Future
 
-
-object ExchangeRepository {
+class ExchangeRepository @Inject()(ewsAuth: EwsAuthUtil, ewsMail:EwsMailUtil, ewsCalendar: EwsCalendarUtil) {
   import database.gen.current.dao._
 
   def getCalendarItemsByMailboxId(mailboxId: Int, startDate: Long, endDate: Long):Future[List[CalendarItem]] = {
-    val ewsAuth = new EwsAuthUtil()
-    val ewsCalendar = new EwsCalendarUtil()
     getMailboxEntityById(mailboxId).map{res =>
             val service = ewsAuth.tryToLogin(res.server, res.login, res.password)
             ewsCalendar.findAppointments(service,startDate, endDate).asScala.toList
+    }
+  }
+
+  //Unit because of EWS. It returns nothing when you send mail.
+  def sendMail(mailboxId: Int, mail: MailToSend):Future[Unit] = {
+    getMailboxEntityById(mailboxId).map{res =>
+      val service = ewsAuth.tryToLogin(res.server, res.login, res.password)
+      ewsMail.send(service, mail)
     }
   }
 }
