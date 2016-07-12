@@ -159,6 +159,7 @@ object EmployeeDBRepository {
   def softDeleteEmployeeById(employeeId: Int): Future[Employee] = {
       for{
           deleted <- softDeleteEmployeeEntityById(employeeId)
+          deletedUser <- softDeleteById(deleted.userId) 
           userWithProfileEntt <- getUserWithProfileByUserId(deleted.userId)
       } yield(deleted, userWithProfileEntt).asEmployee
   }
