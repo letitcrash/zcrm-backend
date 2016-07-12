@@ -27,7 +27,7 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
                             union: Option[Union] = None, 
                             teams: Option[List[Team]] = None,
                             delegates: Option[List[Delegate]] = None,
-                            employeeLevel: Option[Int]) {
+                            employeeLevel: Option[Int] = None) {
 
                               def toEmployee(companyId: Int) = {
                                 Employee(
