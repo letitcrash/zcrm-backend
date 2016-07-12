@@ -112,7 +112,7 @@ DELETE  /companies/:companyId/employees/:employeeId/teams                       
 
 GET     /companies/:companyId/employees/typeahead                                            controllers.EmployeeController.searchForTypeahead(companyId: Int, searchTerm: Option[String])
 GET     /companies/:companyId/employees/:employeeId                                          controllers.EmployeeController.getEmployee(companyId: Int, employeeId: Int)
-GET     /companies/:companyId/employees                                                      controllers.EmployeeController.searchAllEmployeesByCompanyId(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String], positionIds: List[Int], shiftIds: List[Int], departmentIds: List[Int], unionIds:List[Int])
+GET     /companies/:companyId/employees                                                      controllers.EmployeeController.searchAllEmployeesByCompanyId(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String], positionIds: List[Int], shiftIds: List[Int], departmentIds: List[Int], unionIds:List[Int], recordStatus: Option[Int])
 
 #Mailbox
 POST   /users/:userId/mailboxes                                                              controllers.MailboxController.newMailbox(userId: Int)                   
