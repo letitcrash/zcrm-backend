@@ -10,6 +10,8 @@ case class ContactProfileEntity(
   firstname:          Option[String] = None,
   lastname:           Option[String] = None,
   email:              Option[String] = None,
+  emailHome:          Option[String] = None,
+  emailWork:          Option[String] = None,
   address:            Option[String] = None,
   city:               Option[String] = None,
   zipCode:            Option[String] = None,
@@ -30,6 +32,8 @@ trait ContactProfileDBComponent extends DBComponent {
     def firstname = column[String]("firstname", Nullable, O.SqlType("VARCHAR(255)"))
     def lastname = column[String]("lastname", Nullable, O.SqlType("VARCHAR(255)"))
     def email = column[String]("email", Nullable, O.SqlType("VARCHAR(255)"))
+    def emailHome = column[String]("email", Nullable, O.SqlType("VARCHAR(255)"))
+    def emailWork = column[String]("email", Nullable, O.SqlType("VARCHAR(255)"))
     def address = column[String]("address", Nullable, O.SqlType("VARCHAR(255)"))
     def city = column[String]("city", Nullable, O.SqlType("VARCHAR(255)"))
     def zipCode = column[String]("zip_code", Nullable, O.SqlType("VARCHAR(255)"))
@@ -38,7 +42,7 @@ trait ContactProfileDBComponent extends DBComponent {
     def phoneWork = column[String]("phone_work", Nullable, O.SqlType("VARCHAR(255)"))
     def lastModified = column[Timestamp]("last_modified", Nullable)
 
-    override def * = (id.?, firstname.?, lastname.?, email.?, address.?, city.?,
+    override def * = (id.?, firstname.?, lastname.?, email.?, emailHome.?, emailWork.?, address.?, city.?,
       zipCode.?, phoneMobile.?, phoneHome.?, phoneWork.?, lastModified.?) <>
         (ContactProfileEntity.tupled, ContactProfileEntity.unapply)
   }
