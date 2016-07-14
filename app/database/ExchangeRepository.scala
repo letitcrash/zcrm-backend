@@ -2,7 +2,7 @@ package database
 
 import javax.inject._
 
-import models.{CalendarItem, MailToSend}
+import models.{CalendarItem, MailToSend, ExchangeMail}
 import utils.ews.{EwsAuthUtil, EwsCalendarUtil, EwsMailUtil}
 import scala.collection.JavaConverters._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -25,6 +25,13 @@ class ExchangeRepository @Inject()(ewsAuth: EwsAuthUtil, ewsMail:EwsMailUtil, ew
     getMailboxEntityById(mailboxId).map{res =>
       val service = ewsAuth.tryToLogin(res.server, res.login, res.password)
       ewsMail.send(service, mail)
+    }
+  }
+
+  def getSentMail(mailboxId: Int, pageNr: Int, pageSize: Int):Future[List[ExchangeMail]] = {
+   getMailboxEntityById(mailboxId).map{res =>
+      val service = ewsAuth.tryToLogin(res.server, res.login, res.password)
+      ewsMail.getSentMail(service, mailboxId, pageNr, pageSize).asScala.toList
     }
   }
 }

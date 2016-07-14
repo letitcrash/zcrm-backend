@@ -123,6 +123,7 @@ GET     /users/:userId/mailboxes                                                
 
 #Mail
 GET    /users/:userId/mailboxes/:mailboxId/mails                                             controllers.ExchangeController.getODSMailsForMailboxGrouped(userId: Int, mailboxId: Int)
+GET    /users/:userId/mailboxes/:mailboxId/outbox                                            controllers.ExchangeController.getSentMail(userId: Int, mailboxId: Int, pagenNr: Option[Int], pageSize: Option[Int])
 GET    /users/:userId/mailboxes/:mailboxId/mails/:mailId                                     controllers.ExchangeController.getMail(userId: Int, mailboxId: Int, mailId: Int)
 
 GET    /users/:userId/mailboxes/:mailboxId/calendar                                          controllers.ExchangeController.getCalendarItemsByMailBoxId(userId: Int, mailboxId: Int, startDate: Long, endDate: Long)

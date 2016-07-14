@@ -45,4 +45,8 @@ class ExchangeController @Inject()(exchangeRepo: ExchangeRepository) extends CRM
     import utils.JSFormat.calendarItemFrmt
     exchangeRepo.getCalendarItemsByMailboxId(mailboxId, startDate, endDate).map(res => Json.toJson(res));
   }
+
+  def getSentMail(userId: Int, mailboxId: Int, pagenNr: Option[Int] = None, pageSize: Option[Int] = None) = CRMActionAsync{rq =>
+   exchangeRepo.getSentMail(mailboxId, pagenNr.getOrElse(1), pageSize.getOrElse(25)).map(Json.toJson(_))
+  }
 }

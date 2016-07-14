@@ -14,9 +14,10 @@ case class DelegateEntity(
   createdAt: Timestamp = new Timestamp(System.currentTimeMillis()),
   updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()))
 
-trait DelegateDBComponent extends DBComponent
-  with CompanyDBComponent {
-  this: DBComponent =>
+trait DelegateDBComponent extends DBComponent {
+  this: DBComponent
+  with CompanyDBComponent
+  with TeamDBComponent =>
 
   import dbConfig.driver.api._
 

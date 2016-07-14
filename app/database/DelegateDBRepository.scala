@@ -30,7 +30,10 @@ object DelegateDBRepository {
   }
 
   def getDelegateById(id: Int): Future[Delegate] = {
-    getDelegateEntityById(id).map(_.asDelegate)
+    for{
+        delegate <- getDelegateEntityById(id)
+        team     <- getTeamEntityById(delegate.teamId.get)
+      }yield delegate.asDelegate
   }
 
 

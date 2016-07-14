@@ -12,10 +12,11 @@ case class GroupDelegateEntity(
   delegateStartDate: Option[Timestamp],
   delegateEndDate: Option[Timestamp])
 
-trait GroupDelegateDBComponent extends DBComponent
+trait GroupDelegateDBComponent extends DBComponent {
+  this: DBComponent
   with UserDBComponent 
-  with DelegateDBComponent {
-  this: DBComponent with ContactProfileDBComponent =>
+  with DelegateDBComponent
+  with ContactProfileDBComponent =>
 
   import dbConfig.driver.api._
 
