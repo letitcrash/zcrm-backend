@@ -23,6 +23,17 @@ object TeamDBRepository {
           .map(updated => updated.asTeam)
   }
 
+  def updateTeamWithMembers(teamWithMembers: TeamWithMember, companyId: Int): Future[TeamWithMember] = {
+    updateTeamEntity(teamWithMembers.asTeamEntity(companyId))
+      .flatMap(teamEntt =>
+        teamWithMembers.members.map( mbs => 
+          deleteTeamGroupByTeamId(teamEntt.id.get).flatMap( ok =>
+            insertTeamGroups( mbs.map( m =>
+              m.asTeamGroupEntt(teamEntt.id.get))).flatMap( list =>
+                Future(teamWithMembers.copy(id = teamEntt.id))))
+         ).getOrElse(Future(teamWithMembers.copy(id = teamEntt.id))))
+  }
+
   def deleteTeam(teamId: Int): Future[Team] = {
     softDeleteTeamById(teamId)
           .map(deleted => deleted.asTeam)

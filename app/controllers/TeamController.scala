@@ -31,12 +31,17 @@ class TeamController @Inject() extends CRMController {
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
-
-
   //TODO: add permissions check
   def updateTeam(companyId: Int, teamId: Int) = CRMActionAsync[Team](expectedTeamFormat){ rq =>
     // if(rq.header.belongsToCompany(companyId)){
       TeamDBRepository.updateTeam(rq.body.copy(id = Some(teamId)), companyId).map( team => Json.toJson(team))
+    // }else{ Future{Failure(new InsufficientRightsException())} }
+  }
+
+  //FIXME: wrong expectedTeamFormat
+  def updateTeamWithMembers(companyId: Int, teamId: Int) = CRMActionAsync[TeamWithMember](expectedTeamFormat){ rq =>
+    // if(rq.header.belongsToCompany(companyId)){
+      TeamDBRepository.updateTeamWithMembers(rq.body.copy(id = Some(teamId)), companyId).map( team => Json.toJson(team))
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 

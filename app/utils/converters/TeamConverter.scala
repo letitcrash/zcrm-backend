@@ -64,6 +64,15 @@ object TeamConverter {
      description = twm.description)
   }
 
+  implicit class TeamWithMemberToTeamEntity(t: TeamWithMember)  {
+    def asTeamEntity(companyId: Int): TeamEntity = {
+            TeamEntity(id = t.id,
+                       companyId = companyId,
+                       name = t.name,
+                       description = t.description)
+    }
+  }
+
   implicit class TeamEntityWithEmployeesToTeamWithMember(o: (TeamEntity, List[(TeamGroupEntity, (EmployeeEntity, (UserEntity, ContactProfileEntity)))])) {
     import utils.converters.EmployeeConverter._
 

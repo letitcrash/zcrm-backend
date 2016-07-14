@@ -117,6 +117,12 @@ trait TeamDBComponent extends DBComponent {
     lastDeleted
   }
 
+  def deleteTeamGroupByTeamId(teamId: Int): Future[String] = {
+    //val lastDeleted = getTeamGroupEntityByUserId(userId)
+    db.run(teamGroups.filter(_.teamId === teamId).delete)
+    Future("Ok")
+  }
+
   def deleteUserFromTeamGroup(teamId:Int, userId: Int): Future[TeamGroupEntity] = {
     val deleted = db.run(teamGroups.filter(t => (t.userId === userId && 
                                                  t.teamId === teamId)).result.head)
