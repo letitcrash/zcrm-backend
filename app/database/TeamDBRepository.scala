@@ -61,8 +61,8 @@ object TeamDBRepository {
        teamWithMembers.members.map( mbs => 
          insertTeamGroups( mbs.map( m =>
            m.asTeamGroupEntt(newTeam.id.get))).flatMap( list =>
-             Future(teamWithMembers))
-       ).getOrElse(Future(teamWithMembers)))
+             Future(teamWithMembers.copy(id = newTeam.id)))
+       ).getOrElse(Future(teamWithMembers.copy(id = newTeam.id))))
   }
   
 
