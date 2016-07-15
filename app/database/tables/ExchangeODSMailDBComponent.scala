@@ -6,6 +6,7 @@ import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.model.ForeignKeyAction.{Cascade, SetNull, Restrict}
 import models._
+import database.PagedDBResult
 
 case class ExchangeODSMailEntity(
   id: Option[Int] = None,
@@ -55,6 +56,10 @@ trait ExchangeODSMailDBComponent extends DBComponent {
     def UqExtId = index("unique_ods_ext_id", extId, unique = true)
   }
 
+  def odsQry(mailboxId: Int) = {
+    ods_mails.filter(_.mailboxId === mailboxId)
+  }
+
    def insertODSMailEntity(mail: ExchangeODSMailEntity): Future[ExchangeODSMailEntity] = {
        db.run((ods_mails returning ods_mails.map(_.id)
                      into ((mail,id) => mail.copy(id=Some(id)))) += mail)
@@ -91,6 +96,30 @@ trait ExchangeODSMailDBComponent extends DBComponent {
     val deleted = getODSMailEntityByExtId(extId)
     db.run(ods_mails.filter(_.extId === extId).delete)
     deleted
+  }
+
+  //FILTERS
+
+  def searchODSMailEntitiesByMailboxId(mailboxId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String] = None): Future[PagedDBResult[ExchangeODSMailEntity]] = {
+    val baseQry = searchTerm.map { st =>
+        val s = "%" + st + "%"
+        odsQry(mailboxId).filter{_.subject.like(s)}
+      }.getOrElse(odsQry(mailboxId))  
+
+    val pageRes = baseQry
+      .sortBy(_.received.asc)
+      .drop(pageSize * (pageNr - 1))
+      .take(pageSize)
+
+    db.run(pageRes.result).flatMap( mailsList => 
+        db.run(baseQry.length.result).map( totalCount => 
+         PagedDBResult(
+            pageSize = pageSize,
+            pageNr = pageNr,
+            totalCount = totalCount,
+            data = mailsList)
+          )
+        )
   }
 
 }

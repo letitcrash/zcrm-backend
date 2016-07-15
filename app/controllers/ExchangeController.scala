@@ -14,6 +14,7 @@ import scala.concurrent.Future
 
 class ExchangeController @Inject()(exchangeRepo: ExchangeRepository) extends CRMController {
   import utils.JSFormat.exchangeMailFrmt
+  import utils.JSFormat.groupedMailFrmt
 
   def getMailsForMailbox(userId: Int, mailboxId: Int) = CRMActionAsync{rq =>
     // if(rq.header.belongsToCompany(companyId)){
@@ -23,11 +24,21 @@ class ExchangeController @Inject()(exchangeRepo: ExchangeRepository) extends CRM
 
   def getODSMailsForMailboxGrouped(userId: Int, mailboxId: Int) = CRMActionAsync{rq =>
     // if(rq.header.belongsToCompany(companyId)){
-    import utils.JSFormat.groupedMailFrmt
     ExchangeODSMailDBRepository.getODSMailsByMailboxId(mailboxId).map(mails => 
           mails.groupBy(_.conversationExtId)).map(res => 
                   Json.toJson(res.map{ case (k,v) => GroupedMail(conversationId = k.get, mails = v)}))
     // }else{ Future{Failure(new InsufficientRightsException())} }
+  }
+
+  def searchAllTicketsByName(userId: Int, mailboxId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String]) = CRMActionAsync{rq =>
+    import utils.JSFormat._
+    if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
+      val psize = pageSize.getOrElse(25)
+      val pnr = pageNr.getOrElse(1)
+      ExchangeODSMailDBRepository.searchODSMailsByMailboxId(mailboxId, psize, pnr, searchTerm).map(Json.toJson(_))
+    } else { ExchangeODSMailDBRepository.getODSMailsByMailboxId(mailboxId).map(mails => 
+                mails.groupBy(_.conversationExtId)).map(res => 
+                  Json.toJson(res.map{ case (k,v) => GroupedMail(conversationId = k.get, mails = v)})) }
   }
 
   def getMail(userId: Int, mailboxId: Int, mailId: Int)  = CRMActionAsync { rq =>
@@ -47,6 +58,8 @@ class ExchangeController @Inject()(exchangeRepo: ExchangeRepository) extends CRM
   }
 
   def getSentMail(userId: Int, mailboxId: Int, pagenNr: Option[Int] = None, pageSize: Option[Int] = None) = CRMActionAsync{rq =>
-   exchangeRepo.getSentMail(mailboxId, pagenNr.getOrElse(1), pageSize.getOrElse(25)).map(Json.toJson(_))
+   exchangeRepo.getSentMail(mailboxId, pagenNr.getOrElse(1), pageSize.getOrElse(25)).map(mails => 
+          mails.groupBy(_.conversationExtId)).map(res => 
+                  Json.toJson(res.map{ case (k,v) => GroupedMail(conversationId = k.get, mails = v)}))
   }
 }
