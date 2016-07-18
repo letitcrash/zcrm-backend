@@ -43,6 +43,7 @@ trait TeamDBComponent extends DBComponent {
     def updatedAt = column[Timestamp]("updated_at", Nullable)
 
     def fkCompanyId = foreignKey("fk_team_company", companyId, companies)(_.id)
+    def UqTeamName = index("uq_team_name_per_company", (name,companyId), unique = true)
 
     def * = (id.?, companyId, name, description.?, recordStatus, createdAt, updatedAt)<>(TeamEntity.tupled, TeamEntity.unapply)
   }
