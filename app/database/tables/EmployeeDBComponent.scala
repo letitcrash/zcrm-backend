@@ -118,13 +118,11 @@ trait EmployeeDBComponent extends DBComponentWithSlickQueryOps{
   }
 
   def getEmployeeById(id: Int): Future[EmployeeEntity] = {
-    db.run(employees.filter(t => (t.id === id &&
-                                  t.recordStatus === RowStatus.ACTIVE)).result.head)
+    db.run(employees.filter(_.id === id).result.head)
   }
 
   def getEmployeeByUserId(userId: Int): Future[EmployeeEntity] = {
-    db.run(employees.filter(t => (t.userId === userId &&
-                                  t.recordStatus === RowStatus.ACTIVE)).result.head)
+    db.run(employees.filter(_.userId === userId).result.head)
   }
 
   def updateEmployeeEntity(newEmpl: EmployeeEntity): Future[EmployeeEntity] = {
@@ -155,8 +153,7 @@ trait EmployeeDBComponent extends DBComponentWithSlickQueryOps{
   }
 
   def getAllEmployeesWithUsersByCompanyId(companyId: Int): Future[List[(EmployeeEntity,  (UserEntity, ContactProfileEntity))]] = {
-    db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.companyId === companyId && 
-                                                     t._1.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
+    db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.companyId === companyId)).result).map(_.toList)
   }
 
   def getAllAggregatedEmployeesByCompanyId(companyId: Int, 
@@ -222,8 +219,7 @@ trait EmployeeDBComponent extends DBComponentWithSlickQueryOps{
   }
 
   def searchEmployeesWithUserWithContactProfileForTypeahead(companyId: Int, searchTerm: Option[String] = None): Future[List[(EmployeeEntity,  (UserEntity, ContactProfileEntity))]] = {
-    def qry(cmpId: Int) = employeesWithUsersWihtProfile.filter(t =>(t._1.companyId === cmpId && 
-                                                                    t._1.recordStatus === RowStatus.ACTIVE))
+    def qry(cmpId: Int) = employeesWithUsersWihtProfile.filter(t =>(t._1.companyId === cmpId))
     val baseQry = searchTerm.map { st =>
         val s = "%" + st + "%"
         qry(companyId).filter{t => t._2._2.firstname.like(s) || 
@@ -235,13 +231,11 @@ trait EmployeeDBComponent extends DBComponentWithSlickQueryOps{
   }
 
   def getEmployeeWithUserById(employeeId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
-    db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.id === employeeId && 
-                                                     t._1.recordStatus === RowStatus.ACTIVE)).result.head)
+    db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.id === employeeId)).result.head)
   }
 
   def getEmployeeWithUserByUserId(userId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
-    db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.userId === userId && 
-                                                     t._1.recordStatus === RowStatus.ACTIVE)).result.head)
+    db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.userId === userId)).result.head)
   }
 
   def updateEmployeeWithUser(emplEntt: EmployeeEntity): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {

@@ -31,7 +31,8 @@ object ExpectedFormat {
       "user"                    -> expectedUserFormat,
       "companyId"               -> Json.toJson("[M] (int) Company Id for user"),
       "employeeType"            -> Json.toJson("[O] (string) "),
-      "employeeLevel"           -> Json.toJson("[M] (int) Level of employee")
+      "employeeLevel"           -> Json.toJson("[M] (int) Level of employee"),
+      "recordStatus"            -> Json.toJson("[M] (int) 0 - deleted, 1 - active")
     ))
 
   val expectedLoginRqFormat = Json.toJson(ListMap(

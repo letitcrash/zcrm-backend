@@ -12,4 +12,5 @@ case class Employee(
   delegates: Option[List[Delegate]] = None, 
   flypass: Option[String] = None, 
   salarySystem: Option[Int] = None, 
-  employeeLevel: Int = UserLevels.USER)
+  employeeLevel: Int = UserLevels.USER,
+  recordStatus: Int)

@@ -38,7 +38,8 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
                                   union = union, 
                                   teams = teams,
                                   delegates = delegates, 
-                                  employeeLevel = employeeLevel.getOrElse(UserLevels.USER)
+                                  employeeLevel = employeeLevel.getOrElse(UserLevels.USER),
+                                  recordStatus = RowStatus.ACTIVE 
                                 )
                               }
 

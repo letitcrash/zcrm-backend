@@ -33,7 +33,8 @@ object EmployeeConverter {
         delegates = Some(delegateEnnts.map(_.asDelegate)),
         flypass = employeeTup.flypass,
         salarySystem =  employeeTup.salarySystem,
-        employeeLevel = employeeTup.employeeLevel
+        employeeLevel = employeeTup.employeeLevel,
+        recordStatus = employeeTup.recordStatus
       )
     }
   }
@@ -47,7 +48,8 @@ object EmployeeConverter {
         id = tup._1.id,
         user = Some(tup._2.asUser),
         companyId = tup._1.companyId,
-        employeeLevel = tup._1.employeeLevel)
+        employeeLevel = tup._1.employeeLevel,
+        recordStatus = tup._1.recordStatus)
     }
   }
 
@@ -92,7 +94,8 @@ object EmployeeConverter {
         id = emp.id,
         user = Some((o._2, o._3).asUser),
         companyId = o._1.companyId,
-        employeeLevel = o._1.employeeLevel)
+        employeeLevel = o._1.employeeLevel,
+        recordStatus = o._1.recordStatus)
     }
   }
 
@@ -103,6 +106,7 @@ object EmployeeConverter {
         id = emp.id,
         user = Some(user),
         companyId = comp.id.getOrElse(0),
-        employeeLevel = emp.employeeLevel)
+        employeeLevel = emp.employeeLevel,
+        recordStatus = emp.recordStatus)
   }
 }

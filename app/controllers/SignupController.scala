@@ -159,7 +159,8 @@ class SignupController @Inject() (mailer: utils.Mailer) extends CRMController {
                     emp <- EmployeeDBRepository.addEmployee(Employee( companyId = company.id.get,
                                                                       user = Some(user), 
                                                                      // employeeType = Some("Owner"),
-                                                                      employeeLevel = EmployeeLevels.OWNER))
+                                                                      employeeLevel = EmployeeLevels.OWNER,
+                                                                      recordStatus = RowStatus.ACTIVE))
                     markUsed <- SignupRepository.markTokenUsed(token.token)
                 } yield user 
 
