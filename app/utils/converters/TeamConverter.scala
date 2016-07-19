@@ -32,21 +32,27 @@ object TeamConverter {
   implicit class TeamGroupToTeamGroupEntity(t: TeamGroup) {
       def asEntity: TeamGroupEntity = {
         TeamGroupEntity( teamId = t.teamId,
-                         userId = t.userId)
+                         userId = t.userId,
+                         startDate = t.startDate,
+                         endDate = t.endDate)
       }
   }
 
   implicit class EnitityToTeamGroup(t: TeamGroupEntity) {
       def asTeamGroup: TeamGroup = {
         TeamGroup( teamId = t.teamId,
-                   userId = t.userId)
+                   userId = t.userId,
+                   startDate = t.startDate,
+                   endDate = t.endDate)
       }
   }
 
   implicit class TeamToTeamGroup(t: Team) {
     def asTeamGroup(userId: Int): TeamGroup = {
       TeamGroup( teamId = t.id.get,
-                 userId = userId)
+                 userId = userId,
+                 startDate = t.startDate,
+                 endDate = t.endDate)
     }
   }
 

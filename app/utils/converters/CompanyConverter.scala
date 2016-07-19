@@ -20,7 +20,7 @@ object CompanyConverter {
       )
     }
 
-    def asAggregatedCompany(delegateEntts: List[DelegateEntity],
+    def asAggregatedCompany(//delegateEntts: List[DelegateEntity],
                             shiftEntts: List[ShiftEntity], 
                             departmetEntts: List[DepartmentEntity],
                             unionEntts: List[UnionEntity],
@@ -37,7 +37,7 @@ object CompanyConverter {
           name = tuple._1.name,
           contactProfile = Some(tuple._2.asProfile),
           vatId = tuple._1.vatId,
-          delegates  = Some(delegateEntts.map(_.asDelegate)),
+         // delegates  = Some(delegateEntts.map(_.asDelegate)),
           shifts = Some(shiftEntts.map(_.asShift)),
           departmets = Some(departmetEntts.map(_.asDepartment)),
           unions = Some(unionEntts.map(_.asUnion)), 

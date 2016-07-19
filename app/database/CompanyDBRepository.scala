@@ -27,13 +27,14 @@ object CompanyDBRepository {
     import utils.converters.CompanyConverter.EntitiesToCompany
     for {
       companyEntt <- getCompanyWithProfileById(id)
-      delegatesEntt <- getDelegateEntitiesByCompanyId(id)
+      //delegatesEntt <- getDelegateEntitiesByCompanyId(id)
       shiftsEntt <-  getShiftEntitiesByCompanyId(id)
       departmetsEntt <- getDepartmentEntitiesByCompanyId(id)
       unionsEntt <- getUnionEntitiesByCompanyId(id)
       teamsEntt <-  getTeamEntitiesByCompanyId(id)
       positionsEntt <- getPositionEntitiesByCompanyId(id)
-    } yield  companyEntt.asAggregatedCompany(delegatesEntt, shiftsEntt, departmetsEntt, unionsEntt, teamsEntt, positionsEntt)
+    //} yield  companyEntt.asAggregatedCompany(delegatesEntt, shiftsEntt, departmetsEntt, unionsEntt, teamsEntt, positionsEntt)
+    } yield  companyEntt.asAggregatedCompany( shiftsEntt, departmetsEntt, unionsEntt, teamsEntt, positionsEntt)
   }
 
   def getCompany(id: Int): Future[Company] = {

@@ -26,7 +26,7 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
                             department: Option[Department] = None, 
                             union: Option[Union] = None, 
                             teams: Option[List[Team]] = None,
-                            delegates: Option[List[Delegate]] = None,
+                          //  delegates: Option[List[Delegate]] = None,
                             employeeLevel: Option[Int] = None) {
 
                               def toEmployee(companyId: Int) = {
@@ -37,7 +37,7 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
                                   department = department,
                                   union = union, 
                                   teams = teams,
-                                  delegates = delegates, 
+                                  //delegates = delegates, 
                                   employeeLevel = employeeLevel.getOrElse(UserLevels.USER),
                                   recordStatus = RowStatus.ACTIVE 
                                 )

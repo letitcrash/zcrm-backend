@@ -42,15 +42,15 @@ object EmployeeDBRepository {
             empEnt <- insertEmployee(employee.asEmployeeEntity(employee.companyId, userEnt.id.get))
             teamGrpEnts <- employee.teams match { case Some(teams) => insertTeamGroups(teams.map(t =>t.asTeamGroup(userEnt.id.get)).map(_.asEntity))
                                                  case _ => Future(List())}
-            delegateGrpEnts <- employee.delegates match { case Some(delegates) => insertDelegateGroups(delegates.map(d => d.asDelegateGroup(userEnt.id)).map(_.asGroupEntity))
-                                                         case _ => Future(List())}
+         //   delegateGrpEnts <- employee.delegates match { case Some(delegates) => insertDelegateGroups(delegates.map(d => d.asDelegateGroup(userEnt.id)).map(_.asGroupEntity)) case _ => Future(List())}
          } yield (empEnt, userEnt, profEnt).asEmployee()).map( e =>
             e.copy( position = employee.position,
                     shift = employee.shift,
                     department = employee.department,
                     union = employee.union,
-                    teams = employee.teams,
-                    delegates = employee.delegates))
+                    teams = employee.teams//,
+                   // delegates = employee.delegates
+                    ))
     })
  }
 
@@ -85,7 +85,8 @@ object EmployeeDBRepository {
               delegatesTup =>
                 getTeamEntitiesByUserId(aggEmployee._1._1._1._1._2._1.id.get).map(
                   teamsTup => 
-                    aggEmployee.asEmployee(teamsTup, delegatesTup))))))
+                    //aggEmployee.asEmployee(teamsTup, delegatesTup))))))
+                    aggEmployee.asEmployee(teamsTup))))))
   }
 
   def searchAggragatedEmployeesByCompanyId (companyId: Int,
@@ -114,7 +115,8 @@ object EmployeeDBRepository {
               delegatesTup =>
                 getTeamEntitiesByUserId(aggEmployee._1._1._1._1._2._1.id.get).map(
                   teamsTup => 
-                    aggEmployee.asEmployee(teamsTup, delegatesTup))))).map( empList => 
+                    //aggEmployee.asEmployee(teamsTup, delegatesTup))))).map( empList => 
+                    aggEmployee.asEmployee(teamsTup))))).map( empList => 
                       PagedResult[Employee](
                         pageSize = dbPage.pageSize,
                         pageNr = dbPage.pageNr,
@@ -152,8 +154,9 @@ object EmployeeDBRepository {
                     shift = employee.shift,
                     department = employee.department,
                     union = employee.union,
-                    teams = employee.teams,
-                    delegates = employee.delegates))
+                    teams = employee.teams//,
+                   // delegates = employee.delegates
+                    ))
   }
 
   def softDeleteEmployeeById(employeeId: Int): Future[Employee] = {

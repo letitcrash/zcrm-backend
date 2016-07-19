@@ -7,7 +7,8 @@ object EmployeeConverter {
 
   implicit class AggregatedEmployeeEnttToEmployee
   (tup: (((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), Option[PositionEntity]) , Option[ShiftEntity]),  Option[DepartmentEntity]), Option[UnionEntity]) ) {
-    def asEmployee(teamEntts: List[(TeamGroupEntity, TeamEntity)], delegateEnnts: List[(GroupDelegateEntity, DelegateEntity)]): Employee = {
+    //def asEmployee(teamEntts: List[(TeamGroupEntity, TeamEntity)], delegateEnnts: List[(GroupDelegateEntity, DelegateEntity)]): Employee = {
+    def asEmployee(teamEntts: List[(TeamGroupEntity, TeamEntity)]): Employee = {
       import UserConverter.EntityToUser
       import DelegateConverter._
       import ShiftConverter._
@@ -30,7 +31,7 @@ object EmployeeConverter {
         department = departmentTup.map(_.asDepartment),
         union = unionTup.map(_.asUnion),
         teams = Some(teamEntts.map(_.asTeam)),
-        delegates = Some(delegateEnnts.map(_.asDelegate)),
+       // delegates = Some(delegateEnnts.map(_.asDelegate)),
         flypass = employeeTup.flypass,
         salarySystem =  employeeTup.salarySystem,
         employeeLevel = employeeTup.employeeLevel,
