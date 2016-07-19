@@ -72,5 +72,32 @@ class ProjectController @Inject() extends CRMController {
   def addClientsToProject(companyId: Int, projectId: Int) = CRMActionAsync[ProjectClients](expecteProjectClientsFormat){ rq =>
     ProjectDBRepository.addClients(rq.body.projectId, rq.body.clients).map(clients => Json.toJson(clients))
   }
+
+  import utils.JSFormat.userFrmt
+  case class ProjectMembers( projectId: Int, members: List[User])
+  implicit val  projectMembersFrmt       = Json.format[ProjectMembers]
+
+  import scala.collection.immutable.ListMap
+  val expecteProjectMembersFormat = Json.toJson(ListMap(
+    "projectId"        -> "[M] (int) id of the project",
+    "members"         -> "[M] (list[user])"))
+
+  def addMembersToProject(companyId: Int, projectId: Int) = CRMActionAsync[ProjectMembers](expecteProjectMembersFormat){ rq => 
+    ProjectDBRepository.addMembers(rq.body.projectId, rq.body.members).map(users => Json.toJson(users))
+  }
+
+  import utils.JSFormat.teamFrmt
+  case class ProjectTeamMembers( projectId: Int, teams: List[Team])
+  implicit val  projectTeamMembersFrmt       = Json.format[ProjectTeamMembers]
+
+  import scala.collection.immutable.ListMap
+  val expecteProjectTeamMembersFormat = Json.toJson(ListMap(
+    "projectId"      -> "[M] (int) id of the project",
+    "teams"         -> "[M] (list[team])"))
+
+  def addTeamMembersToProject(companyId: Int, projectId: Int) = CRMActionAsync[ProjectTeamMembers](expecteProjectTeamMembersFormat){ rq => 
+    ProjectDBRepository.addTeams(rq.body.projectId, rq.body.teams).map(teams => Json.toJson(teams))
+  }
+
  
 }

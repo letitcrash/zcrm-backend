@@ -85,6 +85,8 @@ GET      /companies/:companyId/positions/:positionId                            
 #Project 
 POST     /companies/:companyId/projects                                                      controllers.ProjectController.newProject(companyId: Int)
 POST     /companies/:companyId/projects/:projectId/clients                                   controllers.ProjectController.addClientsToProject(companyId: Int, projectId: Int)
+POST     /companies/:companyId/projects/:projectId/teams                                     controllers.ProjectController.addTeamMembersToProject(companyId: Int, projectId: Int)
+POST     /companies/:companyId/projects/:projectId/clients                                   controllers.ProjectController.addClientsToProject(companyId: Int, projectId: Int)
 PUT      /companies/:companyId/projects/:projectId                                           controllers.ProjectController.updateProject(companyId: Int, projectId: Int) 
 DELETE   /companies/:companyId/projects/:projectId                                           controllers.ProjectController.deleteProjectById(companyId: Int, projectId:Int) 
 GET      /companies/:companyId/projects                                                      controllers.ProjectController.searchAllProjectsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
