@@ -167,6 +167,16 @@ object EmployeeDBRepository {
       } yield(deleted, userWithProfileEntt).asEmployee
   }
 
+  def restoreEmployeeById(employeeId: Int): Future[Employee] = {
+    for{
+         deleted         <- getEmployeeById(employeeId)
+         activated       <- updateEmployeeEntity(deleted.copy(recordStatus = RowStatus.ACTIVE))
+         deletedUser     <- getUserById(activated.userId)
+         activatedUser   <- updateUser(deletedUser.copy(recordStatus = RowStatus.ACTIVE))
+         userWithProfile <- getUserWithProfileByUserId(activatedUser.id.get)
+      } yield (activated, userWithProfile).asEmployee 
+  }
+
   def updateEmployeePosition(employeeId: Int, positionId: Int): Future[Position] = {
     import utils.converters.PositionConverter._
     updateEmployeeEntityPosition(employeeId, Some(positionId)).map(_.asEmployee)

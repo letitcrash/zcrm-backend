@@ -103,6 +103,7 @@ PUT     /companies/:companyId/employees/:employeeId/departments/:departmentId   
 PUT     /companies/:companyId/employees/:employeeId/shifts/:shiftId                         controllers.EmployeeController.updateEmployeeShiftById(companyId: Int, employeeId: Int, shiftId: Int)
 #PUT     /companies/:companyId/employees/:employeeId/delegates                               controllers.EmployeeController.updateEmployeeDelegatesById(companyId: Int, employeeId: Int)
 PUT     /companies/:companyId/employees/:employeeId/teams                                   controllers.EmployeeController.updateEmployeeTeamsById(companyId: Int, employeeId: Int)
+PUT     /companies/:companyId/employees/:employeeId                                         controllers.EmployeeController.reactivateEmployee(companyId: Int, employeeId: Int)
 
 DELETE  /companies/:companyId/employees/:employeeId                                         controllers.EmployeeController.softDeleteEmployee(companyId: Int, employeeId: Int)
 DELETE  /companies/:companyId/employees/:employeeId/positions/:positionId                   controllers.EmployeeController.clearEmployeePositionById(companyId: Int, employeeId: Int, positionId: Int)

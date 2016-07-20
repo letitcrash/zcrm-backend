@@ -77,6 +77,10 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
     EmployeeDBRepository.softDeleteEmployeeById(employeeId).map(deletedEmpl => Json.toJson(deletedEmpl))
   }
 
+  def reactivateEmployee(companyId: Int, employeeId: Int) = CRMActionAsync{rq =>
+    EmployeeDBRepository.restoreEmployeeById(employeeId).map(Json.toJson(_))
+  }
+
 
   /*
   def getAllEmployeesByCompanyId(companyId: Int) = CRMActionAsync{rq =>
