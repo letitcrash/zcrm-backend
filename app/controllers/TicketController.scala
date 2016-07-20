@@ -122,12 +122,26 @@ class TicketController @Inject() extends CRMController {
       TicketDBRepository.deleteTicket(ticketId).map(deletedTicket => Json.toJson(deletedTicket))
   }
 
-  def searchAllTicketsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String]) = CRMActionAsync{rq =>
+  def searchAllTicketsByName(companyId: Int, 
+                             projectIds: List[Int], 
+                             createdByUserIds: List[Int],
+                             requestedByUserIds: List[Int], 
+                             assignedToUserIds: List[Int],
+                             assignedToTeamIds: List[Int], 
+                             pageSize: Option[Int], 
+                             pageNr: Option[Int], 
+                             searchTerm: Option[String]) = CRMActionAsync{rq =>
     import utils.JSFormat._
     if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
       val psize = pageSize.getOrElse(10)
       val pnr = pageNr.getOrElse(1)
-      TicketDBRepository.searchTicketByName(companyId, psize, pnr, searchTerm).map(page => Json.toJson(page))
+      TicketDBRepository.searchTicketByName(companyId, 
+                                            projectIds,
+                                            createdByUserIds,
+                                            requestedByUserIds,
+                                            assignedToUserIds,
+                                            assignedToTeamIds,
+                                            psize, pnr, searchTerm).map(page => Json.toJson(page))
     } else { TicketDBRepository.getTicketsByCompanyId(companyId).map( tickets => Json.toJson(tickets)) }
   }
 

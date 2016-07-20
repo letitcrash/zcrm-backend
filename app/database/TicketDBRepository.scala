@@ -80,8 +80,24 @@ object TicketDBRepository {
         } yield ticket.asTicket(userEntts, teamsEntts, clientEntts, requesterEntts, projectEntt)))}
   } 
 
-  def searchTicketByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String]): Future[PagedResult[Ticket]] = {
-    searchTicketEntitiesByName(companyId, pageSize, pageNr, searchTerm).flatMap{dbPage =>
+  def searchTicketByName(companyId: Int, 
+                         projectIds: List[Int], 
+                         createdByUserIds: List[Int],
+                         requestedByUserIds: List[Int], 
+                         assignedToUserIds: List[Int],
+                         assignedToTeamIds: List[Int], 
+                         pageSize: Int, 
+                         pageNr: Int, 
+                         searchTerm: Option[String]): Future[PagedResult[Ticket]] = {
+    searchTicketEntitiesByName(companyId, 
+                               projectIds,
+                               createdByUserIds,
+                               requestedByUserIds,
+                               assignedToUserIds,
+                               assignedToTeamIds,
+                               pageSize, 
+                               pageNr, 
+                               searchTerm).flatMap{dbPage =>
         Future.sequence(
             dbPage.data.map(t =>
               for {

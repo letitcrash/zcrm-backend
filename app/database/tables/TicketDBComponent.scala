@@ -75,10 +75,18 @@ trait TicketDBComponent extends DBComponent {
   //(TicketEntity, (UserEntity, ContactProfileEntity))
   def aggregatedTickets = tickets join usersWithProfile on (_.createdByUserId === _._1.id)
                           
-
-  def ticketQry(companyId: Int) = {
-    tickets.filter(t =>(t.projectId === companyId &&
-                        t.recordStatus === RowStatus.ACTIVE))
+  def ticketQry(companyId: Int, 
+                projectIds: List[Int], 
+                createdByUserIds: List[Int],
+                requestedByUserIds: List[Int], 
+                assignedToUserIds: List[Int],
+                assignedToTeamIds: List[Int]) = {
+    tickets.filter(t =>(t.companyId === companyId && t.recordStatus === RowStatus.ACTIVE))
+      .filteredBy( projectIds match { case List() => None; case list => Some(list) } )( _.projectId inSet _)
+      .filteredBy( createdByUserIds match { case List() => None; case list => Some(list) } )( _.createdByUserId inSet _)
+      .filteredBy( requestedByUserIds match { case List() => None; case list => Some(list) } )( _.requestedByUserId inSet _)
+      .filteredBy( assignedToUserIds match { case List() => None; case list => Some(list) } )( _.assignedToUserId inSet _)
+      .filteredBy( assignedToTeamIds match { case List() => None; case list => Some(list) } )( _.assignedToTeamId inSet _)
   }
 
   //CRUD TicketEntity
@@ -132,11 +140,29 @@ trait TicketDBComponent extends DBComponent {
   }
 
 
-  def searchTicketEntitiesByName(companyId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String] = None): Future[PagedDBResult[TicketEntity]] = {
+  def searchTicketEntitiesByName(companyId: Int, 
+                                 projectIds: List[Int], 
+                                 createdByUserIds: List[Int],
+                                 requestedByUserIds: List[Int], 
+                                 assignedToUserIds: List[Int],
+                                 assignedToTeamIds: List[Int], 
+                                 pageSize: Int, 
+                                 pageNr: Int, 
+                                 searchTerm: Option[String] = None): Future[PagedDBResult[TicketEntity]] = {
     val baseQry = searchTerm.map { st =>
         val s = "%" + st + "%"
-        ticketQry(companyId).filter{_.subject.like(s)}
-      }.getOrElse(ticketQry(companyId))  
+        ticketQry(companyId,
+                  projectIds,
+                  createdByUserIds,
+                  requestedByUserIds,
+                  assignedToUserIds,
+                  assignedToTeamIds).filter{_.subject.like(s)}
+      }.getOrElse(ticketQry(companyId,
+                  projectIds,
+                  createdByUserIds,
+                  requestedByUserIds,
+                  assignedToUserIds,
+                  assignedToTeamIds))  
 
     val pageRes = baseQry
       .sortBy(_.subject.asc)
