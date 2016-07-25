@@ -31,11 +31,15 @@ trait TicketActionAttachedMailDBComponent extends DBComponent {
     def * = (actionId, mailId) <> (TicketActionAttachedMailEntity.tupled, TicketActionAttachedMailEntity.unapply)
   }
 
-  def attachedMailsWithTickets = (attachedMails join actions on (_.actionId === _.id)) join tickets on (_._2.ticketId === _.id)
+  def attachedMailsWithMails = attachedMails join saved_mails on (_.mailId === _.id)
 
   //AttachedMailEntity CRUD
   def insertAttachedMailEnitity(attchedMail: TicketActionAttachedMailEntity): Future[TicketActionAttachedMailEntity] = {
     db.run(attachedMails += attchedMail).map( res => attchedMail)
+  }
+
+  def getAttachedMailWithMailEntityByActionId(actionId: Int): Future[(TicketActionAttachedMailEntity, ExchangeSavedMailEntity)] = {
+    db.run(attachedMailsWithMails.filter(f => f._1.actionId === actionId).result.head)
   }
 
   def deleteAttachedMailEntity(entity: TicketActionAttachedMailEntity): Future[TicketActionAttachedMailEntity] = {
@@ -52,6 +56,10 @@ trait TicketActionAttachedMailDBComponent extends DBComponent {
   def deleteAttachedMailEnitities(attchedMailList : List[TicketActionAttachedMailEntity]): Future[List[TicketActionAttachedMailEntity]] = {
     Future.sequence(attchedMailList.map( t =>  deleteAttachedMailEntity(t)))
     Future(attchedMailList)
+  }
+
+  def getAttachedMailsWithMailEntities(actionIds: List[Int]): Future[List[(TicketActionAttachedMailEntity, ExchangeSavedMailEntity)]] = {
+    Future.sequence(actionIds.map(id => getAttachedMailWithMailEntityByActionId(id)))
   }
 
 }

@@ -30,9 +30,15 @@ trait TicketActionAttachedFileDBComponent extends DBComponent {
     def * = (actionId, fileId) <> (TicketActionAttachedFileEntity.tupled, TicketActionAttachedFileEntity.unapply)
   }
 
+  def attachedFilesWithFiles = attachedFiles join files on (_.fileId === _.id)
+
   //AttachedFileEntity CRUD
   def insertAttachedFileEnitity(attchedFile: TicketActionAttachedFileEntity): Future[TicketActionAttachedFileEntity] = {
     db.run(attachedFiles += attchedFile).map( res => attchedFile)
+  }
+
+  def getAttachedFileWithFileEntityByActionId(actionId: Int): Future[(TicketActionAttachedFileEntity, FileEntity)] = {
+    db.run(attachedFilesWithFiles.filter(f => f._1.actionId === actionId).result.head)
   }
 
   def deleteAttachedFileEntity(entity: TicketActionAttachedFileEntity): Future[TicketActionAttachedFileEntity] = {
@@ -51,5 +57,8 @@ trait TicketActionAttachedFileDBComponent extends DBComponent {
     Future(attchedFileList)
   }
 
+  def getAttachedFilesWithFileEntities(actionIds: List[Int]): Future[List[(TicketActionAttachedFileEntity, FileEntity)]] = {
+    Future.sequence(actionIds.map(id => getAttachedFileWithFileEntityByActionId(id)))
+  }
 }
 
