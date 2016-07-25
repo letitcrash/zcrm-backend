@@ -135,9 +135,6 @@ GET    /users/:userId/mailboxes/:mailboxId/calendar                             
 
 #Tickets
 POST   /companies/:companyId/tickets                                                         controllers.TicketController.newTicket(companyId: Int)
-POST   /companies/:companyId/tickets/:ticketId/comments                                      controllers.TicketController.addCommentToTicket(companyId: Int, ticketId: Int)
-POST   /companies/:companyId/tickets/:ticketId/mails/:mailId                                 controllers.TicketController.attachMailToTicket(companyId: Int, ticketId: Int, mailId: Int)
-POST   /companies/:companyId/tickets/:ticketId/files/:fileId                                 controllers.TicketController.attachFileToTicket(companyId: Int, ticketId: Int, fileId: Int)
 POST   /companies/:companyId/tickets/:ticketId/members                                       controllers.TicketController.addMembersToTicket(companyId: Int, ticketId: Int)
 POST   /companies/:companyId/tickets/:ticketId/teams                                         controllers.TicketController.addTeamMembersToTicket(companyId: Int, ticketId: Int)
 POST   /companies/:companyId/tickets/:ticketId/clients                                       controllers.TicketController.addClientsToTicket(companyId: Int, ticketId: Int)
@@ -147,11 +144,16 @@ PUT    /companies/:companyId/tickets/:ticketId/status                           
 PUT    /companies/:companyId/tickets/:ticketId/priority                                      controllers.TicketController.updatePriorityById(companyId: Int, ticketId: Int)
 PUT    /companies/:companyId/tickets/:ticketId/project                                       controllers.TicketController.updateProject(companyId: Int, ticketId: Int)
 DELETE /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.deleteTicketById(companyId: Int, ticketId:Int) 
-DELETE /companies/:companyId/tickets/:ticketId/attachedmails/:attachedMailId                 controllers.TicketController.detachMailFromTicket(companyId: Int, ticketId: Int, attachedMailId: Int) 
-DELETE /companies/:companyId/tickets/:ticketId/attachedfiles/:attachedFileId                 controllers.TicketController.detachFileFromTicket(companyId: Int, ticketId: Int, attachedFileId: Int)
 GET    /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.getTicket(companyId: Int, ticketId: Int)
 GET    /companies/:companyId/tickets                                                         controllers.TicketController.searchAllTicketsByName(companyId: Int, projectIds: List[Int], createdByUserIds: List[Int], requestedByUserIds: List[Int], assignedToUserIds: List[Int], assignedToTeamIds: List[Int], pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 GET    /companies/:companyId/tickets/users/:userId                                           controllers.TicketController.getAllTicketsByCreatedByUser(companyId:Int, userId: Int)
+
+#Ticket actions
+POST   /companies/:companyId/tickets/:ticketId/comments                                      controllers.TicketController.addCommentToTicket(companyId: Int, ticketId: Int)
+POST   /companies/:companyId/tickets/:ticketId/mails/:mailId                                 controllers.TicketController.attachMailToTicket(companyId: Int, ticketId: Int, mailId: Int)
+POST   /companies/:companyId/tickets/:ticketId/files/:fileId                                 controllers.TicketController.attachFileToTicket(companyId: Int, ticketId: Int, fileId: Int)
+DELETE /companies/:companyId/tickets/:ticketId/actions/:actionId/mails/:mailId               controllers.TicketController.detachMailFromTicket(companyId: Int, ticketId: Int, actionId: Int, mailId: Int) 
+DELETE /companies/:companyId/tickets/:ticketId/actions/:actionId/files/:fileId               controllers.TicketController.detachFileFromTicket(companyId: Int, ticketId: Int, actionId: Int, fileId: Int)
 GET    /companies/:companyId/tickets/:ticketId/actions                                       controllers.TicketController.getAllActionWithPagination(companyId: Int, ticketId: Int, actionTypes: List[Int], pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 
 #File

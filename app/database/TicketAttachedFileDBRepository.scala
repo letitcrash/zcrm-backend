@@ -5,6 +5,7 @@ import scala.concurrent.Future
 import models.{TicketAction, TicketActionAttachedFile , PagedResult}
 import play.api.Logger
 import utils.converters.TicketActionConverter._
+import database.tables.TicketActionAttachedFileEntity
 
 
 object TicketAttachedFileDBRepository {
@@ -16,11 +17,7 @@ object TicketAttachedFileDBRepository {
           .map(inserted => inserted.asAttachedFileAction)
   }
 
-  def getAttachedFileAction(actionId: Int): Future[TicketActionAttachedFile] = {
-    getAttachedFileEntityById(actionId).map(action => action.asAttachedFileAction)
-  }
-
-  def deleteAttachedFileAction(actionId: Int): Future[TicketActionAttachedFile] = {
-    deleteAttachedFileEntityById(actionId).map(deleted => deleted.asAttachedFileAction)
+  def deleteAttachedFileAction(actionId: Int, fileId: Int): Future[TicketActionAttachedFile] = {
+    deleteAttachedFileEntity(TicketActionAttachedFileEntity(actionId,fileId)).map(deleted => deleted.asAttachedFileAction)
   }
 }

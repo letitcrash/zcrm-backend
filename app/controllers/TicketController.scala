@@ -51,10 +51,10 @@ class TicketController @Inject() extends CRMController {
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
- def detachMailFromTicket(companyId: Int, ticketId: Int, attachedMailId: Int) = CRMActionAsync{rq =>
+ def detachMailFromTicket(companyId: Int, ticketId: Int, actionId: Int, mailId: Int) = CRMActionAsync{rq =>
    import utils.JSFormat.ticketActionMailFrmt
    for{
-          deletedAttachedMail <- TicketAttachedMailDBRepository.deleteAttachedMailAction(attachedMailId)
+          deletedAttachedMail <- TicketAttachedMailDBRepository.deleteAttachedMailAction(actionId, mailId)
           deletedAction       <- TicketActionDBRepository.deleteAction(deletedAttachedMail.actionId)
    }yield Json.toJson(deletedAttachedMail)
   }
@@ -73,13 +73,14 @@ class TicketController @Inject() extends CRMController {
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
- def detachFileFromTicket(companyId: Int, ticketId: Int, attachedFileId: Int) = CRMActionAsync{rq =>
+ def detachFileFromTicket(companyId: Int, ticketId: Int, actionId: Int, fileId:Int) = CRMActionAsync{rq =>
    import utils.JSFormat.ticketActionFileFrmt
    for{
-          deletedAttachedFile <- TicketAttachedFileDBRepository.deleteAttachedFileAction(attachedFileId)
+          deletedAttachedFile <- TicketAttachedFileDBRepository.deleteAttachedFileAction(actionId, fileId)
           deletedAction       <- TicketActionDBRepository.deleteAction(deletedAttachedFile.actionId)
    }yield Json.toJson(deletedAttachedFile)
   }
+
 
 
   //TODO: add permissions check

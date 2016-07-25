@@ -31,32 +31,28 @@ object TicketActionConverter {
 
   implicit class AttachedMailEntityToAttachedMail (a: TicketActionAttachedMailEntity) {
       def asAttachedMailAction: TicketActionAttachedMail= {
-        TicketActionAttachedMail(id = a.id,
-                                 actionId = a.actionId,
+        TicketActionAttachedMail(actionId = a.actionId,
                                  mailId = a.mailId)
       }
   }
 
   implicit class AttachedMailToEntity(a: TicketActionAttachedMail){
       def asAttachedActionMailEntity: TicketActionAttachedMailEntity = {
-        TicketActionAttachedMailEntity(id = a.id,
-                                       actionId = a.actionId,
+        TicketActionAttachedMailEntity(actionId = a.actionId,
                                        mailId = a.mailId)
       }
   }
 
   implicit class AttachedFileEntityToAttachedFile (f: TicketActionAttachedFileEntity) {
       def asAttachedFileAction: TicketActionAttachedFile= {
-        TicketActionAttachedFile(id = f.id,
-                                 actionId = f.actionId,
+        TicketActionAttachedFile(actionId = f.actionId,
                                  fileId = f.fileId)
       }
   }
 
   implicit class AttachedFileToEntity(f: TicketActionAttachedFile){
       def asAttachedActionFileEntity: TicketActionAttachedFileEntity = {
-        TicketActionAttachedFileEntity(id = f.id,
-                                       actionId = f.actionId,
+        TicketActionAttachedFileEntity(actionId = f.actionId,
                                        fileId = f.fileId)
       }
   }

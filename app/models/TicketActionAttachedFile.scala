@@ -1,5 +1,4 @@
 package models
 
-case class TicketActionAttachedFile(id: Option[Int] = None,
-                                    actionId: Int,
+case class TicketActionAttachedFile(actionId: Int,
                                     fileId: Int)
