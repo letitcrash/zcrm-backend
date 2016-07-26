@@ -7,4 +7,6 @@ case class TicketAction(id: Option[Int] = None,
                         user: User,
                         actionType: Int,
                         comment: Option[String] = None,
+                        mail: Option[ExchangeMail] = None,
+                        file: Option[UploadedFile] = None,
                         createdAt: Option[Timestamp] = None)

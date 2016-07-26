@@ -38,8 +38,8 @@ trait TicketActionAttachedMailDBComponent extends DBComponent {
     db.run(attachedMails += attchedMail).map( res => attchedMail)
   }
 
-  def getAttachedMailWithMailEntityByActionId(actionId: Int): Future[(TicketActionAttachedMailEntity, ExchangeSavedMailEntity)] = {
-    db.run(attachedMailsWithMails.filter(f => f._1.actionId === actionId).result.head)
+  def getAttachedMailWithMailEntityByActionId(actionId: Int): Future[List[(TicketActionAttachedMailEntity, ExchangeSavedMailEntity)]] = {
+    db.run(attachedMailsWithMails.filter(f => f._1.actionId === actionId).result).map(_.toList)
   }
 
   def deleteAttachedMailEntity(entity: TicketActionAttachedMailEntity): Future[TicketActionAttachedMailEntity] = {
@@ -58,9 +58,10 @@ trait TicketActionAttachedMailDBComponent extends DBComponent {
     Future(attchedMailList)
   }
 
-  def getAttachedMailsWithMailEntities(actionIds: List[Int]): Future[List[(TicketActionAttachedMailEntity, ExchangeSavedMailEntity)]] = {
+/*  def getAttachedMailsWithMailEntities(actionIds: List[Int]): Future[List[(TicketActionAttachedMailEntity, ExchangeSavedMailEntity)]] = {
     Future.sequence(actionIds.map(id => getAttachedMailWithMailEntityByActionId(id)))
   }
+*/
 
 }
 

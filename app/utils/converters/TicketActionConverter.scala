@@ -1,12 +1,14 @@
 package utils.converters
 
-import database.tables.{TicketActionEntity, TicketActionAttachedMailEntity, TicketActionAttachedFileEntity, UserEntity, ContactProfileEntity}
+import database.tables.{TicketActionEntity, TicketActionAttachedMailEntity, TicketActionAttachedFileEntity, UserEntity, ContactProfileEntity, FileEntity, ExchangeSavedMailEntity}
 import models.{TicketAction, TicketActionAttachedMail,TicketActionAttachedFile}
 
 object TicketActionConverter {
   
   implicit class EntityToAction (t: (TicketActionEntity, (UserEntity, ContactProfileEntity))) {
       import utils.converters.UserConverter._
+      import utils.converters.MailConverter._
+      import utils.converters.FileConverter._
       def asAction: TicketAction= {
         TicketAction(id = t._1.id,
                      parentActionId = t._1.parentActionId,
@@ -14,6 +16,18 @@ object TicketActionConverter {
                      user = t._2.asUser,
                      actionType = t._1.actionType,
                      comment = t._1.comment,
+                     createdAt = Some(t._1.createdAt))
+      }
+
+      def asAction(file: Option[FileEntity] = None, mail: Option[ExchangeSavedMailEntity] = None): TicketAction= {
+        TicketAction(id = t._1.id,
+                     parentActionId = t._1.parentActionId,
+                     ticketId = t._1.ticketId,
+                     user = t._2.asUser,
+                     actionType = t._1.actionType,
+                     comment = t._1.comment,
+                     mail = mail.map(_.asMailFromSaved),
+                     file = file.map(_.asUploadedFile),
                      createdAt = Some(t._1.createdAt))
       }
   }

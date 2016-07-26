@@ -34,7 +34,16 @@ object TicketActionDBRepository {
   }
 
   def getActionsByTicketId(ticketId: Int, actionTypes: List[Int]): Future[List[TicketAction]] = {
-    getActionEntitiesByTicketId(ticketId, actionTypes).map(list => list.map(_.asAction))
+    getActionEntitiesByTicketId(ticketId, actionTypes).flatMap(actionList =>
+        Future.sequence(
+          actionList.map(a =>  
+              for{
+                  action <- getActionEntityWithProfileById(a._1.id.get)
+                  file   <- getAttachedFileWithFileEntityByActionId(action._1.id.get)  
+                  mail   <- getAttachedMailWithMailEntityByActionId(action._1.id.get) 
+              } yield action.asAction(file  match { case List() => None; case list => Some(list.head._2) }, 
+                                      mail  match { case List() => None; case list => Some(list.head._2) }))))
+    
   }
 
   def getActionsByUserId(userId: Int): Future[List[TicketAction]] = {
@@ -42,11 +51,21 @@ object TicketActionDBRepository {
   }
 
   def getActionWithPagination(ticketId: Int, actionTypes: List[Int], pageSize: Int, pageNr: Int): Future[PagedResult[TicketAction]] = {
-    getActionEntitiesWithPagination(ticketId, actionTypes, pageSize, pageNr).map{dbPage =>
-        PagedResult[TicketAction](pageSize = dbPage.pageSize,
-                                  pageNr = dbPage.pageNr,
-                                  totalCount = dbPage.totalCount,
-                                  data = dbPage.data.map(_.asAction))}
+    getActionEntitiesWithPagination(ticketId, actionTypes, pageSize, pageNr).flatMap{dbPage =>
+        Future.sequence(
+            dbPage.data.map(a =>
+              for{
+                  action <- getActionEntityWithProfileById(a._1.id.get)
+                  file   <- getAttachedFileWithFileEntityByActionId(action._1.id.get)  
+                  mail   <- getAttachedMailWithMailEntityByActionId(action._1.id.get) 
+              } yield action.asAction(file  match { case List() => None; case list => Some(list.head._2) }, 
+                                      mail  match { case List() => None; case list => Some(list.head._2) })))
+                  .map(actionList =>
+                      PagedResult[TicketAction](pageSize = dbPage.pageSize,
+                                                pageNr = dbPage.pageNr,
+                                                totalCount = dbPage.totalCount,
+                                                data = actionList))
+        }
   }
 
 }
