@@ -4,7 +4,7 @@ import models.Employee
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
-import models.{Period, PagedResult}
+import models.Period
 import play.api.Logger
 import utils.converters.PeriodConverter._
 
@@ -13,7 +13,7 @@ object PeriodDBRepository {
   import database.gen.current.dao.dbConfig.driver.api._
   import database.gen.current.dao._
 
-  /*def createPeriod(period: Period): Future[Period] = {
+  def createPeriod(period: Period): Future[Period] = {
     insertPeriod(period.asPeriodEntity)
           .map(inserted => inserted.asPeriod)
   }
@@ -31,6 +31,6 @@ object PeriodDBRepository {
   def getPeriodById(id: Int): Future[Period] = {
     getPeriodEntityById(id).map(period => period.asPeriod)
   }
-*/
+
 
 }

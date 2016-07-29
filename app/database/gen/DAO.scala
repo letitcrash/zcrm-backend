@@ -49,7 +49,8 @@ class DAO extends UserDBComponent
     with ProjectClientDBComponent
     with TicketRequesterDBComponent
     with TicketClientDBComponent
-    with FileDBComponent{
+    with FileDBComponent
+    with PeriodDBComponent{
  import dbConfig.driver.api._
 
   def clearDatabase: Try[String] = {
@@ -103,6 +104,7 @@ class DAO extends UserDBComponent
       Logger.info("Dropping project clients   -> " + tryDrop(projectClients.schema))
       Logger.info("Dropping ticket clients    -> " + tryDrop(ticketClients.schema))
       Logger.info("Dropping ticket requesters -> " + tryDrop(ticketRequesters.schema))
+      Logger.info("Dropping periods           -> " + tryDrop(periods.schema))
       Success("Tables dropped")
     } catch {
       case ex: Exception =>
@@ -161,6 +163,7 @@ class DAO extends UserDBComponent
     Logger.info("Creating ticket clients    -> " + tryCreate(ticketClients.schema))
     Logger.info("Creating project clients   -> " + tryCreate(projectClients.schema))
     Logger.info("Creating ticket requesters -> " + tryCreate(ticketRequesters.schema))
+    Logger.info("Creating periods           -> " + tryCreate(periods.schema))
     Success("Created All tables!")
   }
 
