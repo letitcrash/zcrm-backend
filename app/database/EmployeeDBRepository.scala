@@ -42,15 +42,15 @@ object EmployeeDBRepository {
             empEnt <- insertEmployee(employee.asEmployeeEntity(employee.companyId, userEnt.id.get))
             teamGrpEnts <- employee.teams match { case Some(teams) => insertTeamGroups(teams.map(t =>t.asTeamGroup(userEnt.id.get)).map(_.asEntity))
                                                  case _ => Future(List())}
-            delegateGrpEnts <- employee.delegates match { case Some(delegates) => insertDelegateGroups(delegates.map(d => d.asDelegateGroup(userEnt.id)).map(_.asGroupEntity))
-                                                         case _ => Future(List())}
+         //   delegateGrpEnts <- employee.delegates match { case Some(delegates) => insertDelegateGroups(delegates.map(d => d.asDelegateGroup(userEnt.id)).map(_.asGroupEntity)) case _ => Future(List())}
          } yield (empEnt, userEnt, profEnt).asEmployee()).map( e =>
             e.copy( position = employee.position,
                     shift = employee.shift,
                     department = employee.department,
                     union = employee.union,
-                    teams = employee.teams,
-                    delegates = employee.delegates))
+                    teams = employee.teams//,
+                   // delegates = employee.delegates
+                    ))
     })
  }
 
@@ -63,36 +63,70 @@ object EmployeeDBRepository {
     getAllEmployeesWithUsersByCompanyId(companyId).map(list => list.map(_.asEmployee))
   }
 
-  def getAggragatedEmployeesByCompanyId(companyId: Int, positionIds: Option[List[Int]]): Future[List[Employee]] = {
-    getAllAggregatedEmployeesByCompanyId(companyId, positionIds).flatMap( listAggEmployees =>
+  def getAggragatedEmployeesByCompanyId(companyId: Int,
+                                        positionIds: List[Int],
+                                        shiftIds: List[Int],
+                                        departmentIds: List[Int],
+                                        unionIds:List[Int]
+                                       // delegateIds: List[Int],
+                                       // teamIds: List[Int]
+                                        ): Future[List[Employee]] = {
+    getAllAggregatedEmployeesByCompanyId(companyId,
+                                         positionIds,
+                                         shiftIds,
+                                         departmentIds,
+                                         unionIds
+                                        // delegateIds,
+                                        // teamIds
+                                         ).flatMap( listAggEmployees =>
       Future.sequence(
         listAggEmployees.map( aggEmployee =>
             getDelegateEntitiesByUserId(aggEmployee._1._1._1._1._2._1.id.get).flatMap(
               delegatesTup =>
                 getTeamEntitiesByUserId(aggEmployee._1._1._1._1._2._1.id.get).map(
                   teamsTup => 
-                    aggEmployee.asEmployee(teamsTup, delegatesTup))))))
+                    //aggEmployee.asEmployee(teamsTup, delegatesTup))))))
+                    aggEmployee.asEmployee(teamsTup))))))
   }
 
   def searchAggragatedEmployeesByCompanyId (companyId: Int,
-                                            positionIds: Option[List[Int]],
+                                            positionIds: List[Int],
+                                            shiftIds: List[Int],
+                                            departmentIds: List[Int],
+                                            unionIds:List[Int],
+                                           // delegateIds: List[Int],
+                                           // teamIds: List[Int],
                                             pageSize: Int,
                                             pageNr: Int,
                                             searchTerm: Option[String]): Future[PagedResult[Employee]] = {
-    searchAllAggregatedEmployeesByCompanyId(companyId, positionIds, pageSize, pageNr, searchTerm).flatMap( dbPage =>
+    searchAllAggregatedEmployeesByCompanyId(companyId, 
+                                            positionIds, 
+                                            shiftIds,
+                                            departmentIds,
+                                            unionIds,
+                                         //   delegateIds,
+                                         //   teamIds,
+                                            pageSize, 
+                                            pageNr, 
+                                            searchTerm).flatMap( dbPage =>
       Future.sequence(
         dbPage.data.map( aggEmployee =>
             getDelegateEntitiesByUserId(aggEmployee._1._1._1._1._2._1.id.get).flatMap(
               delegatesTup =>
                 getTeamEntitiesByUserId(aggEmployee._1._1._1._1._2._1.id.get).map(
                   teamsTup => 
-                    aggEmployee.asEmployee(teamsTup, delegatesTup))))).map( empList => 
+                    //aggEmployee.asEmployee(teamsTup, delegatesTup))))).map( empList => 
+                    aggEmployee.asEmployee(teamsTup))))).map( empList => 
                       PagedResult[Employee](
                         pageSize = dbPage.pageSize,
                         pageNr = dbPage.pageNr,
                         totalCount = dbPage.totalCount,
                         data = empList)))
 
+  }
+
+  def searchEmployeesForTypeahead(companyId: Int, searchTerm: Option[String] = None): Future[List[Employee]] = {
+    searchEmployeesWithUserWithContactProfileForTypeahead(companyId, searchTerm).map(entitiesList => entitiesList.map(_.asEmployee))
   }
 
   def getEmployeeByEmployeeId(employeeId: Int): Future[Employee] = {
@@ -120,15 +154,27 @@ object EmployeeDBRepository {
                     shift = employee.shift,
                     department = employee.department,
                     union = employee.union,
-                    teams = employee.teams,
-                    delegates = employee.delegates))
+                    teams = employee.teams//,
+                   // delegates = employee.delegates
+                    ))
   }
 
   def softDeleteEmployeeById(employeeId: Int): Future[Employee] = {
       for{
           deleted <- softDeleteEmployeeEntityById(employeeId)
+          deletedUser <- softDeleteById(deleted.userId) 
           userWithProfileEntt <- getUserWithProfileByUserId(deleted.userId)
       } yield(deleted, userWithProfileEntt).asEmployee
+  }
+
+  def restoreEmployeeById(employeeId: Int): Future[Employee] = {
+    for{
+         deleted         <- getEmployeeById(employeeId)
+         activated       <- updateEmployeeEntity(deleted.copy(recordStatus = RowStatus.ACTIVE))
+         deletedUser     <- getUserById(activated.userId)
+         activatedUser   <- updateUser(deletedUser.copy(recordStatus = RowStatus.ACTIVE))
+         userWithProfile <- getUserWithProfileByUserId(activatedUser.id.get)
+      } yield (activated, userWithProfile).asEmployee 
   }
 
   def updateEmployeePosition(employeeId: Int, positionId: Int): Future[Position] = {

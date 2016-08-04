@@ -2,6 +2,7 @@ package database.tables
 
 import java.sql.Timestamp
 import scala.concurrent.Future
+import slick.profile.SqlProfile.ColumnOption.Nullable
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import database.PagedDBResult
@@ -13,9 +14,10 @@ case class DelegateEntity(
   createdAt: Timestamp = new Timestamp(System.currentTimeMillis()),
   updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()))
 
-trait DelegateDBComponent extends DBComponent
-  with CompanyDBComponent {
-  this: DBComponent =>
+trait DelegateDBComponent extends DBComponent {
+  this: DBComponent
+  with CompanyDBComponent
+  with TeamDBComponent =>
 
   import dbConfig.driver.api._
 
@@ -24,9 +26,9 @@ trait DelegateDBComponent extends DBComponent
   class DelegateTable(tag: Tag) extends Table[DelegateEntity](tag, "tbl_delegate") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def companyId = column[Int]("company_id")
-    def name = column[String]("name")
-    def createdAt = column[Timestamp]("created_at", O.Default(new Timestamp(System.currentTimeMillis())))
-    def updatedAt = column[Timestamp]("updated_at", O.Default(new Timestamp(System.currentTimeMillis())))
+    def name = column[String]("name", O.SqlType("VARCHAR(255)"))
+    def createdAt = column[Timestamp]("created_at", Nullable)
+    def updatedAt = column[Timestamp]("updated_at", Nullable)
 
     def fkCompany = foreignKey("fk_delegate_company", companyId, companies)(_.id)
 

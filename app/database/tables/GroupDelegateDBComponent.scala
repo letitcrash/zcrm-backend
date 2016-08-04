@@ -12,17 +12,18 @@ case class GroupDelegateEntity(
   delegateStartDate: Option[Timestamp],
   delegateEndDate: Option[Timestamp])
 
-trait GroupDelegateDBComponent extends DBComponent
+trait GroupDelegateDBComponent extends DBComponent {
+  this: DBComponent
   with UserDBComponent 
-  with DelegateDBComponent {
-  this: DBComponent with ContactProfileDBComponent =>
+  with DelegateDBComponent
+  with ContactProfileDBComponent =>
 
   import dbConfig.driver.api._
 
   val groupDelegates = TableQuery[GroupDelegateTable]
 
   class GroupDelegateTable(tag: Tag) extends Table[GroupDelegateEntity](tag, "tbl_group_delegate") {
-    def delegateId = column[Int]("delegate_id", O.PrimaryKey, O.AutoInc)
+    def delegateId = column[Int]("delegate_id")
     def userId = column[Int]("user_id")
     def delegateStartDate = column[Timestamp]("delegate_start_date", Nullable)
     def delegateEndDate = column[Timestamp]("delegate_end_date", Nullable)
@@ -39,8 +40,9 @@ trait GroupDelegateDBComponent extends DBComponent
 
   //CRUD
   def insertGroupDelegate(entity: GroupDelegateEntity): Future[GroupDelegateEntity] = {
-    db.run((groupDelegates returning groupDelegates.map(_.delegateId) into ((gd, id) => gd.copy(delegateId = Some(id))))
-      += entity)
+    //db.run((groupDelegates returning groupDelegates.map(_.delegateId) into ((gd, id) => gd.copy(delegateId = Some(id)))) += entity)
+    db.run(groupDelegates += entity).map( res => entity)
+
   }
 
   //TODO: pointless 

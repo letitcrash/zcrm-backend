@@ -24,9 +24,9 @@ trait PasswordTokenDBComponent extends DBComponent{
 
   class PasswordTokenTable(tag: Tag) extends Table[PasswordTokenEntity](tag, "tbl_password_tokens") {
     def userId = column[Int]("user_id")
-    def token = column[String]("token")
+    def token = column[String]("token", O.SqlType("VARCHAR(255)"))
     def expires = column[Timestamp]("expires_at")
-    def addedAt = column[Timestamp]("added_at", O.Default(new Timestamp(System.currentTimeMillis())))
+    def addedAt = column[Timestamp]("added_at")
     def usedAt = column[Timestamp]("used_at", Nullable)
 
     def * = (userId, token, expires, addedAt, usedAt.?) <>(PasswordTokenEntity.tupled, PasswordTokenEntity.unapply)

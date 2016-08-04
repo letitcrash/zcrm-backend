@@ -11,7 +11,7 @@ GET     /setupdb                                                                
 # Signup
 POST    /signup                                                                               controllers.SignupController.sendSignupEmail
 POST    /activate-user                                                                        controllers.SignupController.activateUserWithToken
-#POST    /deactivate-user                                                                     controllers.SignupController.deactivateUser
+#POST    /deactivate-user                                                                      controllers.SignupController.deactivateUser
 
 # Password
 POST    /users/:userId/password/recover                                                       controllers.UserController.setPasswordUsingToken(userId: Int)
@@ -26,6 +26,14 @@ GET     /companies                                                              
 
 GET     /companies/:companyId                                                                 controllers.CompanyController.get(companyId: Int)
 GET     /companies/:companyId/expand                                                          controllers.CompanyController.getExpanded(companyId: Int)
+GET     /companies/:companyId/dashboard                                                        controllers.DashboardController.getCountsForCompany(companyId: Int)
+
+#Clients
+POST    /companies/:companyId/clients                                                         controllers.ClientController.newClient(companyId: Int)                   
+PUT     /companies/:companyId/clients/:clientId                                               controllers.ClientController.updateClient(companyId: Int, clientId: Int)
+DELETE  /companies/:companyId/clients/:clientId                                               controllers.ClientController.deleteClient(companyId: Int, clientId: Int)
+GET     /companies/:companyId/clients                                                         controllers.ClientController.getAllClientesByCompanyId(companyId: Int)
+GET     /companies/:companyId/clients/:clientId																								controllers.ClientController.getClientById(companyId: Int, clientId: Int) 
 
 # Delegate
 
@@ -58,10 +66,12 @@ GET     /companies/:companyId/unions                                            
 GET      /companies/:companyId/unions/:unionId                                               controllers.UnionController.getUnion(companyId: Int, unionId: Int) 
 
 #Team 
-POST     /companies/:companyId/teams                                                         controllers.TeamController.newTeam(companyId: Int)
+POST     /companies/:companyId/teams                                                         controllers.TeamController.newTeamWithMembers(companyId: Int)
 POST     /companies/:companyId/teams/:teamId/users/:userId                                   controllers.TeamController.addUserToTeam(companyId: Int, teamId: Int, userId: Int)
-PUT      /companies/:companyId/teams/:teamId                                                 controllers.TeamController.updateTeam(companyId: Int, teamId: Int) 
-DELETE   /companies/:companyId/teams/:teamId                                                 controllers.TeamController.deleteTeamById(companyId: Int, teamId: Int) 
+#PUT      /companies/:companyId/teams/:teamId                                                 controllers.TeamController.updateTeam(companyId: Int, teamId: Int) 
+PUT      /companies/:companyId/teams/:teamId                                                 controllers.TeamController.updateTeamWithMembers(companyId: Int, teamId: Int) 
+DELETE   /companies/:companyId/teams/:teamId                                                 controllers.TeamController.deleteTeamById(companyId: Int, teamId: Int)
+DELETE   /companies/:companyId/teams/:teamId/users/:userId                                   controllers.TeamController.removeUserFromTeam(companyId: Int, teamId: Int, userId: Int)
 GET      /companies/:companyId/teams                                                         controllers.TeamController.searchAllTeamsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 GET      /companies/:companyId/teams/:teamId                                                 controllers.TeamController.getTeam(companyId: Int, teamId: Int)  
 
@@ -72,6 +82,16 @@ DELETE   /companies/:companyId/positions/:positionId                            
 GET      /companies/:companyId/positions                                                     controllers.PositionController.searchAllPositionsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 GET      /companies/:companyId/positions/:positionId                                         controllers.PositionController.getPosition(companyId: Int, positionId: Int) 
  
+#Project 
+POST     /companies/:companyId/projects                                                      controllers.ProjectController.newProject(companyId: Int)
+POST     /companies/:companyId/projects/:projectId/clients                                   controllers.ProjectController.addClientsToProject(companyId: Int, projectId: Int)
+POST     /companies/:companyId/projects/:projectId/teams                                     controllers.ProjectController.addTeamMembersToProject(companyId: Int, projectId: Int)
+POST     /companies/:companyId/projects/:projectId/clients                                   controllers.ProjectController.addClientsToProject(companyId: Int, projectId: Int)
+PUT      /companies/:companyId/projects/:projectId                                           controllers.ProjectController.updateProject(companyId: Int, projectId: Int) 
+DELETE   /companies/:companyId/projects/:projectId                                           controllers.ProjectController.deleteProjectById(companyId: Int, projectId:Int) 
+GET      /companies/:companyId/projects                                                      controllers.ProjectController.searchAllProjectsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
+GET      /companies/:companyId/projects/:projectId                                           controllers.ProjectController.getProject(companyId: Int, projectId: Int)  
+
 # Employees
 POST    /companies/:companyId/employees                                                     controllers.EmployeeController.inviteEmployee(companyId: Int)
 
@@ -81,8 +101,9 @@ PUT     /companies/:companyId/employees/:employeeId/positions/:positionId       
 PUT     /companies/:companyId/employees/:employeeId/unions/:unionId                         controllers.EmployeeController.updateEmployeeUnionById(companyId: Int, employeeId: Int, unionId: Int)
 PUT     /companies/:companyId/employees/:employeeId/departments/:departmentId               controllers.EmployeeController.updateEmployeeDepartmentById(companyId: Int, employeeId: Int, departmentId: Int)
 PUT     /companies/:companyId/employees/:employeeId/shifts/:shiftId                         controllers.EmployeeController.updateEmployeeShiftById(companyId: Int, employeeId: Int, shiftId: Int)
-PUT     /companies/:companyId/employees/:employeeId/delegates                               controllers.EmployeeController.updateEmployeeDelegatesById(companyId: Int, employeeId: Int)
+#PUT     /companies/:companyId/employees/:employeeId/delegates                               controllers.EmployeeController.updateEmployeeDelegatesById(companyId: Int, employeeId: Int)
 PUT     /companies/:companyId/employees/:employeeId/teams                                   controllers.EmployeeController.updateEmployeeTeamsById(companyId: Int, employeeId: Int)
+PUT     /companies/:companyId/employees/:employeeId                                         controllers.EmployeeController.reactivateEmployee(companyId: Int, employeeId: Int)
 
 DELETE  /companies/:companyId/employees/:employeeId                                         controllers.EmployeeController.softDeleteEmployee(companyId: Int, employeeId: Int)
 DELETE  /companies/:companyId/employees/:employeeId/positions/:positionId                   controllers.EmployeeController.clearEmployeePositionById(companyId: Int, employeeId: Int, positionId: Int)
@@ -92,9 +113,10 @@ DELETE  /companies/:companyId/employees/:employeeId/shifts/:shiftId             
 DELETE  /companies/:companyId/employees/:employeeId/delegates                               controllers.EmployeeController.clearEmployeeDelegatesById(companyId: Int, employeeId: Int)
 DELETE  /companies/:companyId/employees/:employeeId/teams                                   controllers.EmployeeController.clearEmployeeTeamsById(companyId: Int, employeeId: Int)
 
-GET     /companies/:companyId/employees/:employeeId                                          controllers.EmployeeController.getEmployee(companyId: Int, employeeId: Int)
-GET     /companies/:companyId/employees                                                      controllers.EmployeeController.searchAllEmployeesByCompanyId(companyId: Int, positionIds: Option[List[Int]] , pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 
+GET     /companies/:companyId/employees/typeahead                                            controllers.EmployeeController.searchForTypeahead(companyId: Int, searchTerm: Option[String])
+GET     /companies/:companyId/employees/:employeeId                                          controllers.EmployeeController.getEmployee(companyId: Int, employeeId: Int)
+GET     /companies/:companyId/employees                                                      controllers.EmployeeController.searchAllEmployeesByCompanyId(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String], positionIds: List[Int], shiftIds: List[Int], departmentIds: List[Int], unionIds:List[Int], recordStatus: Option[Int])
 
 #Mailbox
 POST   /users/:userId/mailboxes                                                              controllers.MailboxController.newMailbox(userId: Int)                   
@@ -104,18 +126,35 @@ GET    /users/:userId/mailboxes/:mailboxId                                      
 GET     /users/:userId/mailboxes                                                             controllers.MailboxController.searchAllMailboxesByName(userId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 
 #Mail
-GET    /users/:userId/mailboxes/:mailboxId/mails                                             controllers.ExchangeController.getMailsForMailbox(userId: Int, mailboxId: Int)
+POST   /users/:userId/mailboxes/:mailboxId/send                                              controllers.ExchangeController.sendMail(userId: Int, mailboxId: Int)
+GET    /users/:userId/mailboxes/:mailboxId/mails                                             controllers.ExchangeController.searchAllTicketsByName(userId: Int, mailboxId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
+GET    /users/:userId/mailboxes/:mailboxId/outbox                                            controllers.ExchangeController.getSentMail(userId: Int, mailboxId: Int, pagenNr: Option[Int], pageSize: Option[Int])
 GET    /users/:userId/mailboxes/:mailboxId/mails/:mailId                                     controllers.ExchangeController.getMail(userId: Int, mailboxId: Int, mailId: Int)
 
-#Tasks
-#POST   /companies/:companyId/tasks                                                           controllers.TaskController.newTask(companyId: Int)
-#POST   /companies/:companyId/tasks/:taskId/mail                                              controllers.TaskController.attachMailToTask(companyId: Int, taskId: Int)
-#PUT    /companies/:companyId/tasks/:taskId                                                   controllers.TaskController.updateTask(companyId: Int, taskId: Int)
-#DELETE /companies/:companyId/tasks/:taskId/mail                                              controllers.TaskController.removeAttachedMailFromTask(companyId: Int, taskId: Int)
-#DELETE /companies/:companyId/tasks/:taskId                                                   controllers.TaskController.softDeleteTaskByTaskId(companyId: Int, taskId: Int)
-#GET    /companies/:companyId/tasks/:taskId                                                   controllers.TaskController.getTask(companyId: Int, taskId: Int)
-#GET    /companies/:companyId/tasks                                                           controllers.TaskController.getAllTasks(companyId: Int)
+GET    /users/:userId/mailboxes/:mailboxId/calendar                                          controllers.ExchangeController.getCalendarItemsByMailBoxId(userId: Int, mailboxId: Int, startDate: Long, endDate: Long)
 
+#Tickets
+POST   /companies/:companyId/tickets                                                         controllers.TicketController.newTicket(companyId: Int)
+POST   /companies/:companyId/tickets/:ticketId/members                                       controllers.TicketController.addMembersToTicket(companyId: Int, ticketId: Int)
+POST   /companies/:companyId/tickets/:ticketId/teams                                         controllers.TicketController.addTeamMembersToTicket(companyId: Int, ticketId: Int)
+POST   /companies/:companyId/tickets/:ticketId/clients                                       controllers.TicketController.addClientsToTicket(companyId: Int, ticketId: Int)
+POST   /companies/:companyId/tickets/:ticketId/requesters                                    controllers.TicketController.addRequestersToTicket(companyId: Int, ticketId: Int)
+PUT    /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.updateTicket(companyId: Int, ticketId: Int)
+PUT    /companies/:companyId/tickets/:ticketId/status                                        controllers.TicketController.updateStatusById(companyId: Int, ticketId: Int)
+PUT    /companies/:companyId/tickets/:ticketId/priority                                      controllers.TicketController.updatePriorityById(companyId: Int, ticketId: Int)
+PUT    /companies/:companyId/tickets/:ticketId/project                                       controllers.TicketController.updateProject(companyId: Int, ticketId: Int)
+DELETE /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.deleteTicketById(companyId: Int, ticketId:Int) 
+GET    /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.getTicket(companyId: Int, ticketId: Int)
+GET    /companies/:companyId/tickets                                                         controllers.TicketController.searchAllTicketsByName(companyId: Int, projectIds: List[Int], createdByUserIds: List[Int], requestedByUserIds: List[Int], assignedToUserIds: List[Int], assignedToTeamIds: List[Int], pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
+GET    /companies/:companyId/tickets/users/:userId                                           controllers.TicketController.getAllTicketsByCreatedByUser(companyId:Int, userId: Int)
+
+#Ticket actions
+POST   /companies/:companyId/tickets/:ticketId/comments                                      controllers.TicketController.addCommentToTicket(companyId: Int, ticketId: Int)
+POST   /companies/:companyId/tickets/:ticketId/mails/:mailId                                 controllers.TicketController.attachMailToTicket(companyId: Int, ticketId: Int, mailId: Int)
+POST   /companies/:companyId/tickets/:ticketId/files/:fileId                                 controllers.TicketController.attachFileToTicket(companyId: Int, ticketId: Int, fileId: Int)
+DELETE /companies/:companyId/tickets/:ticketId/actions/:actionId/mails/:mailId               controllers.TicketController.detachMailFromTicket(companyId: Int, ticketId: Int, actionId: Int, mailId: Int) 
+DELETE /companies/:companyId/tickets/:ticketId/actions/:actionId/files/:fileId               controllers.TicketController.detachFileFromTicket(companyId: Int, ticketId: Int, actionId: Int, fileId: Int)
+GET    /companies/:companyId/tickets/:ticketId/actions                                       controllers.TicketController.getAllActionWithPagination(companyId: Int, ticketId: Int, actionTypes: List[Int], pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
 
 #File
 POST   /users/:userId/files                                                                  controllers.FileController.uploadFile(userId: Int)

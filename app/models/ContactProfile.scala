@@ -7,6 +7,8 @@ case class ContactProfile(
   firstname:          Option[String] = None,
   lastname:           Option[String] = None,
   email:              Option[String] = None,
+  emailHome:          Option[String] = None,
+  emailWork:          Option[String] = None,
   address:            Option[String] = None,
   city:               Option[String] = None,
   zipCode:            Option[String] = None,

@@ -26,8 +26,8 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
                             department: Option[Department] = None, 
                             union: Option[Union] = None, 
                             teams: Option[List[Team]] = None,
-                            delegates: Option[List[Delegate]] = None,
-                            employeeLevel: Option[Int]) {
+                          //  delegates: Option[List[Delegate]] = None,
+                            employeeLevel: Option[Int] = None) {
 
                               def toEmployee(companyId: Int) = {
                                 Employee(
@@ -37,8 +37,9 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
                                   department = department,
                                   union = union, 
                                   teams = teams,
-                                  delegates = delegates, 
-                                  employeeLevel = employeeLevel.getOrElse(UserLevels.USER)
+                                  //delegates = delegates, 
+                                  employeeLevel = employeeLevel.getOrElse(UserLevels.USER),
+                                  recordStatus = RowStatus.ACTIVE 
                                 )
                               }
 
@@ -49,7 +50,7 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
 
   def inviteEmployee(companyId: Int) = CRMActionAsync[InviteEmployee](expectedInviteEmployeeFormat) { rq =>
     import utils.JSFormat.employeeFrmt
-    if(rq.header.isCompanyManager || rq.header.isCompanyOwner){
+   // if(rq.header.isCompanyManager || rq.header.isCompanyOwner){
       //TODO: should be transactionally
       EmployeeDBRepository.createEmployee( username = rq.body.username,
                                            contactProfile = rq.body.contactProfile,
@@ -57,7 +58,7 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
                                              UserDBRepository.createPasswordToken(employee.user.get).map( token =>
                                                  mailer.sendSetPasswordLink(token, rq.body.baseUrl, employee.user.get)
                                                    .map( unit => Json.toJson(employee))))
-    }else{ Future{Failure(new InsufficientRightsException())} }
+   // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
   def getEmployee(companyId: Int, employeeId: Int) = CRMActionAsync{rq =>
@@ -76,6 +77,10 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
     EmployeeDBRepository.softDeleteEmployeeById(employeeId).map(deletedEmpl => Json.toJson(deletedEmpl))
   }
 
+  def reactivateEmployee(companyId: Int, employeeId: Int) = CRMActionAsync{rq =>
+    EmployeeDBRepository.restoreEmployeeById(employeeId).map(Json.toJson(_))
+  }
+
 
   /*
   def getAllEmployeesByCompanyId(companyId: Int) = CRMActionAsync{rq =>
@@ -84,26 +89,51 @@ class EmployeeController @Inject() (mailer: utils.Mailer) extends CRMController 
   */
 
   def searchAllEmployeesByCompanyId(companyId: Int,
-                                    positionIds: Option[List[Int]],
                                     pageSize: Option[Int], 
                                     pageNr: Option[Int],
-                                    searchTerm: Option[String]) = CRMActionAsync{rq =>
+                                    searchTerm: Option[String],
+                                    positionIds: List[Int],
+                                    shiftIds: List[Int],
+                                    departmentIds: List[Int],
+                                    unionIds:List[Int],
+                                    recordStatus: Option[Int] = Some(1)
+
+                                   // delegateIds: List[Int],
+                                   // teamIds: List[Int]
+                                    ) = CRMActionAsync{rq =>
+
     import utils.JSFormat._
     if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
       val psize = pageSize.getOrElse(10)
       val pnr = pageNr.getOrElse(1)
       EmployeeDBRepository.searchAggragatedEmployeesByCompanyId(companyId,
                                                                 positionIds,
+                                                                shiftIds,
+                                                                departmentIds,
+                                                                unionIds,
+                                                              //  delegateIds,
+                                                              //  teamIds,
                                                                 psize,
                                                                 pnr,
                                                                 searchTerm).map(page => Json.toJson(page))
     } else {
-      EmployeeDBRepository.getAggragatedEmployeesByCompanyId(companyId, positionIds).map(list => 
+      EmployeeDBRepository.getAggragatedEmployeesByCompanyId(companyId,
+                                                             positionIds,
+                                                             shiftIds,
+                                                             departmentIds,
+                                                             unionIds
+                                                            // delegateIds,
+                                                            // teamIds
+                                                             ).map(list => 
         Json.toJson( PagedResult[Employee]( pageSize = list.length,
                                            pageNr = 1,
                                            totalCount = list.length,
                                            data = list)))
     }
+  }
+
+  def searchForTypeahead(companyId: Int, searchTerm: Option[String] = None) = CRMActionAsync{rq =>
+    EmployeeDBRepository.searchEmployeesForTypeahead(companyId, searchTerm).map(list => Json.toJson(list))
   }
 
   def updateEmployeePositionById(companyId: Int,  employeeId: Int, positionId: Int) = CRMActionAsync{rq =>

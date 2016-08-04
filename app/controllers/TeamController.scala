@@ -17,6 +17,12 @@ import scala.concurrent.Future
 class TeamController @Inject() extends CRMController {
   import utils.JSFormat.teamFrmt
   import utils.JSFormat.teamGroupFrmt
+  import utils.JSFormat.teamWithMembersFrmt
+
+
+  def newTeamWithMembers(companyId: Int) = CRMActionAsync[TeamWithMember](expectedTeamFormat) { rq => 
+    TeamDBRepository.createTeamWithMembers(rq.body, companyId).map( team => Json.toJson(team))
+  }
 
   //TODO: add permissions check
   def newTeam(companyId: Int) = CRMActionAsync[Team](expectedTeamFormat) { rq => 
@@ -25,11 +31,17 @@ class TeamController @Inject() extends CRMController {
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
-
   //TODO: add permissions check
   def updateTeam(companyId: Int, teamId: Int) = CRMActionAsync[Team](expectedTeamFormat){ rq =>
     // if(rq.header.belongsToCompany(companyId)){
       TeamDBRepository.updateTeam(rq.body.copy(id = Some(teamId)), companyId).map( team => Json.toJson(team))
+    // }else{ Future{Failure(new InsufficientRightsException())} }
+  }
+
+  //FIXME: wrong expectedTeamFormat
+  def updateTeamWithMembers(companyId: Int, teamId: Int) = CRMActionAsync[TeamWithMember](expectedTeamFormat){ rq =>
+    // if(rq.header.belongsToCompany(companyId)){
+      TeamDBRepository.updateTeamWithMembers(rq.body.copy(id = Some(teamId)), companyId).map( team => Json.toJson(team))
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
@@ -55,6 +67,10 @@ class TeamController @Inject() extends CRMController {
 
   def addUserToTeam(companyId: Int, teamId: Int, userId: Int) = CRMActionAsync{ rq => 
     TeamDBRepository.addUserToTeamGroup(TeamGroup(teamId, userId)).map( tg => Json.toJson(tg))
+  }
+
+  def removeUserFromTeam(companyId: Int, teamId: Int, userId: Int) = CRMActionAsync{rq =>
+    TeamDBRepository.deleteUserFromTeam(teamId, userId).map(tg => Json.toJson(tg))
   }
 
   def searchAllTeamsByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String]) = CRMActionAsync{rq =>

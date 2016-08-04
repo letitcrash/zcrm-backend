@@ -45,15 +45,27 @@ object JSFormat {
   implicit val employeeWithLevelFrmt        = Json.format[EmployeeWithLevel]
   implicit val companyFrmt                  = Json.format[Company]
   implicit val employeeFrmt                 = Json.format[Employee]
+  implicit val clientFrmt                   = Json.format[Client]
+  implicit val projectFrmt                  = Json.format[Project]
+  implicit val calendarItemFrmt             = Json.format[CalendarItem]
+  implicit val dashboardFrmt                = Json.format[Dashboard]
 
-  implicit val exchangeMailFrmt = Json.format[ExchangeMail]
+  implicit val exchangeMailFrmt             = Json.format[ExchangeMail]
+  implicit val groupedMailFrmt              = Json.format[GroupedMail]
+  implicit val mailToSendFrmt               = Json.format[MailToSend]
+  implicit val uploadedFileFrmt             = Json.format[UploadedFile]
+
+  implicit val ticketFrmt                   = Json.format[Ticket]
+  implicit val ticketActionFrmt             = Json.format[TicketAction]
+  implicit val ticketActionMailFrmt         = Json.format[TicketActionAttachedMail]
+  implicit val ticketActionFileFrmt         = Json.format[TicketActionAttachedFile]
 
   implicit val mailboxFrmt                  = Json.format[Mailbox]
-  implicit val uploadedFileFrmt             = Json.format[UploadedFile]
   implicit val teamGroupFrmt                = Json.format[TeamGroup]
   implicit val delegateGroupFrmt            = Json.format[DelegateGroup]
   implicit val delegatesFrmt                = Json.format[Delegates]
   implicit val teamsFrmt                    = Json.format[Teams]
+  implicit val teamWithMembersFrmt          = Json.format[TeamWithMember]
 
   implicit def pagedResultFrmt[T: Format]: Format[PagedResult[T]] =
         ((__ \ "pageSize").format[Int] ~

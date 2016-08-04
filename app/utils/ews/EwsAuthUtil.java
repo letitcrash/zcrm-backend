@@ -15,7 +15,7 @@ import java.net.URISyntaxException;
 
 public class EwsAuthUtil {
 
-    public ExchangeService checkUserLogin(String server, String login, String password) throws BadCredentialsException {
+    public ExchangeService tryToLogin(String server, String login, String password) throws BadCredentialsException {
         try {
             ExchangeService service = createService(server, login, password);
             Folder.bind(service, WellKnownFolderName.Inbox, PropertySet.IdOnly); //Connection test

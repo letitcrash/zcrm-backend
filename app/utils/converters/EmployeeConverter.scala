@@ -7,7 +7,8 @@ object EmployeeConverter {
 
   implicit class AggregatedEmployeeEnttToEmployee
   (tup: (((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), Option[PositionEntity]) , Option[ShiftEntity]),  Option[DepartmentEntity]), Option[UnionEntity]) ) {
-    def asEmployee(teamEntts: List[(TeamGroupEntity, TeamEntity)], delegateEnnts: List[(GroupDelegateEntity, DelegateEntity)]): Employee = {
+    //def asEmployee(teamEntts: List[(TeamGroupEntity, TeamEntity)], delegateEnnts: List[(GroupDelegateEntity, DelegateEntity)]): Employee = {
+    def asEmployee(teamEntts: List[(TeamGroupEntity, TeamEntity)]): Employee = {
       import UserConverter.EntityToUser
       import DelegateConverter._
       import ShiftConverter._
@@ -30,8 +31,11 @@ object EmployeeConverter {
         department = departmentTup.map(_.asDepartment),
         union = unionTup.map(_.asUnion),
         teams = Some(teamEntts.map(_.asTeam)),
-        delegates = Some(delegateEnnts.map(_.asDelegate)),
-        employeeLevel = employeeTup.employeeLevel
+       // delegates = Some(delegateEnnts.map(_.asDelegate)),
+        flypass = employeeTup.flypass,
+        salarySystem =  employeeTup.salarySystem,
+        employeeLevel = employeeTup.employeeLevel,
+        recordStatus = employeeTup.recordStatus
       )
     }
   }
@@ -45,7 +49,8 @@ object EmployeeConverter {
         id = tup._1.id,
         user = Some(tup._2.asUser),
         companyId = tup._1.companyId,
-        employeeLevel = tup._1.employeeLevel)
+        employeeLevel = tup._1.employeeLevel,
+        recordStatus = tup._1.recordStatus)
     }
   }
 
@@ -59,6 +64,8 @@ object EmployeeConverter {
         shiftId = o.shift match { case Some(s) => s.id; case _ => None}, 
         departmentId = o.department match { case Some(d) => d.id; case _ => None},
         unionId = o.union match { case Some(u) => u.id; case _ => None},
+        flypass = o.flypass,
+        salarySystem =  o.salarySystem,
         employeeLevel = o.employeeLevel)
     }
 
@@ -71,6 +78,8 @@ object EmployeeConverter {
         shiftId = o.shift match { case Some(s) => s.id; case _ => None}, 
         departmentId = o.department match { case Some(d) => d.id; case _ => None},
         unionId = o.union match { case Some(u) => u.id; case _ => None},
+        flypass = o.flypass,
+        salarySystem =  o.salarySystem,
         employeeLevel = o.employeeLevel)
     }
   }
@@ -86,7 +95,8 @@ object EmployeeConverter {
         id = emp.id,
         user = Some((o._2, o._3).asUser),
         companyId = o._1.companyId,
-        employeeLevel = o._1.employeeLevel)
+        employeeLevel = o._1.employeeLevel,
+        recordStatus = o._1.recordStatus)
     }
   }
 
@@ -97,6 +107,7 @@ object EmployeeConverter {
         id = emp.id,
         user = Some(user),
         companyId = comp.id.getOrElse(0),
-        employeeLevel = emp.employeeLevel)
+        employeeLevel = emp.employeeLevel,
+        recordStatus = emp.recordStatus)
   }
 }

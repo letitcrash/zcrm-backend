@@ -9,5 +9,8 @@ case class Employee(
   department: Option[Department] = None, 
   union: Option[Union] = None, 
   teams: Option[List[Team]] = None,
-  delegates: Option[List[Delegate]] = None, 
-  employeeLevel: Int = UserLevels.USER)
+  //delegates: Option[List[Delegate]] = None, 
+  flypass: Option[String] = None, 
+  salarySystem: Option[Int] = None, 
+  employeeLevel: Int = UserLevels.USER,
+  recordStatus: Int)

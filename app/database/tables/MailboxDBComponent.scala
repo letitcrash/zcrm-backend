@@ -14,9 +14,9 @@ case class MailboxEntity(
   server: String,
   login: String,
   password: String, 
+  recordStatus: Int = RowStatus.ACTIVE,
   createdAt: Timestamp = new Timestamp(System.currentTimeMillis()),
-  updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()),
-  recordStatus: String = RowStatus.ACTIVE)
+  updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()))
 
 trait MailboxDBComponent extends DBComponent {
  this: DBComponent 
@@ -29,16 +29,18 @@ trait MailboxDBComponent extends DBComponent {
   class MailboxTable(tag: Tag) extends Table[MailboxEntity](tag, "tbl_mailbox") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def userId = column[Int]("user_id")
-    def server = column[String]("server")
-    def login = column[String]("login")
-    def password = column[String]("password")
-    def createdAt = column[Timestamp]("created_at", O.Default(new Timestamp(System.currentTimeMillis())))
-    def updatedAt = column[Timestamp]("updated_at", O.Default(new Timestamp(System.currentTimeMillis())))
-    def recordStatus = column[String]("record_status",O.Default(RowStatus.ACTIVE))
+    def server = column[String]("server", O.SqlType("VARCHAR(255)"))
+    def login = column[String]("login", O.SqlType("VARCHAR(255)"))
+    def password = column[String]("password", O.SqlType("VARCHAR(255)"))
+    def recordStatus = column[Int]("record_status",O.Default(RowStatus.ACTIVE))
+    def createdAt = column[Timestamp]("created_at", Nullable)
+    def updatedAt = column[Timestamp]("updated_at", Nullable)
 
-    def fkUserId = foreignKey("fk_mailbox_user", userId, users)(_.id, onUpdate = Restrict, onDelete = Cascade ) 
+    def fkUserId = foreignKey("fk_mailbox_user", userId, users)(_.id)
 
-    def * = (id.?, userId, server, login, password, createdAt, updatedAt, recordStatus) <> (MailboxEntity.tupled, MailboxEntity.unapply)
+    def * = (id.?, userId, server, login, password, recordStatus, createdAt, updatedAt) <> (MailboxEntity.tupled, MailboxEntity.unapply)
+
+    def UqCombo = index("unique_combo", (server,login,password), unique = true)
   }
 
   def mailboxQry(userId: Int) = {

@@ -6,6 +6,10 @@ import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.profile.SqlProfile.ColumnOption.Nullable
 import database.PagedDBResult
+import utils.DBComponentWithSlickQueryOps
+
+import play.api.Logger
+
 
 case class EmployeeEntity(
                            id: Option[Int],
@@ -15,17 +19,19 @@ case class EmployeeEntity(
                            shiftId: Option[Int] = None, 
                            departmentId: Option[Int] = None, 
                            unionId: Option[Int] = None,
+                           flypass: Option[String] = None, 
+                           salarySystem: Option[Int] = None, 
 
                            // The level the user has within a company, i.e admin or normal employee
                            // 1000 - 9999  = user level
                            // 100 - 999    = Human resource
                            // 0-99         = Admin levels
                            employeeLevel: Int,
-                           recordStatus: String = RowStatus.ACTIVE)
+                           recordStatus: Int = RowStatus.ACTIVE)
 
 
 
-trait EmployeeDBComponent extends DBComponent {
+trait EmployeeDBComponent extends DBComponentWithSlickQueryOps{
   this: DBComponent 
     with UserDBComponent
     with ContactProfileDBComponent
@@ -49,31 +55,34 @@ trait EmployeeDBComponent extends DBComponent {
     def departmentId = column[Int]("department_id", Nullable)
     def unionId = column[Int]("union_id", Nullable)
    // def employeeType = column[String]("employee_type", Nullable)
-    def comment = column[String]("comment")
+    //def comment = column[String]("comment")
+    def flypass = column[String]("flypass", Nullable, O.SqlType("VARCHAR(255)"))
+    def salarySystem = column[Int]("salary_system", Nullable)
     def employeeLevel = column[Int]("employee_level", O.Default(UserLevels.USER))
-    def recordStatus = column[String]("record_status", O.Default(RowStatus.ACTIVE))
+    def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
 
 
     def fkEmployeeUser =
-      foreignKey("fk_employee_user", userId, users)(_.id, onUpdate = Restrict, onDelete = Cascade)
+      foreignKey("fk_employee_user", userId, users)(_.id)
 
     def fkEmployeeCompany =
-      foreignKey("fk_employee_company", companyId, companies)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
+      foreignKey("fk_employee_company", companyId, companies)(_.id)
 
     def fkEmployeePosition = 
-      foreignKey("fk_employee_position", positionId, positions)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
+      foreignKey("fk_employee_position", positionId, positions)(_.id)
 
     def fkEmployeeShift = 
-      foreignKey("fk_employee_shift", shiftId, shifts)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
+      foreignKey("fk_employee_shift", shiftId, shifts)(_.id)
 
     def fkEmployeeDepartment = 
-      foreignKey("fk_employee_department", departmentId, departments)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
+      foreignKey("fk_employee_department", departmentId, departments)(_.id)
 
     def fkEmployeeUnion = 
-      foreignKey("fk_employee_union", unionId, unions)(_.id, onUpdate = Restrict, onDelete = ForeignKeyAction.Cascade)
+      foreignKey("fk_employee_union", unionId, unions)(_.id)
 
     override def * =
-      ( id.?, companyId, userId, positionId.?, shiftId.?, departmentId.?, unionId.?,  employeeLevel, recordStatus) <> (EmployeeEntity.tupled, EmployeeEntity.unapply)
+      ( id.?, companyId, userId, positionId.?, shiftId.?, departmentId.?, unionId.?,  flypass.?, salarySystem.?, employeeLevel, recordStatus) <> (EmployeeEntity.tupled, EmployeeEntity.unapply)
+
   }
 
   //JOINS 
@@ -90,8 +99,16 @@ trait EmployeeDBComponent extends DBComponent {
 
 
   //Queries 
-  def employeeQry(companyId: Int, positionIds: Option[List[Int]]) = {
+  def employeeQry(companyId: Int, 
+                  positionIds: List[Int],
+                  shiftIds: List[Int],
+                  departmentIds: List[Int],
+                  unionIds:List[Int]) = {
     aggregatedEmployee.filter(t => (t._1._1._1._1._1.companyId === companyId  && t._1._1._1._1._1.recordStatus === RowStatus.ACTIVE) )
+      .filteredBy( positionIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.positionId inSet _)
+      .filteredBy( shiftIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.shiftId inSet _)
+      .filteredBy( unionIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.unionId inSet _)
+      .filteredBy( departmentIds match { case List() => None; case list => Some(list) } )( _._1._1._1._1._1.departmentId inSet _)
   }
 
   //CRUD EmployeeEntity
@@ -101,13 +118,11 @@ trait EmployeeDBComponent extends DBComponent {
   }
 
   def getEmployeeById(id: Int): Future[EmployeeEntity] = {
-    db.run(employees.filter(t => (t.id === id &&
-                                  t.recordStatus === RowStatus.ACTIVE)).result.head)
+    db.run(employees.filter(_.id === id).result.head)
   }
 
   def getEmployeeByUserId(userId: Int): Future[EmployeeEntity] = {
-    db.run(employees.filter(t => (t.userId === userId &&
-                                  t.recordStatus === RowStatus.ACTIVE)).result.head)
+    db.run(employees.filter(_.userId === userId).result.head)
   }
 
   def updateEmployeeEntity(newEmpl: EmployeeEntity): Future[EmployeeEntity] = {
@@ -138,30 +153,54 @@ trait EmployeeDBComponent extends DBComponent {
   }
 
   def getAllEmployeesWithUsersByCompanyId(companyId: Int): Future[List[(EmployeeEntity,  (UserEntity, ContactProfileEntity))]] = {
-    db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.companyId === companyId && 
-                                                     t._1.recordStatus === RowStatus.ACTIVE)).result).map(_.toList)
+    db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.companyId === companyId)).result).map(_.toList)
   }
 
-  def getAllAggregatedEmployeesByCompanyId(companyId: Int, positionIds: Option[List[Int]])
+  def getAllAggregatedEmployeesByCompanyId(companyId: Int, 
+                                           positionIds: List[Int],
+                                           shiftIds: List[Int],
+                                           departmentIds: List[Int],
+                                           unionIds:List[Int]
+                                          // delegateIds: List[Int],
+                                          // teamIds: List[Int]
+                                           )
    : Future[List[(((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), Option[PositionEntity]) , Option[ShiftEntity]),  Option[DepartmentEntity]), Option[UnionEntity])]] = {
-    val baseQry = employeeQry(companyId, positionIds)
+    val baseQry = employeeQry(companyId,
+                              positionIds,
+                              shiftIds,
+                              departmentIds,
+                              unionIds)
     db.run(baseQry.sortBy(_._1._1._1._1._2._2.lastname.asc).result).map(_.toList)
   }
 
   def searchAllAggregatedEmployeesByCompanyId(companyId: Int,
-                                              positionIds: Option[List[Int]],
+                                              positionIds: List[Int],
+                                              shiftIds: List[Int],
+                                              departmentIds: List[Int],
+                                              unionIds:List[Int],
+                                             // delegateIds: List[Int],
+                                             // teamIds: List[Int],
                                               pageSize: Int, 
                                               pageNr: Int, 
                                               searchTerm: Option[String] = None)
    : Future[PagedDBResult[(((((EmployeeEntity,  (UserEntity, ContactProfileEntity)), Option[PositionEntity]) , Option[ShiftEntity]),  Option[DepartmentEntity]), Option[UnionEntity])]] = {
+
     val baseQry = searchTerm.map { st =>
         val s = "%" + st + "%"
-        employeeQry(companyId, positionIds).filter { tup =>
+        employeeQry(companyId,
+                    positionIds,
+                    shiftIds,
+                    departmentIds,
+                    unionIds).filter { tup =>
           tup._1._1._1._1._2._1.username.like(s) ||
           tup._1._1._1._1._2._2.firstname.like(s) ||
           tup._1._1._1._1._2._2.lastname.like(s)
         }
-      }.getOrElse(employeeQry(companyId, positionIds)) // if search term is empty, do not filter
+      }.getOrElse(employeeQry(companyId,
+                               positionIds,
+                               shiftIds,
+                               departmentIds,
+                               unionIds)) // if search term is empty, do not filter
      
     val pageRes = baseQry
       .sortBy(_._1._1._1._1._2._2.lastname.asc)
@@ -179,14 +218,24 @@ trait EmployeeDBComponent extends DBComponent {
         )
   }
 
+  def searchEmployeesWithUserWithContactProfileForTypeahead(companyId: Int, searchTerm: Option[String] = None): Future[List[(EmployeeEntity,  (UserEntity, ContactProfileEntity))]] = {
+    def qry(cmpId: Int) = employeesWithUsersWihtProfile.filter(t =>(t._1.companyId === cmpId))
+    val baseQry = searchTerm.map { st =>
+        val s = "%" + st + "%"
+        qry(companyId).filter{t => t._2._2.firstname.like(s) || 
+                                   t._2._2.lastname.like(s) ||
+                                   t._2._2.email.like(s)}
+        .sortBy(_._1.id.asc)
+      }.getOrElse(qry(companyId).sortBy(_._1.id.asc))  
+    db.run(baseQry.result).map(_.toList)
+  }
+
   def getEmployeeWithUserById(employeeId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
-    db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.id === employeeId && 
-                                                     t._1.recordStatus === RowStatus.ACTIVE)).result.head)
+    db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.id === employeeId)).result.head)
   }
 
   def getEmployeeWithUserByUserId(userId: Int): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
-    db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.userId === userId && 
-                                                     t._1.recordStatus === RowStatus.ACTIVE)).result.head)
+    db.run(employeesWithUsersWihtProfile.filter(t =>(t._1.userId === userId)).result.head)
   }
 
   def updateEmployeeWithUser(emplEntt: EmployeeEntity): Future[(EmployeeEntity,  (UserEntity, ContactProfileEntity))] = {
@@ -214,5 +263,8 @@ trait EmployeeDBComponent extends DBComponent {
     getEmployeeById(employeeId).flatMap(empl =>
           updateEmployeeWithUser(empl.copy(unionId = unionId)))
   }
-
+  
+  def getEmployeeCountByCompanyId(companyId: Int): Future[Int] = {
+   db.run(employees.filter(_.companyId === companyId).length.result)
+  }
 }

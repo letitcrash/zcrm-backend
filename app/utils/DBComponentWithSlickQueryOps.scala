@@ -6,12 +6,13 @@ import play.api.db.slick.HasDatabaseConfig
 import play.api.Play
 import database.tables._
 
-trait SlickQueryOps {
- databaseConfig: HasDatabaseConfig[ JdbcProfile ] =>
+trait DBComponentWithSlickQueryOps extends DBComponent {
+ //databaseConfig: HasDatabaseConfig[ JdbcProfile ] =>
 
   import cats.Apply
   import cats.std.list._
-  import driver.api._
+ // import driver.api._
+  import dbConfig.driver.api._
 
   type BooleanOp = ( Rep[ Boolean ], Rep[ Boolean ] ) => Rep[ Boolean ]
 

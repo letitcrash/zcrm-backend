@@ -9,19 +9,22 @@ import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import org.mindrot.jbcrypt.BCrypt
 import database.PagedDBResult
+import slick.profile.SqlProfile.ColumnOption.Nullable
 
 case class FileEntity(
   id: Option[Int] = None,
   userId: Int,
   hash: String,
   filename: String,
+  folderId: Option[Int] = None,
   createdAt: Timestamp = new Timestamp(System.currentTimeMillis()))
 
 
 trait FileDBComponent extends DBComponent {
   this: DBComponent 
     with UserDBComponent
-    with ContactProfileDBComponent =>
+    with ContactProfileDBComponent
+    with FileFolderDBComponent =>
 
   import dbConfig.driver.api._
 
@@ -30,14 +33,16 @@ trait FileDBComponent extends DBComponent {
   class FileTable(tag: Tag) extends Table[FileEntity](tag, "tbl_files") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def userId = column[Int]("user_id")
-    def fileHash = column[String]("file_hash")
-    def fileName = column[String]("file_name")    
-    def createdAt = column[Timestamp]("created_at", O.Default(new Timestamp(System.currentTimeMillis())))
+    def fileHash = column[String]("file_hash", O.SqlType("VARCHAR(255)"))
+    def fileName = column[String]("file_name", O.SqlType("VARCHAR(255)"))    
+    def folderId = column[Int]("folder", Nullable)    
+    def createdAt = column[Timestamp]("created_at", Nullable)
 
 
-    def fkUser = foreignKey("fk_file_user", userId, users)(_.id, onUpdate = Restrict, onDelete = Cascade)
+    def fkUser = foreignKey("fk_file_user", userId, users)(_.id)
+    def fkFolder = foreignKey("fk_file_folder", folderId, folders)(_.id)
 
-    def * = (id.?, userId, fileHash, fileName, createdAt) <>(FileEntity.tupled, FileEntity.unapply)
+    def * = (id.?, userId, fileHash, fileName, folderId.?, createdAt) <>(FileEntity.tupled, FileEntity.unapply)
   }
 
   def filesWithUsersWihtProfile = files join usersWithProfile on (_.userId === _._1.id)

@@ -31,7 +31,8 @@ object ExpectedFormat {
       "user"                    -> expectedUserFormat,
       "companyId"               -> Json.toJson("[M] (int) Company Id for user"),
       "employeeType"            -> Json.toJson("[O] (string) "),
-      "employeeLevel"           -> Json.toJson("[M] (int) Level of employee")
+      "employeeLevel"           -> Json.toJson("[M] (int) Level of employee"),
+      "recordStatus"            -> Json.toJson("[M] (int) 0 - deleted, 1 - active")
     ))
 
   val expectedLoginRqFormat = Json.toJson(ListMap(
@@ -101,39 +102,45 @@ object ExpectedFormat {
     "name"           -> Json.toJson("[M](string) Shift name")
   ))
 
+  val expectedProjectFormat = Json.toJson(ListMap(
+    "companyId"      -> Json.toJson("[M](int) company ID"),
+    "name"           -> Json.toJson("[M](string) Project name"),
+    "description"    -> Json.toJson("[O](string) Description"),
+    "deadline"       -> Json.toJson("[O](timestamp)")
+  ))
+
   val expectedDepartmentFormat = Json.toJson(ListMap(
     "companyId"      -> Json.toJson("[M](int) company ID"),
     "name"           -> Json.toJson("[M](string) Department name")
   ))
 
-  val expectedTaskFormat =  Json.toJson(ListMap(
+  val expectedClientFormat = Json.toJson(ListMap(
+    "id"             -> Json.toJson("[O](int) Id"),
     "companyId"      -> Json.toJson("[M](int) company ID"),
-    "createdByUser"  ->  expectedUserFormat,
-    "assignedToUser" ->  expectedUserFormat,
-    "title"          -> Json.toJson("[M](string) Task title"),
-    "description"    -> Json.toJson("[O](string) Task description"),
-    "status"         -> Json.toJson("[O](string) One of the task statuses: NEW|OPEN|POSTPONED|RESOLVED"),
-    "attachedMails"  -> Json.toJson(List(ListMap(
-        "Id"         -> "[M](string) Exchange mail ID",
-        "subject"    -> "[M](string) Mail subject",
-        "fromEmail"  -> "[M](string) Mail sender email"))),
-    "dueDate"        -> Json.toJson("[O](string) Task to due date") 
+    "contactProfile" -> expectedContactProfileFormat
   ))
 
-  val expectedExchangeMailFormat = Json.toJson(ListMap(
-    "extId" -> Json.toJson("[M](string) Exchange UniqueID"),
-    "conversationExtId" -> Json.toJson("[M](string) Exchange Conversation ID"),
-    "mailboxId" -> Json.toJson("[M](int) Mailbox ID"),
-    "sender" -> Json.toJson("[M](string) Sender"),
-    "receivedBy" -> Json.toJson("[M](string) Received by"),
-    "ccRecipients" -> Json.toJson("[O](string) Copies divided by , "),
-    "bccRecipients" -> Json.toJson("[O](string) Blind carbon copies divided by , "),
-    "subject" -> Json.toJson("[M](string) Mail subject"),
-    "body" -> Json.toJson("[M](string) Mail body"),
-    "importance" -> Json.toJson("[O](string) Importance"),
-    "attachments" -> Json.toJson("[O](string) Attachments"),
-    "size" -> Json.toJson("[O](int) Mail size"),
-     "received" -> Json.toJson("[M](timestamp) Mail received at")
+  val expectedTicketFormat =  Json.toJson(ListMap(
+    "id"             -> Json.toJson("[O](int) In DB id"),
+    "companyId"      -> Json.toJson("[M](int) Company ID"),
+    "createdByUserId"-> Json.toJson("[M](int) Created by userId"),
+    "requestedByUserId"-> Json.toJson("[O](int) Requested by userId"),
+    "assignedToUserId"-> Json.toJson("[O](int) Assigned to userId"),
+    "assignedToTeamId"-> Json.toJson("[O](int) Assigned to team id"),
+    "status"          -> Json.toJson("[M](int) Status [1:NEW 2:OPEN 3:POSTPONED 4:RESOLVED]"),
+    "priority"        -> Json.toJson("[M](int) Priority [0:LOW 1:MID 2:HIGH]"),
+    "subject"         -> Json.toJson("[O](string) Subject"),
+    "description"     -> Json.toJson("[O](string) Description"),
+    "deadline"        -> Json.toJson("[O](timestamp) Deadline")    
+  ))
+
+  def expectedTicketActionFormat = Json.toJson(ListMap(
+    "id"              -> Json.toJson("[O](int) ID"),
+    "parentActionId"  -> Json.toJson("[O](int) Parent Action ID"),
+    "ticketId"        -> Json.toJson("[M](int) Assigned to ticket"),
+    "user"            -> expectedUserFormat,
+    "actionType"      -> Json.toJson("[M](int) 0 - Comment, 1 - Mail, 2 - File"),
+    "comment"         -> Json.toJson("[O](string) Comment")
   ))
 
   val expectedMailboxFormat = Json.toJson(ListMap(

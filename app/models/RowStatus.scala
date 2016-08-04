@@ -1,6 +1,6 @@
 package models
 
 object RowStatus {
-  val ACTIVE = "ACTIVE"
-  val DELETED = "DELETED" 
+  val ACTIVE = 1
+  val DELETED = 0 
 }

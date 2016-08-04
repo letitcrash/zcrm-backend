@@ -2,7 +2,8 @@ package models
 
 import java.sql.Timestamp
 
-case class ExchangeMail(extId: Option[String] = None,
+case class ExchangeMail(id: Option[Int] = None,
+                        extId: Option[String] = None,
                         conversationExtId: Option[String] = None,
                         mailboxId: Option[Int] = None,
                         sender: Option[String] = None,
@@ -15,3 +16,7 @@ case class ExchangeMail(extId: Option[String] = None,
                         attachments: Option[String] = None,
                         size: Option[Int] = None,
                         received: Option[Timestamp] = None)
+
+case class MailToSend(subject: String,
+                      body: String,
+                      to: List[String])

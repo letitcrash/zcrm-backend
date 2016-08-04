@@ -12,7 +12,7 @@ case class DepartmentEntity(
   id: Option[Int] = None,
   companyId: Int,
   name: String,
-  recordStatus: String = RowStatus.ACTIVE,
+  recordStatus: Int = RowStatus.ACTIVE,
   createdAt: Timestamp = new Timestamp(System.currentTimeMillis()),
   updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()))
 
@@ -32,12 +32,12 @@ trait DepartmentDBComponent extends DBComponent {
   class DepartmentTable(tag: Tag) extends Table[DepartmentEntity](tag, "tbl_department") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def companyId = column[Int]("company_id")
-    def name = column[String]("name")
-    def recordStatus = column[String]("record_status", O.Default(RowStatus.ACTIVE))
-    def createdAt = column[Timestamp]("created_at", O.Default(new Timestamp(System.currentTimeMillis())))
-    def updatedAt = column[Timestamp]("updated_at", O.Default(new Timestamp(System.currentTimeMillis())))
+    def name = column[String]("name", O.SqlType("VARCHAR(255)"))
+    def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
+    def createdAt = column[Timestamp]("created_at", Nullable)
+    def updatedAt = column[Timestamp]("updated_at", Nullable)
 
-    def fkCompanyId = foreignKey("fk_department_company", companyId, companies)(_.id, onUpdate = Restrict, onDelete = Cascade)
+    def fkCompanyId = foreignKey("fk_department_company", companyId, companies)(_.id)
 
     def * = (id.?, companyId, name, recordStatus, createdAt, updatedAt)<>(DepartmentEntity.tupled, DepartmentEntity.unapply)
   }

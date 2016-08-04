@@ -8,13 +8,14 @@ import exceptions.UsernameAlreadyExistException
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import org.mindrot.jbcrypt.BCrypt
+import slick.profile.SqlProfile.ColumnOption.Nullable
 
 case class UserEntity(
   id: Option[Int] = None,
   username: String,
   userLevel: Int,
   profileId: Int,
-  status: String = RowStatus.ACTIVE,
+  recordStatus: Int = RowStatus.ACTIVE,
   updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()))
 
 case class PasswordEntity(
@@ -35,21 +36,21 @@ trait UserDBComponent extends DBComponent {
   class UserTable(tag: Tag) extends Table[UserEntity](tag, "tbl_user") {
     def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
     def userLevel = column[Int]("user_level", O.Default(UserLevels.USER))
-    def username = column[String]("username", O.SqlType("VARCHAR(254)"))
+    def username = column[String]("username", O.SqlType("VARCHAR(255)"))
     def profileId = column[Int]("contact_profile_id")    
-    def status = column[String]("record_status", O.Default(RowStatus.ACTIVE))
-    def updatedAt = column[Timestamp]("updated_at", O.Default(new Timestamp(System.currentTimeMillis())))
+    def recordStatus = column[Int]("record_status", O.Default(RowStatus.ACTIVE))
+    def updatedAt = column[Timestamp]("updated_at", Nullable)
 
-    def fkContactProfile= foreignKey("fk_user_contact_profile", profileId, contactProfiles)(_.id, onUpdate = Restrict, onDelete = Cascade)
+    def fkContactProfile= foreignKey("fk_user_contact_profile", profileId, contactProfiles)(_.id)
     def idxUsername = index("username_uniq", username, unique = true)
 
-    def * = (id.?, username, userLevel, profileId, status, updatedAt) <>
+    def * = (id.?, username, userLevel, profileId, recordStatus, updatedAt) <>
       (UserEntity.tupled, UserEntity.unapply)
   }
 
   class PasswordTable(tag: Tag) extends Table[PasswordEntity](tag, "tbl_passwords") {
     def userId = column[Int]("user_id")
-    def password = column[String]("password")
+    def password = column[String]("password", O.SqlType("VARCHAR(255)"))
     def editedAt = column[Timestamp]("edited_at")
 
     def fkUserId = foreignKey("fk_password_user_id", userId, users)(_.id, onUpdate = Restrict, onDelete = Cascade) 
@@ -87,14 +88,14 @@ trait UserDBComponent extends DBComponent {
 
   def softDeleteById(userId: Int): Future[UserEntity] = {
     getUserById(userId).flatMap(res =>
-        updateUser(res.copy(status = RowStatus.DELETED, 
+        updateUser(res.copy(recordStatus = RowStatus.DELETED, 
                   updatedAt = new Timestamp(System.currentTimeMillis()))))
 
   } 
 
   def softDeleteByUserName(userName: String): Future[UserEntity] = {
     getUserByUserUsername(userName).flatMap(res =>
-        updateUser(res.copy(status = RowStatus.DELETED, 
+        updateUser(res.copy(recordStatus = RowStatus.DELETED, 
                   updatedAt = new Timestamp(System.currentTimeMillis()))))
 
   }
@@ -123,12 +124,12 @@ trait UserDBComponent extends DBComponent {
 
   def checkUserStatusById(userId: Int): Future[Boolean] = {
      getUserById(userId).map(user =>
-       user.status == RowStatus.ACTIVE)
+       user.recordStatus == RowStatus.ACTIVE)
   }
 
   def checkUserStatusByUserName(userName: String): Future[Boolean] = {
     getUserByUserUsername(userName).map(user =>
-      user.status == RowStatus.ACTIVE)
+      user.recordStatus == RowStatus.ACTIVE)
   }
 
   def isUserExists(userName: String): Future[Boolean] = {
