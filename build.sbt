@@ -10,6 +10,7 @@ libraryDependencies ++= Seq(
   //jdbc,
   cache,
   ws,
+  filters,
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0-RC1" % Test,
   "com.jason-goodwin" %% "authentikat-jwt" % "0.4.1",
   "com.typesafe.slick" %% "slick" % "3.1.1",
@@ -24,6 +25,5 @@ libraryDependencies ++= Seq(
   "org.typelevel" %% "cats" % "0.6.0"
 )
 
-libraryDependencies += filters
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
