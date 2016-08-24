@@ -6,7 +6,7 @@
 GET     /                                                                                     controllers.Application.index
   
 # Setup Database 
-GET     /setupdb                                                                              controllers.SetupDBController.setupDataBase
+# GET     /setupdb                                                                              controllers.SetupDBController.setupDataBase
 
 # Signup
 POST    /signup                                                                               controllers.SignupController.sendSignupEmail
@@ -164,4 +164,28 @@ GET    /users/:userId/files/:fileId                                             
 
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET     /assets/*file																		controllers.Assets.versioned(path="/public", file: Asset)
+
+# News
+#GET		/news/get																			controllers.NewsController.get(id: Int)
+#GET		/news/getAll																		controllers.NewsController.getAll(count: Option[Int], offset: Option[Int])
+#GET		/news/search																		controllers.NewsController.search(query: String)
+#POST	/news/add																			controllers.NewsController.add(title: String, author: Int, description: Option[String], text: String, tags: Option[String], permission: Int)
+#PUT		/news/edit																			controllers.NewsController.edit(id: Int, title: Option[String], description: Option[String], text: Option[String], tags: Option[String], permission: Option[Int])
+#DELETE	/news/delete																		controllers.NewsController.delete(id: Int)
+
+# Articles
+#GET		/articles/get																		controllers.ArticlesController.get(id: Int)
+#GET		/articles/getAll																	controllers.ArticlesController.getAll(count: Option[Int], offset: Option[Int])
+#GET		/articles/search																	controllers.ArticlesController.search(query: String)
+#POST	/articles/add																		controllers.ArticlesController.add(title: String, author: Int, body: String, tags: Option[String], permission: Int)
+#PUT		/articles/edit																		controllers.ArticlesController.edit(id: Int, title: Option[String], body: Option[String], tags: Option[String], permission: Option[Int])
+#DELETE	/articles/delete																	controllers.ArticlesController.delete(id: Int)
+
+# Pages
+#GET		/pages/get																			controllers.PagesController.get(id: Int)
+#GET		/pages/getAll																		controllers.PagesController.getAll(count: Option[Int], offset: Option[Int])
+#GET		/pages/search																		controllers.PagesController.search(query: String)
+#POST	/pages/add																			controllers.PagesController.add(title: String, author: Int, description: Option[String], body: String, permission: Int)
+#PUT		/pages/edit																			controllers.PagesController.edit(id: Int, title: Option[String], description: Option[String], body: Option[String], permission: Option[Int])
+#DELETE	/pages/delete																		controllers.PagesController.delete(id: Int)

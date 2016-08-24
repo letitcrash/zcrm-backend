@@ -8,5 +8,3 @@ trait DBComponent  {
   val dbConfig = DatabaseConfigProvider.get[JdbcProfile](Play.current)
   val db = dbConfig.db
 }
-
-

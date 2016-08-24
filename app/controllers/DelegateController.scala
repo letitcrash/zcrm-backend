@@ -8,6 +8,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import utils.ExpectedFormat._
 import database.DelegateDBRepository
 import models.{Delegate, DelegateGroup}
+import scala.concurrent.Future
 
 class DelegateController @Inject() extends CRMController {
   import utils.JSFormat.delegateFrmt
@@ -38,14 +39,19 @@ class DelegateController @Inject() extends CRMController {
     DelegateDBRepository.addDelegateGroup(rq.body).map(dg => Json.toJson(dg))
   }
 
-  def searchAllDelegatesByName(companyId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String]) = CRMActionAsync{rq =>
+  def searchAllDelegatesByName(
+      companyId: Int,
+      pageSize: Option[Int],
+      pageNr: Option[Int],
+      searchTerm: Option[String]) = CRMActionAsync { _ =>
     import utils.JSFormat._
+
     if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
       val psize = pageSize.getOrElse(10)
       val pnr = pageNr.getOrElse(1)
       DelegateDBRepository.searchDelegateByName(companyId, psize, pnr, searchTerm).map(page => Json.toJson(page))
-    } else { DelegateDBRepository.getDelegatesByCompanyId(companyId).map( delegates => Json.toJson(delegates)) }
+    } else {
+      DelegateDBRepository.getDelegatesByCompanyId(companyId).map(delegates => Json.toJson(delegates))
+    }
   }
-
-
 }

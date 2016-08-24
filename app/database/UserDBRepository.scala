@@ -84,7 +84,6 @@ object UserDBRepository {
     )
   }
 
-
  def createPasswordToken(user: User): Future[String] = {
    newPwdToken(user.id.get).map( pwdToken => pwdToken.token)
  }
@@ -105,8 +104,4 @@ object UserDBRepository {
       }
     }
   }
-
-  
- 
-
 }

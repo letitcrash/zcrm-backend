@@ -23,7 +23,6 @@ case class PasswordEntity(
   password: String,
   editedAt: Timestamp)
 
-
 trait UserDBComponent extends DBComponent {
     this: DBComponent 
     with  ContactProfileDBComponent =>
@@ -56,13 +55,10 @@ trait UserDBComponent extends DBComponent {
     def fkUserId = foreignKey("fk_password_user_id", userId, users)(_.id, onUpdate = Restrict, onDelete = Cascade) 
 
     def * = (userId, password, editedAt) <> (PasswordEntity.tupled, PasswordEntity.unapply)
-
   }
-
 
   //JOINs 
   def usersWithProfile = users join contactProfiles on (_.profileId === _.id)
-
 
   //CRUD UserEntity
   def insertUser(user: UserEntity): Future[UserEntity] = {
@@ -79,7 +75,6 @@ trait UserDBComponent extends DBComponent {
   def getUserByUserUsername(username: String): Future[UserEntity] = {
     db.run(users.filter(_.username === username ).result.head)
   }
- 
 
   def updateUser(user: UserEntity): Future[UserEntity] = {
       db.run(users.filter(_.id === user.id).update(user))
@@ -151,12 +146,8 @@ trait UserDBComponent extends DBComponent {
         db.run(passwords.filter(_.userId === user.id.get).sortBy(_.editedAt.desc).result.head))
   }
 
-
   def checkPassword(username: String, rawPassword: String): Future[Boolean] = {
     getPasswordByUsername(username).map( hash =>
                                  BCrypt.checkpw(rawPassword, hash.password))
   }
-
-
 }
-

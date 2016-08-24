@@ -14,6 +14,11 @@ import play.api.libs.json.{JsError, Json}
 import security.Security
 import scala.util.{Try, Success, Failure}
 import utils.ExpectedFormat._
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
+
+import exceptions._
+import database_rf.Database
 
 case class LoginRequest(
   username: String,
@@ -26,8 +31,10 @@ case class LogonResponse(
   sessionToken: Option[String] = None)
 
 @Singleton
-class LoginController @Inject() (mailer: utils.Mailer) extends CRMController {
+class LoginController @Inject() (mailer: utils.Mailer, db: Database) extends CRMController {
+
   import utils.JSFormat.{userFrmt, responseFrmt, employeeFrmt}
+
   implicit val requestFormat = Json.format[LoginRequest]
   implicit val responseFormat = Json.format[LogonResponse]
 
@@ -44,7 +51,7 @@ class LoginController @Inject() (mailer: utils.Mailer) extends CRMController {
                          "expected"  -> expectedLoginRqFormat,
                          "error"     -> Json.toJson(JsError.toJson(e)))))})
   }
-  
+ 
   private[LoginController] def createResponse(user: User, employee: Employee): Try[CRMResponse] = {
     for {
       token <- Security.createSessionToken(user, employee)
@@ -57,5 +64,4 @@ class LoginController @Inject() (mailer: utils.Mailer) extends CRMController {
   private[LoginController] def createFailedResponse(ex: Throwable): CRMResponse = {
     CRMResponse(CRMResponseHeader(-1, Some(ex.getMessage)), None)
   }
-
 }

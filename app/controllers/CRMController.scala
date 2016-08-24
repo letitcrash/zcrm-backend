@@ -50,8 +50,7 @@ class CRMController @Inject() extends Controller with AcceptedReturns  {
   }
 
   object CRMActionAsync {
-    def apply[T](expectedFormat: JsValue)(bodyFn: CRMRequest[T] => Future[AcceptedReturn])
-      (implicit reads: Reads[T]) =
+    def apply[T](expectedFormat: JsValue)(bodyFn: CRMRequest[T] => Future[AcceptedReturn])(implicit reads: Reads[T]) =
       Action.async (parse.anyContent) {
         implicit req =>
         Logger.info("CRMActionAsync.apply[T] - START")
@@ -90,34 +89,28 @@ class CRMController @Inject() extends Controller with AcceptedReturns  {
     // FIXME:
     //   - avoid the need of sending an empty JSON object (it is a GET request, we don't have to send any data).
     //
-    def apply(bodyFn: CRMRequest[None.type] => Future[AcceptedReturn]) = {
-      Action.async (parse.anyContent) {
-        implicit req =>
-        Logger.info("CRMActionAsync.apply - START - " +req.toString+req.headers)
-        val a = Security.validateHeaders(req.headers) match {
-          case Success(rqHeader) =>
-            bodyFn(CRMSimpleRequest(rqHeader, None)).map(_.toResp)
-              .recover { case e: Exception =>
-                BadRequest(Json.toJson(Map(
-                  "result" -> "-1233",
-                  "message" -> "Exception occured",
-                  "reason" -> e.getMessage)))
-            }
-          case Failure(ex) =>
-            Future {
-              Unauthorized(Json.toJson(Map(
-                "result" -> "-1234",
-                "message" -> "Failed to authenticate",
-                "reason" -> ex.getMessage)))
-            }
+    def apply(bodyFn: CRMRequest[None.type] => Future[AcceptedReturn]) = Action.async (parse.anyContent) {
+      implicit req => Logger.info("CRMActionAsync.apply - START - " + req.toString + req.headers)
+
+      val a = Security.validateHeaders(req.headers) match {
+        case Success(rqHeader) => bodyFn(CRMSimpleRequest(rqHeader, None))
+          .map(_.toResp)
+          .recover { case e: Exception => BadRequest(Json.toJson(Map(
+                "result" -> "-1233",
+                "message" -> "Exception occured",
+                "reason" -> e.getMessage)))
+          }
+        case Failure(ex) => Future {
+          Unauthorized(Json.toJson(Map(
+            "result" -> "-1234",
+            "message" -> "Failed to authenticate",
+            "reason" -> ex.getMessage))
+          )
         }
-        Logger.info("CRMActionAsync.apply - END")
-        a
-
       }
+      Logger.info("CRMActionAsync.apply - END")
+      a
     }
-
-
   }
 
   def validateHeaders(headers: Headers)
@@ -151,7 +144,4 @@ class CRMController @Inject() extends Controller with AcceptedReturns  {
           "reason" -> ex.getMessage)))
     }
   }
-
-
-
 }
