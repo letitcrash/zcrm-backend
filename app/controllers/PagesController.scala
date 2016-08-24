@@ -1,21 +1,22 @@
 package controllers
 
-import database_rf.PagesDBComponent
-import database_rf.Database
-import javax.inject.Inject
+import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import javax.inject.Inject
+import play.api.mvc.Action
+import database_rf.{PagesDBComponent, Database}
 
-class PagesController @Inject() (db: Database) {
+class PagesController @Inject() (db: Database) extends CRMController {
   val dbComponent = PagesDBComponent(db)
+
+  def add = Action.async { _ => Future(Ok("Response\n")) }
   
-  /*
-    GET			/pages/get				controllers.PagesController.get(id: Int)
-    GET			/pages/getAll			controllers.PagesController.getAll(count: Option[Int], offset: Option[Int])
-    GET			/pages/search			controllers.PagesController.search(query: String)
-    POST		/pages/add				controllers.PagesController.add(title: String, author: Int, description: Option[String],
-    															body: String, permission: Int)
-    PUT			/pages/edit				controllers.PagesController.edit(id: Int, title: Option[String],
-    															description: Option[String], body: Option[String], permission: Option[Int])
-    DELETE	/pages/delete			controllers.PagesController.delete(id: Int)
-   */
+  def edit(id: Int) = Action.async { _ => Future(Ok("Response\n")) }
+
+  def get(id: Int) = Action.async { _ => Future(Ok("Response\n"))}
+
+  def search(query: Option[String], count: Option[Int], offset: Option[Int]) =
+    Action.async { _ => Future(Ok("Response\n")) }
+  
+  def delete(id: Int) = Action.async { _ => Future(Ok("Response\n")) }
 }
