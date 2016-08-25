@@ -1,9 +1,10 @@
 package models
 
 import java.sql.Date
+import play.api.libs.json.Json
 
 case class NewsArticle(
-    id: Int,
+    id: Option[Int],
     title: String,
     date: Date,
     author: Int,
@@ -12,3 +13,7 @@ case class NewsArticle(
     tags: Option[String],
     permission: Int
 )
+
+object NewsArticle {
+  implicit val newsArticleWrites = Json.format[NewsArticle]
+}
