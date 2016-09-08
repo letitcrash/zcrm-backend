@@ -14,7 +14,7 @@ import models.{Page, Error, Success}
 class PagesController @Inject() (db: Database) extends CRMController {
   val pages = PagesDBComponent(db)
 
-  def add = Action.async (parse.json) { req =>
+  def add = CRMActionAsync (parse.json) { req =>
     req.body.validate[Page] match {
       case json: JsSuccess[Page] => 
         pages.insert(json.get).map { count =>
@@ -25,8 +25,20 @@ class PagesController @Inject() (db: Database) extends CRMController {
     }
   }
 
-  def edit(id: Int) = Action.async { _ =>
-    Future(BadRequest(Json.toJson(Error(-1, "Not implemented"))))
+  def edit(id: Int) = CRMActionAsync (parse.json) { req =>
+    req.body.validate[Map[String, String]] match {
+      case json: JsSuccess[Map[String, String]] => {
+        json.get.foreach {
+          case ("alias", value) => pages.updateAlias(id, value)
+          case ("title", value) => pages.updateTitle(id, value)
+          case ("desc", value) => pages.updateDescription(id, Some(value))
+          case ("body", value) => pages.updateBody(id, value)
+        }
+
+        Future(Ok(Json.toJson(Success(1))))
+      }
+      case _: JsError => Future(BadRequest(Json.toJson(Error(101, "Wrong data?"))))
+    }
   }
 
   def get(id: Int) = Action.async { _ =>
@@ -45,7 +57,7 @@ class PagesController @Inject() (db: Database) extends CRMController {
     }
   }
   
-  def delete(id: Int) = Action.async { _ =>
+  def delete(id: Int) = CRMActionAsync (parse.default) { _ =>
     pages.delete(id).flatMap { count =>
       if (count > 0) Future(Ok(Json.toJson(Success(1))))
       else Future(BadRequest(Json.toJson(Error(102, "Wrong id?"))))

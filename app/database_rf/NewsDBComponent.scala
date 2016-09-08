@@ -26,6 +26,7 @@ class NewsDBComponent(val db: Database) {
   def insert(article: NewsArticle): Future[Int] =
     db.instance.run(news += article)
   
+  
   def get(id: Int): Future[Option[NewsArticle]] =
     db.instance.run(news.filter(_.id === id).result.headOption)
     
@@ -34,6 +35,18 @@ class NewsDBComponent(val db: Database) {
   
   def delete(id: Int): Future[Int] =
     db.instance.run(news.filter(_.id === id).delete)
+    
+  def updateTitle(id: Int, value: String): Future[Int] =
+    db.instance.run(news.filter(_.id === id).map(_.title).update(value))
+    
+  def updateDescription(id: Int, value: String): Future[Int] =
+    db.instance.run(news.filter(_.id === id).map(_.description).update(Some(value)))
+    
+  def updateText(id: Int, value: String): Future[Int] =
+    db.instance.run(news.filter(_.id === id).map(_.text).update(value))
+    
+  def updateTags(id: Int, value: String): Future[Int] =
+    db.instance.run(news.filter(_.id === id).map(_.tags).update(Some(value)))
 }
 
 object NewsDBComponent {

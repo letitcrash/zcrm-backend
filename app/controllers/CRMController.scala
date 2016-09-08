@@ -7,6 +7,7 @@ import controllers.session._
 import play.api.libs.json.{JsError, Reads, JsValue, Json, JsSuccess}
 import scala.util.{Success, Failure, Try}
 import security.Security
+import models.Error
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
@@ -70,6 +71,14 @@ class CRMController @Inject() extends Controller with AcceptedReturns  {
       Logger.info("CRMActionAsync.apply[T] - END")
       a
     }
+    
+    def apply[T](parser: BodyParser[T])(bodyFn: Request[T] => Future[Result]) =
+      Action.async (parser) { req =>
+        Security.validateHeaders(req.headers) match {
+          case Success(header) => bodyFn(req)
+          case Failure(ex) => Future(BadRequest(Json.toJson(Error(-1234, "Failed to authenticate"))))
+        }
+      }
 
     def apply(bodyFn: CRMRequest[None.type] => Future[AcceptedReturn]) = Action.async { req =>
       Logger.info("CRMActionAsync.apply - START - " + req.toString + req.headers)

@@ -33,6 +33,15 @@ class ArticlesDBComponent(val db: Database) {
   
   def delete(id: Int): Future[Int] =
     db.instance.run(articles.filter(_.id === id).delete)
+    
+  def updateTitle(id: Int, value: String): Future[Int] =
+    db.instance.run(articles.filter(_.id === id).map(_.title).update(value))
+  
+  def updateBody(id: Int, value: String): Future[Int] =
+    db.instance.run(articles.filter(_.id === id).map(_.body).update(value))
+  
+  def updateTags(id: Int, value: Option[String]): Future[Int] =
+    db.instance.run(articles.filter(_.id === id).map(_.tags).update(value))
 }
 
 object ArticlesDBComponent {
