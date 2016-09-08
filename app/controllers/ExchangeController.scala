@@ -30,15 +30,31 @@ class ExchangeController @Inject()(exchangeRepo: ExchangeRepository) extends CRM
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
-  def searchAllTicketsByName(userId: Int, mailboxId: Int, pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String]) = CRMActionAsync{rq =>
+  def searchAllTicketsByName(
+      userId: Int,
+      mailboxId: Int,
+      pageSize: Option[Int],
+      pageNr: Option[Int],
+      searchTerm: Option[String]) = CRMActionAsync { rq =>
     import utils.JSFormat._
-    if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
-      val psize = pageSize.getOrElse(25)
-      val pnr = pageNr.getOrElse(1)
-      ExchangeODSMailDBRepository.searchODSMailsByMailboxId(mailboxId, psize, pnr, searchTerm).map(Json.toJson(_))
-    } else { ExchangeODSMailDBRepository.getODSMailsByMailboxId(mailboxId).map(mails => 
-                mails.groupBy(_.conversationExtId)).map(res => 
-                  Json.toJson(res.map{ case (k,v) => GroupedMail(conversationId = k.get, mails = v)})) }
+
+    ExchangeODSMailDBRepository.searchODSMailsByMailboxId(
+        mailboxId,
+        pageSize.getOrElse(5),
+        pageNr.getOrElse(1),
+        searchTerm).map(Json.toJson(_))
+
+//    if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
+//      ExchangeODSMailDBRepository.searchODSMailsByMailboxId(
+//          mailboxId,
+//          pageSize.getOrElse(10),
+//          pageNr.getOrElse(1),
+//          searchTerm).map(Json.toJson(_))
+//    } else {
+//      ExchangeODSMailDBRepository.getODSMailsByMailboxId(mailboxId)
+//        .map(mails => mails.groupBy(_.conversationExtId))
+//        .map(res => Json.toJson(res.map { case (k,v) => GroupedMail(conversationId = k.get, mails = v) } ))
+//    }
   }
 
   def getMail(userId: Int, mailboxId: Int, mailId: Int)  = CRMActionAsync { rq =>

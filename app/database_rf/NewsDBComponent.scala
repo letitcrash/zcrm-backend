@@ -7,7 +7,7 @@ import scala.concurrent.Future
 class NewsDBComponent(val db: Database) {
   import db.config.driver.api._
   
-  class News(tag: Tag) extends Table[NewsArticle](tag, "tbl_test_news") {
+  class News(tag: Tag) extends Table[NewsArticle](tag, "crm_news") {
     def id = column[Option[Int]]("id", O.PrimaryKey, O.AutoInc)
     def title = column[String]("title")
     def date = column[Date]("date")

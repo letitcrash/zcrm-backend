@@ -2,6 +2,7 @@ package database.tables
 
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
+import play.api.Logger
 
 case class TicketRequesterEntity(
   ticketId: Int,

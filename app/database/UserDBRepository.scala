@@ -48,6 +48,7 @@ object UserDBRepository {
   }
 
   def getUserByUserId(id: Int): Future[User] = {
+    Logger.info("getUserByUserId")
     import utils.converters.UserConverter._
 
      val interaction = for {

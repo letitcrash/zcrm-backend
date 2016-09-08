@@ -10,24 +10,26 @@ import database.PagedDBResult
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.Date
+import play.api.Logger
+import slick.lifted.ColumnOrdered
+import slick.ast.Ordering
 
 case class TicketEntity(
-                         id: Option[Int] = None,
-                         companyId: Int,
-                         projectId: Option[Int] = None,
-                         createdByUserId: Int,
-                         requestedByUserId: Option[Int] = None,
-                         //requestedByEmail: Option[String] = None,
-                         assignedToUserId: Option[Int] = None,
-                         assignedToTeamId: Option[Int] = None,
-                         status: Int,
-                         priority: Int,
-                         subject: String,
-                         description: Option[String] = None,
-                         recordStatus: Int = RowStatus.ACTIVE,
-                         deadline: Option[Timestamp] = None,
-                         createdAt: Timestamp = new Timestamp(System.currentTimeMillis()),
-                         updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()))
+    id: Option[Int] = None,
+    companyId: Int,
+    projectId: Option[Int] = None,
+    createdByUserId: Int,
+    requestedByUserId: Option[Int] = None,
+    assignedToUserId: Option[Int] = None,
+    assignedToTeamId: Option[Int] = None,
+    status: Int,
+    priority: Int,
+    subject: String,
+    description: Option[String] = None,
+    recordStatus: Int = RowStatus.ACTIVE,
+    deadline: Option[Timestamp] = None,
+    createdAt: Timestamp = new Timestamp(System.currentTimeMillis()),
+    updatedAt: Timestamp = new Timestamp(System.currentTimeMillis()))
 
 trait TicketDBComponent extends DBComponent {
     this: DBComponent 
@@ -58,35 +60,33 @@ trait TicketDBComponent extends DBComponent {
     def createdAt = column[Timestamp]("created_at", Nullable)
     def updatedAt = column[Timestamp]("updated_at", Nullable)
 
-
     def fkProjectId = foreignKey("fk_ticket_project", projectId, projects)(_.id)
     def fkCreatedByUserId = foreignKey("fk_ticket_created_by_user_id", createdByUserId, users)(_.id)
     def fkRequestedByUserId = foreignKey("fk_ticket_requested_by_user_id", requestedByUserId, users)(_.id)
     def fkAssignedToUserId = foreignKey("fk_ticket_assigned_to_user_id", assignedToUserId, users)(_.id)
     def fkAssignedToTeamId = foreignKey("fk_ticket_assigned_to_team_id", assignedToTeamId, teams)(_.id)
 
-
     def * = (id.?, companyId, projectId.?, createdByUserId, requestedByUserId.?, assignedToUserId.?, assignedToTeamId.?, status, priority, subject,
              description.?, recordStatus, deadline.?, createdAt, updatedAt)<>(TicketEntity.tupled, TicketEntity.unapply)
-
   }
 
   //JOINS
   //(TicketEntity, (UserEntity, ContactProfileEntity))
   def aggregatedTickets = tickets join usersWithProfile on (_.createdByUserId === _._1.id)
                           
-  def ticketQry(companyId: Int, 
-                projectIds: List[Int], 
-                createdByUserIds: List[Int],
-                requestedByUserIds: List[Int], 
-                assignedToUserIds: List[Int],
-                assignedToTeamIds: List[Int]) = {
+  def ticketQry(
+      companyId: Int, 
+      projectIds: List[Int], 
+      createdByUserIds: List[Int],
+      requestedByUserIds: List[Int], 
+      assignedToUserIds: List[Int],
+      assignedToTeamIds: List[Int]) = {
     tickets.filter(t =>(t.companyId === companyId && t.recordStatus === RowStatus.ACTIVE))
-      .filteredBy( projectIds match { case List() => None; case list => Some(list) } )( _.projectId inSet _)
-      .filteredBy( createdByUserIds match { case List() => None; case list => Some(list) } )( _.createdByUserId inSet _)
-      .filteredBy( requestedByUserIds match { case List() => None; case list => Some(list) } )( _.requestedByUserId inSet _)
-      .filteredBy( assignedToUserIds match { case List() => None; case list => Some(list) } )( _.assignedToUserId inSet _)
-      .filteredBy( assignedToTeamIds match { case List() => None; case list => Some(list) } )( _.assignedToTeamId inSet _)
+//      .filteredBy( projectIds match { case List() => None; case list => Some(list) } )( _.projectId inSet _)
+//      .filteredBy( createdByUserIds match { case List() => None; case list => Some(list) } )( _.createdByUserId inSet _)
+//      .filteredBy( requestedByUserIds match { case List() => None; case list => Some(list) } )( _.requestedByUserId inSet _)
+//      .filteredBy( assignedToUserIds match { case List() => None; case list => Some(list) } )( _.assignedToUserId inSet _)
+//      .filteredBy( assignedToTeamIds match { case List() => None; case list => Some(list) } )( _.assignedToTeamId inSet _)
   }
 
   //CRUD TicketEntity
@@ -140,44 +140,66 @@ trait TicketDBComponent extends DBComponent {
   }
 
 
-  def searchTicketEntitiesByName(companyId: Int, 
-                                 projectIds: List[Int], 
-                                 createdByUserIds: List[Int],
-                                 requestedByUserIds: List[Int], 
-                                 assignedToUserIds: List[Int],
-                                 assignedToTeamIds: List[Int], 
-                                 pageSize: Int, 
-                                 pageNr: Int, 
-                                 searchTerm: Option[String] = None): Future[PagedDBResult[TicketEntity]] = {
-    val baseQry = searchTerm.map { st =>
-        val s = "%" + st + "%"
-        ticketQry(companyId,
-                  projectIds,
-                  createdByUserIds,
-                  requestedByUserIds,
-                  assignedToUserIds,
-                  assignedToTeamIds).filter{_.subject.like(s)}
-      }.getOrElse(ticketQry(companyId,
-                  projectIds,
-                  createdByUserIds,
-                  requestedByUserIds,
-                  assignedToUserIds,
-                  assignedToTeamIds))  
+  def searchTicketEntitiesByName(
+      companyId: Int, 
+      projectIds: List[Int], 
+      createdByUserIds: List[Int],
+      requestedByUserIds: List[Int], 
+      assignedToUserIds: List[Int],
+      assignedToTeamIds: List[Int], 
+      pageSize: Int, 
+      pageNr: Int, 
+      searchTerm: Option[String] = None,
+      priority: Option[String],
+      sort: String,
+      order: String): Future[PagedDBResult[TicketEntity]] = {
+    val baseQry = ticketQry(
+        companyId,
+        projectIds,
+        createdByUserIds,
+        requestedByUserIds,
+        assignedToUserIds,
+        assignedToTeamIds)
 
-    val pageRes = baseQry
-      .sortBy(_.subject.asc)
+    val srchQry = searchTerm
+      .map(st => baseQry.filter(_.subject.like("%" + st + "%")))
+      .getOrElse(baseQry)
+
+    val priorQry = priority
+      .map { pr =>
+        val prNum = pr match {
+          case "low" => 0
+          case "med" => 1
+          case "high" => 2
+          case "asap" => 3
+        }
+        
+        srchQry.filter(_.priority === prNum)
+      }
+      .getOrElse(srchQry)
+    
+    val pageRes = priorQry
+      .sorted { table =>
+        val column = sort match {
+          case "id" => table.id
+          case "subj" => table.subject
+          case "priority" => table.priority
+          case "created" => table.createdAt
+          case "updated" => table.updatedAt
+          case "deadline" => table.deadline
+        }
+        val direction = if (order == "asc") Ordering.Asc else Ordering.Desc
+
+        ColumnOrdered(column, Ordering(direction, Ordering.NullsLast))
+      }
       .drop(pageSize * (pageNr - 1))
       .take(pageSize)
 
-    db.run(pageRes.result).flatMap( ticketList => 
-        db.run(baseQry.length.result).map( totalCount => 
-         PagedDBResult(
-            pageSize = pageSize,
-            pageNr = pageNr,
-            totalCount = totalCount,
-            data = ticketList)
-          )
-        )
+    db.run(pageRes.result)
+      .flatMap { ticketList => 
+        db.run(priorQry.length.result)
+          .map(totalCount => PagedDBResult(pageSize, pageNr, totalCount, ticketList))
+      }
   }
 
 

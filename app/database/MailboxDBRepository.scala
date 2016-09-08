@@ -12,8 +12,10 @@ object MailboxDBRepository {
   import database.gen.current.dao.dbConfig.driver.api._
   import database.gen.current.dao._
   
-  def saveMailbox(mailBox: Mailbox): Future[Mailbox] = {
-    insertMailboxEnitity(mailBox.asMailboxEntity).map(res => res.asMailbox)
+//  def saveMailbox(mailBox: Mailbox): Future[Mailbox] = {
+  def saveMailbox(mailBox: Mailbox, userId: Int): Future[Int] = {
+//    insertMailboxEnitity(mailBox.asMailboxEntity).map(res => res.asMailbox)
+    insertMailboxEnitity(mailBox.asMailboxEntity, userId)
   }
 
   def getMailboxById(id: Int): Future[Mailbox] = {

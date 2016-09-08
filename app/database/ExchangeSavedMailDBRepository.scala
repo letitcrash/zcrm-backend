@@ -5,12 +5,14 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import utils.converters.MailConverter._
 
 import scala.concurrent.Future
+import play.api.Logger
 
 
 object ExchangeSavedMailDBRepository {
   import database.gen.current.dao._
 
     def insertSavedMail(mail: ExchangeMail): Future[ExchangeMail] = {
+      Logger.info("insertSavedMail")
       insertSavedMailEntity(mail.asSavedEntity).map(inserted => inserted.asMailFromSaved)
     }
 

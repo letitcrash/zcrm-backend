@@ -20,9 +20,9 @@ class TicketController @Inject() extends CRMController {
   import utils.JSFormat.ticketActionFrmt
 
   //TODO: add permissions check
-  def newTicket(companyId: Int) = CRMActionAsync[Ticket](expectedTicketFormat) { rq => 
+  def newTicket(companyId: Int, projectId: Int) = CRMActionAsync[Ticket](expectedTicketFormat) { rq => 
     // if(rq.header.belongsToCompany(companyId)){
-       TicketDBRepository.createTicket(rq.body, companyId).map( ticket => Json.toJson(ticket))
+       TicketDBRepository.createTicket(rq.body, companyId, projectId).map(ticket => Json.toJson(ticket))
     // }else{ Future{Failure(new InsufficientRightsException())} }
   }
 
@@ -34,21 +34,20 @@ class TicketController @Inject() extends CRMController {
   }
 
   //TODO: add permissions check
-  def attachMailToTicket(companyId: Int, ticketId: Int, mailId: Int) = CRMActionAsync{ rq =>
+  def attachMailToTicket(companyId: Int, ticketId: Int, mailId: Int) = CRMActionAsync{ _ =>
     // if(rq.header.belongsToCompany(companyId)){
     import utils.JSFormat.exchangeMailFrmt
-    for{
-          userId       <- ExchangeODSMailDBRepository.getUserIdByODSMailId(mailId)
-          odsMail      <- ExchangeODSMailDBRepository.getODSMailById(mailId)
-          mail         <- ExchangeSavedMailDBRepository.insertSavedMail(odsMail)
-          user         <- UserDBRepository.getUserByUserId(userId)
-          action       <- TicketActionDBRepository.createAction(TicketAction(ticketId = ticketId, user = user, actionType = ActionType.MAIL), companyId)
-          attachedMail <- TicketAttachedMailDBRepository.createAttachedMailAction(TicketActionAttachedMail(actionId = action.id.get, mailId = mail.id.get ))
-          updatedOds   <- ExchangeODSMailDBRepository.updateODSMail(
-                                                      odsMail.copy(subject = Some(odsMail.subject.getOrElse("") + " [Ticket "+(new DecimalFormat("#000000")).format(ticketId)+"]")))
-      } yield Json.toJson(mail)    
-     
-    // }else{ Future{Failure(new InsufficientRightsException())} }
+    
+    for {
+        userId       <- ExchangeODSMailDBRepository.getUserIdByODSMailId(mailId)
+        odsMail      <- ExchangeODSMailDBRepository.getODSMailById(mailId)
+        mail         <- ExchangeSavedMailDBRepository.insertSavedMail(odsMail)
+        user         <- UserDBRepository.getUserByUserId(userId)
+        action       <- TicketActionDBRepository.createAction(TicketAction(ticketId = ticketId, user = user, actionType = ActionType.MAIL), companyId)
+        attachedMail <- TicketAttachedMailDBRepository.createAttachedMailAction(TicketActionAttachedMail(actionId = action.id.get, mailId = mail.id.get ))
+        updatedOds   <- ExchangeODSMailDBRepository.updateODSMail(
+            odsMail.copy(subject = Some(odsMail.subject.getOrElse("") + " [Ticket "+(new DecimalFormat("#000000")).format(ticketId)+"]")))
+    } yield JS(Json.toJson(mail))
   }
 
  def detachMailFromTicket(companyId: Int, ticketId: Int, actionId: Int, mailId: Int) = CRMActionAsync{rq =>
@@ -123,27 +122,56 @@ class TicketController @Inject() extends CRMController {
       TicketDBRepository.deleteTicket(ticketId).map(deletedTicket => Json.toJson(deletedTicket))
   }
 
-  def searchAllTicketsByName(companyId: Int, 
-                             projectIds: List[Int], 
-                             createdByUserIds: List[Int],
-                             requestedByUserIds: List[Int], 
-                             assignedToUserIds: List[Int],
-                             assignedToTeamIds: List[Int], 
-                             pageSize: Option[Int], 
-                             pageNr: Option[Int], 
-                             searchTerm: Option[String]) = CRMActionAsync{rq =>
+  /*
+   * priority - low, med, high, asap
+   * field - id, subj, proj, date, ddln, prt
+   */
+
+  def searchAllTicketsByName(
+      companyId: Int, 
+      projectIds: List[Int], 
+      createdByUserIds: List[Int],
+      requestedByUserIds: List[Int], 
+      assignedToUserIds: List[Int],
+      assignedToTeamIds: List[Int], 
+      pageSize: Option[Int], 
+      pageNr: Option[Int], 
+      searchTerm: Option[String],
+      priority: Option[String],
+      sort: Option[String],
+      order: Option[String]) = CRMActionAsync { rq =>
     import utils.JSFormat._
-    if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
-      val psize = pageSize.getOrElse(10)
-      val pnr = pageNr.getOrElse(1)
-      TicketDBRepository.searchTicketByName(companyId, 
-                                            projectIds,
-                                            createdByUserIds,
-                                            requestedByUserIds,
-                                            assignedToUserIds,
-                                            assignedToTeamIds,
-                                            psize, pnr, searchTerm).map(page => Json.toJson(page))
-    } else { TicketDBRepository.getTicketsByCompanyId(companyId).map( tickets => Json.toJson(tickets)) }
+
+    TicketDBRepository.searchTicketByName(
+        companyId, 
+        projectIds,
+        createdByUserIds,
+        requestedByUserIds,
+        assignedToUserIds,
+        assignedToTeamIds,
+        pageSize.getOrElse(10),
+        pageNr.getOrElse(1),
+        searchTerm,
+        priority,
+        sort.getOrElse("id"),
+        order.getOrElse("desc")).map(page => Json.toJson(page))
+
+//
+//    if (pageNr.nonEmpty || pageSize.nonEmpty || searchTerm.nonEmpty) {
+//      TicketDBRepository.searchTicketByName(
+//          companyId, 
+//          projectIds,
+//          createdByUserIds,
+//          requestedByUserIds,
+//          assignedToUserIds,
+//          assignedToTeamIds,
+//          pageSize.getOrElse(10),
+//          pageNr.getOrElse(1),
+//          searchTerm,
+//          priority).map(page => Json.toJson(page))
+//    } else {
+//      TicketDBRepository.getTicketsByCompanyId(companyId).map(tickets => Json.toJson(tickets))
+//    }
   }
 
   def getAllActionWithPagination(companyId: Int, ticketId: Int, actionTypes: List[Int], pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String]) = CRMActionAsync{rq =>

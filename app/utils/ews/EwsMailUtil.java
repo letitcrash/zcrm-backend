@@ -12,7 +12,6 @@ import microsoft.exchange.webservices.data.search.FindItemsResults;
 import microsoft.exchange.webservices.data.search.ItemView;
 import models.ExchangeMail;
 import models.MailToSend;
-import scala.None$;
 import scala.Option;
 import scala.Some;
 import scala.collection.JavaConversions;
@@ -43,20 +42,20 @@ public class EwsMailUtil {
         String cc = " ", bcc = " ";
         for (EmailAddress address : message.getCcRecipients()) {cc += address.getAddress() + ",";}
         for (EmailAddress address : message.getBccRecipients()) {bcc += address.getAddress() + ",";}
-        ExchangeMail msg = new ExchangeMail(Option.apply(null),
-                                            new Some<>(message.getId().toString()),
-                                            new Some<>(message.getConversationId().toString()),
-                                            new Some<>(mailboxId),
-                                            new Some<>(message.getFrom().getAddress()),
-                                            new Some<>(message.getReceivedBy().getAddress()),
-                                            new Some<>(cc),
-                                            new Some<>(bcc),
-                                            new Some<>(message.getSubject()),
-                                            new Some<>(message.getBody().toString()),
-                                            new Some<>(message.getImportance().toString()),
-                                            new Some<>("There are must be attachments, but no"),
-                                            new Some<>(item.getSize()),
-                                            new Some<>(new Timestamp(item.getDateTimeReceived().getTime())));
+        ExchangeMail msg = new ExchangeMail(Option.apply(null), // id
+                                            new Some<>(message.getId().toString()), // extId
+                                            new Some<>(message.getConversationId().toString()), // conversationExtId
+                                            new Some<>(mailboxId), // mailboxId
+                                            new Some<>(message.getFrom().getAddress()), // sender
+                                            new Some<>(message.getReceivedBy().getAddress()), // receivedBy
+                                            new Some<>(cc), // ccRecipients
+                                            new Some<>(bcc), // bccRecipients
+                                            new Some<>(message.getSubject()), // subject
+                                            new Some<>(message.getBody().toString()), // body
+                                            new Some<>(message.getImportance().toString()), // importance
+                                            new Some<>("There are must be attachments, but no"), // attachments
+                                            new Some<>(item.getSize()), // size
+                                            new Some<>(new Timestamp(item.getDateTimeReceived().getTime()))); // received
         result.add(msg);
      }
     return result;

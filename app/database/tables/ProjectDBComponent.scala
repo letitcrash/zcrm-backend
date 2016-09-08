@@ -7,6 +7,7 @@ import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.profile.SqlProfile.ColumnOption.Nullable
 import database.PagedDBResult
+import play.api.Logger
 
 case class ProjectEntity(
   id: Option[Int] = None,
@@ -54,8 +55,7 @@ trait ProjectDBComponent extends DBComponent {
   }
 
   def getProjectEntityById(id: Int): Future[ProjectEntity] = {
-    db.run(projects.filter(p =>(p.id === id && 
-                                p.recordStatus === RowStatus.ACTIVE)).result.head)
+    db.run(projects.filter(p => (p.id === id && p.recordStatus === RowStatus.ACTIVE)).result.head)
   }
 
   def updateProjectEntity(project: ProjectEntity): Future[ProjectEntity] = {

@@ -7,9 +7,10 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.model.ForeignKeyAction.{Cascade, SetNull, Restrict}
 import models._
 import database.PagedDBResult
+import play.api.Logger
 
 case class MailboxEntity(
-  id: Option[Int] = None, 
+  id: Option[Int], 
   userId: Int,
   server: String,
   login: String,
@@ -27,7 +28,7 @@ trait MailboxDBComponent extends DBComponent {
   val mailboxes = TableQuery[MailboxTable]
 
   class MailboxTable(tag: Tag) extends Table[MailboxEntity](tag, "tbl_mailbox") {
-    def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
+    def id = column[Option[Int]]("id", O.PrimaryKey, O.AutoInc)
     def userId = column[Int]("user_id")
     def server = column[String]("server", O.SqlType("VARCHAR(255)"))
     def login = column[String]("login", O.SqlType("VARCHAR(255)"))
@@ -38,7 +39,8 @@ trait MailboxDBComponent extends DBComponent {
 
     def fkUserId = foreignKey("fk_mailbox_user", userId, users)(_.id)
 
-    def * = (id.?, userId, server, login, password, recordStatus, createdAt, updatedAt) <> (MailboxEntity.tupled, MailboxEntity.unapply)
+    def * = (id, userId, server, login, password, recordStatus, createdAt, updatedAt) <>
+      (MailboxEntity.tupled, MailboxEntity.unapply)
 
     def UqCombo = index("unique_combo", (server,login,password), unique = true)
   }
@@ -50,14 +52,34 @@ trait MailboxDBComponent extends DBComponent {
 
   //MailboxEntity CRUD
 
-  def insertMailboxEnitity(mailbox: MailboxEntity): Future[MailboxEntity] = {
-      db.run(((mailboxes returning mailboxes.map(_.id) 
-                  into ((mailbox,id) => mailbox.copy(id=Some(id)))) += mailbox))
+  def insertMailboxEnitity(mailbox: MailboxEntity, userId: Int): Future[Int] = {
+    db.run(mailboxes.map(columns => (
+        columns.id,
+        columns.userId,
+        columns.server,
+        columns.login,
+        columns.password,
+        columns.recordStatus,
+        columns.createdAt,
+        columns.updatedAt)) += (
+            Some(1),
+            userId,
+            mailbox.server,
+            mailbox.login,
+            mailbox.password,
+            mailbox.recordStatus,
+            mailbox.createdAt,
+            mailbox.updatedAt))
   } 
 
   def getMailboxEntityById(id:Int): Future[MailboxEntity] = {
-      db.run(mailboxes.filter(m => (m.id === id &&
+    Logger.info("getMailboxEntityById")
+    Logger.info("FUCKING ID IS " + id)
+    val fut = db.run(mailboxes.filter(m => (m.id === id &&
                                     m.recordStatus === RowStatus.ACTIVE)).result.head)
+    Logger.info("/ getMailboxEntityById")
+    fut.foreach(entity => println(entity.toString))
+    fut
   }
 
   def getMailboxEntitiesByUserId(userId: Int): Future[List[MailboxEntity]] = {
@@ -77,7 +99,11 @@ trait MailboxDBComponent extends DBComponent {
                                        updatedAt = new Timestamp(System.currentTimeMillis()))))
   }
 
-  def searchMailboxEntitiesByName(userId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String] = None): Future[PagedDBResult[MailboxEntity]] = {
+  def searchMailboxEntitiesByName(
+      userId: Int,
+      pageSize: Int,
+      pageNr: Int,
+      searchTerm: Option[String] = None): Future[PagedDBResult[MailboxEntity]] = {
     val baseQry = searchTerm.map { st =>
         val s = "%" + st + "%"
         mailboxQry(userId).filter{_.login.like(s)}
@@ -98,6 +124,4 @@ trait MailboxDBComponent extends DBComponent {
           )
         )
   }
-
 }
-

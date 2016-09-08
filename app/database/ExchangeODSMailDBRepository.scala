@@ -5,10 +5,17 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import utils.converters.MailConverter._
 
 import scala.concurrent.Future
-
+import play.api.Logger
+import microsoft.exchange.webservices.data.core.service.item.Item
+import database.tables.ExchangeODSMailEntity
+import database.tables.ExchangeODSMailDBComponent
 
 object ExchangeODSMailDBRepository {
   import database.gen.current.dao._
+  
+  def insertEmails(emails: Iterable[ExchangeODSMailEntity]): Unit = {
+    insertTheEmails(emails)
+  }
 
     def insertODSMail(mail: ExchangeMail): Future[ExchangeMail] = {
         insertODSMailEntity(mail.asODSEntity).map(inserted => inserted.asMailFromODS)
@@ -24,7 +31,7 @@ object ExchangeODSMailDBRepository {
 
     def getUserIdByODSMailId(mailId: Int): Future[Int] = {
       getODSMailEntityById(mailId).flatMap(entity => 
-                                       getMailboxEntityById(entity.id.get).map(res => res.userId))
+                                       getMailboxEntityById(entity.mailboxId).map(res => res.userId))
     }
 
     def  getODSMailsByConversationId(conversationId: String): Future[List[ExchangeMail]] = {
@@ -32,7 +39,7 @@ object ExchangeODSMailDBRepository {
     }
 
     def getODSMailsByMailboxId(mailboxId: Int): Future[List[ExchangeMail]] = {
-        getODSMailEntitiesByMailboxId(mailboxId).map(list => list.map(_.asMailFromODS))
+      getODSMailEntitiesByMailboxId(mailboxId).map(list => list.map(_.asMailFromODS))
     }
 
     def updateODSMail(mail: ExchangeMail): Future[ExchangeMail] = {
@@ -47,11 +54,18 @@ object ExchangeODSMailDBRepository {
         deleteODSMailEntityByExtId(extId).map(deleted => deleted.asMailFromODS)
     }
 
-  def searchODSMailsByMailboxId(mailboxId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String]): Future[PagedResult[GroupedMail]] = {
-    searchODSMailEntitiesByMailboxId(mailboxId, pageSize, pageNr, searchTerm).map{dbPage =>
-        PagedResult[GroupedMail](pageSize = dbPage.pageSize,
-                                  pageNr = dbPage.pageNr,
-                                  totalCount = dbPage.totalCount,
-                                  data = dbPage.data.groupBy(_.conversationExtId).map{ case (k,v) => GroupedMail(conversationId = k, mails = v.map(_.asMailFromODS).toList)}.toList)}
-  }
+  def searchODSMailsByMailboxId(
+      mailboxId: Int,
+      pageSize: Int,
+      pageNr: Int,
+      searchTerm: Option[String]): Future[PagedResult[GroupedMail]] =
+    searchODSMailEntitiesByMailboxId(mailboxId, pageSize, pageNr, searchTerm).map { dbPage =>
+      PagedResult[GroupedMail](
+          dbPage.pageSize,
+          dbPage.pageNr,
+          dbPage.totalCount,
+          dbPage.data.groupBy(_.conversationExtId).map {
+            case (k,v) => GroupedMail(k, v.map(_.asMailFromODS).toList)
+          } toList)
+    }
 }

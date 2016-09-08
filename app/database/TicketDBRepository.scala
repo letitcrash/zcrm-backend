@@ -13,9 +13,9 @@ object TicketDBRepository {
   import database.gen.current.dao.dbConfig.driver.api._
   import database.gen.current.dao._
 
-  def createTicket(ticket: Ticket, companyId: Int): Future[Ticket] = {
+  def createTicket(ticket: Ticket, companyId: Int, projectId: Int): Future[Ticket] = {
     for {
-      ticketEntt <- insertTicket(ticket.asTicketEntity(companyId))
+      ticketEntt <- insertTicket(ticket.asTicketEntity(companyId, projectId))
       members <- ticket.members.map( users => addMembers(ticketEntt.id.get, users)).getOrElse(Future())
       teams <- ticket.teams.map( teams => addTeams(ticketEntt.id.get, teams)).getOrElse(Future())
       clients <- ticket.clients.map( clients => addClients(ticketEntt.id.get, clients)).getOrElse(Future())
@@ -43,12 +43,15 @@ object TicketDBRepository {
 
   def getTicketById(id: Int): Future[Ticket] = {
     for {
-    ticket <- getAggTicketEntityById(id)
-    userEntts <- getUsersByTicketId(ticket._1.id.get)
-    teamsEntts <- getTeamsByTicketId(ticket._1.id.get)
-    clientEntts <- getClientsByTicketId(ticket._1.id.get)
-    requesterEntts <- getRequestersByTicketId(ticket._1.id.get)
-    projectEntt <- ticket._1.projectId match { case Some(pId) => getProjectEntityById(pId).map(p => Some(p)); case _ => Future(None) }
+      ticket <- getAggTicketEntityById(id)
+      userEntts <- getUsersByTicketId(ticket._1.id.get)
+      teamsEntts <- getTeamsByTicketId(ticket._1.id.get)
+      clientEntts <- getClientsByTicketId(ticket._1.id.get)
+      requesterEntts <- getRequestersByTicketId(ticket._1.id.get)
+      projectEntt <- ticket._1.projectId match {
+        case Some(pId) => getProjectEntityById(pId).map(p => Some(p));
+        case _ => Future(None)
+      }
     } yield ticket.asTicket(userEntts, teamsEntts, clientEntts, requesterEntts, projectEntt)
   }
 
@@ -80,41 +83,52 @@ object TicketDBRepository {
         } yield ticket.asTicket(userEntts, teamsEntts, clientEntts, requesterEntts, projectEntt)))}
   } 
 
-  def searchTicketByName(companyId: Int, 
-                         projectIds: List[Int], 
-                         createdByUserIds: List[Int],
-                         requestedByUserIds: List[Int], 
-                         assignedToUserIds: List[Int],
-                         assignedToTeamIds: List[Int], 
-                         pageSize: Int, 
-                         pageNr: Int, 
-                         searchTerm: Option[String]): Future[PagedResult[Ticket]] = {
-    searchTicketEntitiesByName(companyId, 
-                               projectIds,
-                               createdByUserIds,
-                               requestedByUserIds,
-                               assignedToUserIds,
-                               assignedToTeamIds,
-                               pageSize, 
-                               pageNr, 
-                               searchTerm).flatMap{dbPage =>
-        Future.sequence(
-            dbPage.data.map(t =>
-              for {
-                ticket <- getAggTicketEntityById(t.id.get)
-                userEntts <- getUsersByTicketId(ticket._1.id.get)
-                teamsEntts <- getTeamsByTicketId(ticket._1.id.get)
-                clientEntts <- getClientsByTicketId(ticket._1.id.get)
-                requesterEntts <- getRequestersByTicketId(ticket._1.id.get)
-                projectEntt <- ticket._1.projectId match { case Some(pId) => getProjectEntityById(pId).map(p => Some(p)); case _ => Future(None) }
-              } yield ticket.asTicket(userEntts, teamsEntts, clientEntts, requesterEntts, projectEntt)))
-                  .map(ticketList =>
-                       PagedResult[Ticket](pageSize = dbPage.pageSize,
-                                            pageNr = dbPage.pageNr,
-                                            totalCount = dbPage.totalCount,
-                                            data = ticketList))
+  def searchTicketByName(
+      companyId: Int, 
+      projectIds: List[Int], 
+      createdByUserIds: List[Int],
+      requestedByUserIds: List[Int], 
+      assignedToUserIds: List[Int],
+      assignedToTeamIds: List[Int], 
+      pageSize: Int, 
+      pageNr: Int, 
+      searchTerm: Option[String],
+      priority: Option[String],
+      sort: String,
+      order: String): Future[PagedResult[Ticket]] = {
+    searchTicketEntitiesByName(
+        companyId, 
+        projectIds,
+        createdByUserIds,
+        requestedByUserIds,
+        assignedToUserIds,
+        assignedToTeamIds,
+        pageSize, 
+        pageNr, 
+        searchTerm,
+        priority,
+        sort,
+        order).flatMap { dbPage =>
+      Future.sequence {
+        dbPage.data.map { t =>
+          for {
+            ticket <- getAggTicketEntityById(t.id.get)
+            userEntts <- getUsersByTicketId(ticket._1.id.get)
+            teamsEntts <- getTeamsByTicketId(ticket._1.id.get)
+            clientEntts <- getClientsByTicketId(ticket._1.id.get)
+            requesterEntts <- getRequestersByTicketId(ticket._1.id.get)
+            projectEntt <- ticket._1.projectId match {
+              case Some(pId) => getProjectEntityById(pId).map(p => Some(p))
+              case _ => Future(None)
+            }
+          } yield ticket.asTicket(userEntts, teamsEntts, clientEntts, requesterEntts, projectEntt)
+        }
+      } map(ticketList => PagedResult[Ticket](
+          pageSize = dbPage.pageSize,
+          pageNr = dbPage.pageNr,
+          totalCount = dbPage.totalCount,
+          data = ticketList))
     }
-
   }
 
   def addMembers(ticketId: Int, users: List[User]): Future[List[User]] = {

@@ -134,7 +134,7 @@ GET    /users/:userId/mailboxes/:mailboxId/mails/:mailId                        
 GET    /users/:userId/mailboxes/:mailboxId/calendar                                          controllers.ExchangeController.getCalendarItemsByMailBoxId(userId: Int, mailboxId: Int, startDate: Long, endDate: Long)
 
 #Tickets
-POST   /companies/:companyId/tickets                                                         controllers.TicketController.newTicket(companyId: Int)
+POST   /companies/:companyId/tickets/:projectId                                              controllers.TicketController.newTicket(companyId: Int, projectId: Int)
 POST   /companies/:companyId/tickets/:ticketId/members                                       controllers.TicketController.addMembersToTicket(companyId: Int, ticketId: Int)
 POST   /companies/:companyId/tickets/:ticketId/teams                                         controllers.TicketController.addTeamMembersToTicket(companyId: Int, ticketId: Int)
 POST   /companies/:companyId/tickets/:ticketId/clients                                       controllers.TicketController.addClientsToTicket(companyId: Int, ticketId: Int)
@@ -145,7 +145,7 @@ PUT    /companies/:companyId/tickets/:ticketId/priority                         
 PUT    /companies/:companyId/tickets/:ticketId/project                                       controllers.TicketController.updateProject(companyId: Int, ticketId: Int)
 DELETE /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.deleteTicketById(companyId: Int, ticketId:Int) 
 GET    /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.getTicket(companyId: Int, ticketId: Int)
-GET    /companies/:companyId/tickets                                                         controllers.TicketController.searchAllTicketsByName(companyId: Int, projectIds: List[Int], createdByUserIds: List[Int], requestedByUserIds: List[Int], assignedToUserIds: List[Int], assignedToTeamIds: List[Int], pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String])
+GET    /companies/:companyId/tickets                                                         controllers.TicketController.searchAllTicketsByName(companyId: Int, projectIds: List[Int], createdByUserIds: List[Int], requestedByUserIds: List[Int], assignedToUserIds: List[Int], assignedToTeamIds: List[Int], pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String], priority: Option[String], sort: Option[String], order: Option[String])
 GET    /companies/:companyId/tickets/users/:userId                                           controllers.TicketController.getAllTicketsByCreatedByUser(companyId:Int, userId: Int)
 
 #Ticket actions
@@ -186,3 +186,6 @@ PUT		/pages/edit/:id			controllers.PagesController.edit(id: Int)
 GET		/pages/get/:id			controllers.PagesController.get(id: Int)
 GET		/pages/search			controllers.PagesController.search(query: Option[String], count: Option[Int], offset: Option[Int])
 DELETE	/pages/delete/:id		controllers.PagesController.delete(id: Int)
+
+# Mails
+GET		/mailboxes/synchronize/:userId	controllers.MailboxController.synchronize(userId: Int)

@@ -12,6 +12,7 @@ object TicketActionDBRepository {
   import database.gen.current.dao._
 
   def createAction(action: TicketAction, companyId: Int): Future[TicketAction] = {
+    Logger.info("createAction")
     insertAction(action.asActionEntity)
           .flatMap(inserted => 
                    getActionEntityWithProfileById(inserted.id.get).map(_.asAction))

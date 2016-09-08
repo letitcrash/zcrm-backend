@@ -7,22 +7,25 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.model.ForeignKeyAction.{Cascade, SetNull, Restrict}
 import models._
 import database.PagedDBResult
+import play.api.Logger
+import slick.lifted.{Ordered, ColumnOrdered}
+import slick.ast.Ordering
 
 case class ExchangeODSMailEntity(
-  id: Option[Int] = None,
-  mailboxId: Int,
-  extId: String,
-  conversationExtId: String,
-  sender: String,
-  receivedBy: String,
-  ccRecipients: String,
-  bccRecipients: String,
-  subject: String,
-  body: String,
-  importance: String,
-  attachments: String,
-  size: Int,
-  received: Timestamp)
+    id: Option[Int] = None,
+    mailboxId: Int,
+    extId: String,
+    conversationExtId: String,
+    sender: String,
+    receivedBy: String,
+    ccRecipients: String,
+    bccRecipients: String,
+    subject: String,
+    body: String,
+    importance: String,
+    attachments: String,
+    size: Int,
+    received: Timestamp)
 
 trait ExchangeODSMailDBComponent extends DBComponent {
  this: DBComponent
@@ -48,7 +51,7 @@ trait ExchangeODSMailDBComponent extends DBComponent {
     def size = column[Int]("size")
     def received = column[Timestamp]("received")
 
-    def mailboxIdFk = foreignKey("fk_ods_mailbox_id", mailboxId, mailboxes)(_.id)
+    def mailboxIdFk = foreignKey("fk_ods_mailbox_id", mailboxId, mailboxes)(_.id.get)
 
     def * = (id.?, mailboxId, extId, conversationExtId, sender, receivedBy, ccRecipients, bccRecipients,
              subject, body, importance, attachments, size, received) <> (ExchangeODSMailEntity.tupled, ExchangeODSMailEntity.unapply)
@@ -64,9 +67,13 @@ trait ExchangeODSMailDBComponent extends DBComponent {
        db.run((ods_mails returning ods_mails.map(_.id)
                      into ((mail,id) => mail.copy(id=Some(id)))) += mail)
    }
+   
+  def insertTheEmails(emails: Iterable[ExchangeODSMailEntity]): Future[Option[Int]] = {
+    db.run(ods_mails ++= emails)
+  }
 
   def getODSMailEntityById(id: Int): Future[ExchangeODSMailEntity] = {
-       db.run(ods_mails.filter(_.id === id).result.head)
+    db.run(ods_mails.filter(_.id === id).result.head)
   }
 
   def getODSMailEntityByExtId(extId: String): Future[ExchangeODSMailEntity] = {
@@ -78,7 +85,7 @@ trait ExchangeODSMailDBComponent extends DBComponent {
   }
 
   def getODSMailEntitiesByMailboxId(mailboxId: Int): Future[List[ExchangeODSMailEntity]] = {
-      db.run(ods_mails.filter(_.mailboxId === mailboxId).result).map(_.toList)
+    db.run(ods_mails.filter(_.mailboxId === mailboxId).result).map(_.toList)
   }
 
   def updateODSMailEntity(mail: ExchangeODSMailEntity): Future[ExchangeODSMailEntity] = {
@@ -100,27 +107,20 @@ trait ExchangeODSMailDBComponent extends DBComponent {
 
   //FILTERS
 
-  def searchODSMailEntitiesByMailboxId(mailboxId: Int, pageSize: Int, pageNr: Int, searchTerm: Option[String] = None): Future[PagedDBResult[ExchangeODSMailEntity]] = {
-    val baseQry = searchTerm.map { st =>
-        val s = "%" + st + "%"
-        odsQry(mailboxId).filter{_.subject.like(s)}
-      }.getOrElse(odsQry(mailboxId))  
-
-    val pageRes = baseQry
-      .sortBy(_.received.asc)
-      .drop(pageSize * (pageNr - 1))
-      .take(pageSize)
-
-    db.run(pageRes.result).flatMap( mailsList => 
-        db.run(baseQry.length.result).map( totalCount => 
-         PagedDBResult(
-            pageSize = pageSize,
-            pageNr = pageNr,
-            totalCount = totalCount,
-            data = mailsList)
-          )
-        )
+  def searchODSMailEntitiesByMailboxId(
+      mailboxId: Int,
+      pageSize: Int,
+      pageNr: Int,
+      searchTerm: Option[String] = None): Future[PagedDBResult[ExchangeODSMailEntity]] = {
+    val baseQry = searchTerm.map(st => odsQry(mailboxId).filter(_.subject.like("%" + st + "%")))
+      .getOrElse(odsQry(mailboxId))
+    
+    db.run(baseQry.result).flatMap { mailsList =>
+      val mails = mailsList.sortWith((first, second) => first.received.after(second.received))
+        .drop(pageSize * (pageNr - 1))
+        .take(pageSize)
+        
+      db.run(baseQry.length.result).map(totalCount => PagedDBResult(pageSize, pageNr, totalCount, mails))
+    }
   }
-
 }
-

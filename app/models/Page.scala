@@ -5,7 +5,7 @@ import play.api.libs.json.Json
 
 case class Page(
     id: Option[Int],
-    name: String,
+    alias: String,
     title: String,
     date: Date,
     author: Int,
