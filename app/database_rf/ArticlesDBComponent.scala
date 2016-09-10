@@ -3,6 +3,7 @@ package database_rf
 import models.Article
 import java.sql.Date
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class ArticlesDBComponent(val db: Database) {
   import db.config.driver.api._
@@ -28,8 +29,11 @@ class ArticlesDBComponent(val db: Database) {
   def get(id: Int): Future[Option[Article]] =
     db.instance.run(articles.filter(_.id === id).result.headOption)
   
-  def list(count: Int, offset: Int): Future[Seq[Article]] =
-    db.instance.run(articles.drop(offset).take(count).result)
+  def list(query: String, count: Int, offset: Int): Future[Seq[Article]] = {
+    db.instance.run(articles.result).map { seq =>
+      seq.filter(_.title.contains(query)).drop(offset).take(count)
+    }
+  }
   
   def delete(id: Int): Future[Int] =
     db.instance.run(articles.filter(_.id === id).delete)

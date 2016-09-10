@@ -3,6 +3,7 @@ package database_rf
 import models.Page
 import java.sql.Date
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class PagesDBComponent(val db: Database) {
   import db.config.driver.api._
@@ -29,9 +30,12 @@ class PagesDBComponent(val db: Database) {
   def get(id: Int): Future[Option[Page]] =
     db.instance.run(pages.filter(_.id === id).result.headOption)
   
-  def list(count: Int, offset: Int): Future[Seq[Page]] =
-    db.instance.run(pages.drop(offset).take(count).result)
-    
+  def list(query: String, count: Int, offset: Int): Future[Seq[Page]] = {
+    db.instance.run(pages.result).map { seq =>
+      seq.filter(_.title.contains(query)).drop(offset).take(count)
+    }
+  }
+
   def delete(id: Int): Future[Int] =
     db.instance.run(pages.filter(_.id === id).delete)
     

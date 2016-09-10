@@ -49,18 +49,16 @@ class PagesController @Inject() (db: Database) extends CRMController {
   }
 
   def search(query: Option[String], count: Option[Int], offset: Option[Int]) = Action.async { _ =>
-    pages.list(count.getOrElse(50), offset.getOrElse(0)).flatMap { seq =>
-      val result = seq.filter(_.title.contains(query.getOrElse("")))
-
-      if (result.size > 0) Future(Ok(Json.toJson(result)))
-      else Future(BadRequest(Json.toJson(Error(200, "Nothing found."))))
+    pages.list(query.getOrElse(""), count.getOrElse(50), offset.getOrElse(0)).map { seq =>
+      if (seq.size > 0) Ok(Json.toJson(seq))
+      else BadRequest(Json.toJson(Error(200, "Nothing found.")))
     }
   }
   
   def delete(id: Int) = CRMActionAsync (parse.default) { _ =>
-    pages.delete(id).flatMap { count =>
-      if (count > 0) Future(Ok(Json.toJson(Success(1))))
-      else Future(BadRequest(Json.toJson(Error(102, "Wrong id?"))))
+    pages.delete(id).map { count =>
+      if (count > 0) Ok(Json.toJson(Success(1)))
+      else BadRequest(Json.toJson(Error(102, "Wrong id?")))
     }
   }
 }
