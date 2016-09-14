@@ -93,7 +93,7 @@ object TicketDBRepository {
       pageSize: Int, 
       pageNr: Int, 
       searchTerm: Option[String],
-      priority: Option[String],
+      priority: Option[Int],
       sort: String,
       order: String): Future[PagedResult[Ticket]] = {
     searchTicketEntitiesByName(

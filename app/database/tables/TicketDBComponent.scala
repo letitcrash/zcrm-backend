@@ -150,7 +150,7 @@ trait TicketDBComponent extends DBComponent {
       pageSize: Int, 
       pageNr: Int, 
       searchTerm: Option[String] = None,
-      priority: Option[String],
+      priority: Option[Int],
       sort: String,
       order: String): Future[PagedDBResult[TicketEntity]] = {
     val baseQry = ticketQry(
@@ -166,16 +166,7 @@ trait TicketDBComponent extends DBComponent {
       .getOrElse(baseQry)
 
     val priorQry = priority
-      .map { pr =>
-        val prNum = pr match {
-          case "low" => 0
-          case "med" => 1
-          case "high" => 2
-          case "asap" => 3
-        }
-        
-        srchQry.filter(_.priority === prNum)
-      }
+      .map(num => srchQry.filter(_.priority === num))
       .getOrElse(srchQry)
     
     val pageRes = priorQry

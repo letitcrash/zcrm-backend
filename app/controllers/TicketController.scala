@@ -137,7 +137,7 @@ class TicketController @Inject() extends CRMController {
       pageSize: Option[Int], 
       pageNr: Option[Int], 
       searchTerm: Option[String],
-      priority: Option[String],
+      priority: Option[Int],
       sort: Option[String],
       order: Option[String]) = CRMActionAsync { rq =>
     import utils.JSFormat._

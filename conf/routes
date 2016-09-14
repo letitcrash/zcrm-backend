@@ -145,7 +145,7 @@ PUT    /companies/:companyId/tickets/:ticketId/priority                         
 PUT    /companies/:companyId/tickets/:ticketId/project                                       controllers.TicketController.updateProject(companyId: Int, ticketId: Int)
 DELETE /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.deleteTicketById(companyId: Int, ticketId:Int) 
 GET    /companies/:companyId/tickets/:ticketId                                               controllers.TicketController.getTicket(companyId: Int, ticketId: Int)
-GET    /companies/:companyId/tickets                                                         controllers.TicketController.searchAllTicketsByName(companyId: Int, projectIds: List[Int], createdByUserIds: List[Int], requestedByUserIds: List[Int], assignedToUserIds: List[Int], assignedToTeamIds: List[Int], pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String], priority: Option[String], sort: Option[String], order: Option[String])
+GET    /companies/:companyId/tickets                                                         controllers.TicketController.searchAllTicketsByName(companyId: Int, projectIds: List[Int], createdByUserIds: List[Int], requestedByUserIds: List[Int], assignedToUserIds: List[Int], assignedToTeamIds: List[Int], pageSize: Option[Int], pageNr: Option[Int], searchTerm: Option[String], priority: Option[Int], sort: Option[String], order: Option[String])
 GET    /companies/:companyId/tickets/users/:userId                                           controllers.TicketController.getAllTicketsByCreatedByUser(companyId:Int, userId: Int)
 
 #Ticket actions

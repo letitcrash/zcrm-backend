@@ -85,6 +85,7 @@ class MailboxesDBComponent(val db: Database) {
         .filter(_.id === mailbox.id)
         .map(_.syncState)
         .update(syncResponse.getSyncState))
+    
     Json.parse(s"""{"email":"${mailbox.login}","count":${count}}""")
   }
 }

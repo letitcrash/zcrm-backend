@@ -1,10 +1,10 @@
-name := """crm-services"""
+name := "crm"
 
-version := "1.0-SNAPSHOT"
+version := "pre-release"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
 libraryDependencies ++= Seq(
   //jdbc,
@@ -25,3 +25,6 @@ libraryDependencies ++= Seq(
 )
 
 resolvers += "scalaz-bintray" at "http://dl.bintray.com/scalaz/releases"
+
+EclipseKeys.withSource := true
+EclipseKeys.withJavadoc := true
