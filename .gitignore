@@ -1,13 +1,5 @@
-logs
-target
+/bin
+/libexec
+/logs
+/target
 /.idea
-/.idea_modules
-/.classpath
-/.project
-/.settings
-/.cache-tests
-/.cache-main
-/RUNNING_PID
-*.sw*
-/bin/
-/libexec/
