@@ -81,15 +81,16 @@ class MailboxesDBComponent(val db: Database) {
           Timestamp.from(message.getDateTimeReceived.toInstant))
     })
 
-    val count = db.instance.run(mailboxes
+    db.instance.run(mailboxes
         .filter(_.id === mailbox.id)
         .map(_.syncState)
         .update(syncResponse.getSyncState))
     
-    Json.parse(s"""{"email":"${mailbox.login}","count":${count}}""")
+    Json.parse(s"""{"email":"${mailbox.login}","count":${syncResponse.getCount}}""")
   }
 }
 
 object MailboxesDBComponent {
   def apply(db: Database) = new MailboxesDBComponent(db)
 }
+
