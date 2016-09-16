@@ -6,7 +6,6 @@ import slick.profile.SqlProfile.ColumnOption.Nullable
 import scala.concurrent.Future
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import java.math.BigInteger
-import java.security.SecureRandom
 
 case class PasswordTokenEntity(
   userId: Int,
@@ -33,7 +32,7 @@ trait PasswordTokenDBComponent extends DBComponent{
       
   }
 
-  private val random = new SecureRandom()
+  private val random = SecureRandom.getInstance("NativePRNGNonBlocking")
   random.setSeed(random.generateSeed(55))
 
 

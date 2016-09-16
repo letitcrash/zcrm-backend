@@ -1,7 +1,6 @@
 package database 
 
 import java.math.BigInteger
-import java.security.SecureRandom
 import java.sql.Timestamp
 
 import database.tables.SignupTokenEntity

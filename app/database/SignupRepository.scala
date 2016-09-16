@@ -17,7 +17,7 @@ object SignupRepository {
   import database.gen.current.dao.dbConfig.driver.api._
   import database.gen.current.dao._
 
-  private[SignupRepository] val random = new SecureRandom()
+  private[SignupRepository] val random = SecureRandom.getInstance("NativePRNGNonBlocking")
   random.setSeed(random.generateSeed(55))
 
   def createTokenForEmail(email: String, validFor: Long = 7200000): Try[SignupToken] = {
