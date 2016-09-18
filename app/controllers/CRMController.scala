@@ -32,6 +32,14 @@ class CRMController @Inject() extends Controller with AcceptedReturns  {
       }
     }
 
+    def apply[T](parser: BodyParser[T])(bodyFn: Request[T] => Result) =
+      Action (parser) { req =>
+        Security.validateHeaders(req.headers) match {
+          case Success(header) => bodyFn(req)
+          case Failure(ex) => BadRequest(Json.toJson(Error(-1234, "Failed to authenticate")))
+        }
+      }
+
     def apply(bodyFn: CRMRequest[None.type] => AcceptedReturn) = Action { req =>
         validateHeaders(req.headers) { ttHeader =>
           bodyFn(CRMSimpleRequest(ttHeader, None)).toResp

@@ -8,6 +8,7 @@ case class Article(
     title: String,
     date: Date,
     author: Int,
+    image: Option[String],
     body: String,
     tags: Option[String],
     permission: Int

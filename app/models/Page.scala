@@ -10,6 +10,7 @@ case class Page(
     date: Date,
     author: Int,
     description: Option[String],
+    image: Option[String],
     body: String,
     permission: Int
 )

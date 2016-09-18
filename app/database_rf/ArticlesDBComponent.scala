@@ -13,11 +13,12 @@ class ArticlesDBComponent(val db: Database) {
     def title = column[String]("title")
     def date = column[Date]("date")
     def author = column[Int]("author")
+    def image = column[Option[String]]("image")
     def body = column[String]("body")
     def tags = column[Option[String]]("tags")
     def permission = column[Int]("permission")
     
-    def * = (id, title, date, author, body, tags, permission) <>
+    def * = (id, title, date, author, image, body, tags, permission) <>
         ((Article.apply _).tupled, Article.unapply)
   }
   
@@ -46,6 +47,9 @@ class ArticlesDBComponent(val db: Database) {
   
   def updateTags(id: Int, value: Option[String]): Future[Int] =
     db.instance.run(articles.filter(_.id === id).map(_.tags).update(value))
+    
+  def updateImage(id: Int, value: Option[String]): Future[Int] =
+    db.instance.run(articles.filter(_.id === id).map(_.image).update(value))
 }
 
 object ArticlesDBComponent {

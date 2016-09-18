@@ -9,6 +9,7 @@ case class NewsArticle(
     date: Date,
     author: Int,
     description: Option[String],
+    image: Option[String],
     text: String,
     tags: Option[String],
     permission: Int

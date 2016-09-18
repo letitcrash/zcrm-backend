@@ -33,6 +33,7 @@ class PagesController @Inject() (db: Database) extends CRMController {
           case ("title", value) => pages.updateTitle(id, value)
           case ("desc", value) => pages.updateDescription(id, Some(value))
           case ("body", value) => pages.updateBody(id, value)
+          case ("image", value) => pages.updateImage(id, Some(value))
         }
 
         Future(Ok(Json.toJson(Success(1))))

@@ -14,11 +14,12 @@ class NewsDBComponent(val db: Database) {
     def date = column[Date]("date")
     def author = column[Int]("author")
     def description = column[Option[String]]("description")
+    def image = column[Option[String]]("image")
     def text = column[String]("text")
     def tags = column[Option[String]]("tags")
     def permission = column[Int]("permission")
 
-    def * = (id, title, date, author, description, text, tags, permission) <>
+    def * = (id, title, date, author, description, image, text, tags, permission) <>
         ((NewsArticle.apply _).tupled, NewsArticle.unapply)
   }
   
@@ -50,6 +51,9 @@ class NewsDBComponent(val db: Database) {
     
   def updateTags(id: Int, value: String): Future[Int] =
     db.instance.run(news.filter(_.id === id).map(_.tags).update(Some(value)))
+  
+  def updateImage(id: Int, value: Option[String]): Future[Int] =
+    db.instance.run(news.filter(_.id === id).map(_.image).update(value))
 }
 
 object NewsDBComponent {

@@ -32,6 +32,7 @@ class ArticlesController @Inject() (db: Database) extends CRMController {
           case ("title", value) => articles.updateTitle(id, value)
           case ("body", value) => articles.updateBody(id, value)
           case ("tags", value) => articles.updateTags(id, Some(value))
+          case ("image", value) => articles.updateImage(id, Some(value))
         }
 
         Future(Ok(Json.toJson(Success(1))))

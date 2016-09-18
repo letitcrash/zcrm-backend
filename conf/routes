@@ -189,3 +189,6 @@ DELETE	/pages/delete/:id		controllers.PagesController.delete(id: Int)
 
 # Mails
 GET		/mailboxes/synchronize/:userId	controllers.MailboxController.synchronize(userId: Int)
+
+# Images
+POST	/images/upload			controllers.ImagesController.upload

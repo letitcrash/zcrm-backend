@@ -15,10 +15,11 @@ class PagesDBComponent(val db: Database) {
     def date = column[Date]("date")
     def author = column[Int]("author")
     def description = column[Option[String]]("description")
+    def image = column[Option[String]]("image")
     def body = column[String]("body")
     def permission = column[Int]("permission")
     
-    def * = (id, alias, title, date, author, description, body, permission) <>
+    def * = (id, alias, title, date, author, description, image, body, permission) <>
         ((Page.apply _).tupled, Page.unapply)
   }
   
@@ -50,6 +51,9 @@ class PagesDBComponent(val db: Database) {
     
   def updateBody(id: Int, value: String): Future[Int] =
     db.instance.run(pages.filter(_.id === id).map(_.body).update(value))
+    
+  def updateImage(id: Int, value: Option[String]): Future[Int] =
+    db.instance.run(pages.filter(_.id === id).map(_.image).update(value))
 }
 
 object PagesDBComponent {
